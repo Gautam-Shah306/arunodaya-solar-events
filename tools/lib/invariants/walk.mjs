@@ -11,7 +11,13 @@ const CODE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.mjs', '.cjs', '.html', 
  * @returns {string}
  */
 export function toRelPath(root, fullPath) {
-  return path.relative(root, fullPath).replace(/\\/g, '/');
+  const normRoot = path.resolve(root).replace(/\\/g, '/').replace(/\/+$/, '');
+  const normFull = path.resolve(fullPath).replace(/\\/g, '/');
+
+  if (normFull.toLowerCase().startsWith(normRoot.toLowerCase())) {
+    return normFull.slice(normRoot.length).replace(/^\/+/, '');
+  }
+  return path.relative(path.resolve(root), path.resolve(fullPath)).replace(/\\/g, '/');
 }
 
 /**

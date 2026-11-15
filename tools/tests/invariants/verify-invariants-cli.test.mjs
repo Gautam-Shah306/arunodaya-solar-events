@@ -20,7 +20,9 @@ describe('verify-invariants CLI', () => {
           encoding: 'utf8',
         });
         expect(res.status).toBe(0);
-        expect(res.stdout).toContain('invariants: 0 findings across 0 files (0 rules)');
+        expect(res.stdout).toMatch(
+          /invariants: 0 findings across \d+ files scanned \(10 rules run\)/,
+        );
       },
     );
   });
@@ -39,7 +41,9 @@ describe('verify-invariants CLI', () => {
         });
         expect(res.status).toBe(1);
         expect(res.stderr).toContain('[INV-TIME] apps/app/src/bad.ts:1');
-        expect(res.stdout).toContain('invariants: 1 findings across 1 files (1 rules)');
+        expect(res.stdout).toMatch(
+          /invariants: 1 findings across \d+ files scanned \(10 rules run\)/,
+        );
       },
     );
   });

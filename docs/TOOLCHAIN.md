@@ -4,8 +4,9 @@
 
 - **Node.js**: `v24.21.0` (native)
 - **npm**: `11.19.0` (native)
-- **Docker image**: not needed (native Node satisfies `>=24 <25` and npm satisfies `>=11.10`)
+- **Docker image**: not needed for local build/test (native Node satisfies `>=24 <25` and npm satisfies `>=11.10`)
 - **Host OS**: Windows 11 (PowerShell 5.1+)
+- **Host Repository Path**: Contains spaces (`D:\Sem4 vac\arunodaya-solar-events`)
 
 ## Pinned Dependencies
 
@@ -23,6 +24,10 @@ All dependencies are exact-pinned devDependencies located at the repository root
 | `vite`                | `8.3.8`   | MIT        | Application bundler and dev server        |
 | `@types/node`         | `26.6.6`  | MIT        | Node.js standard library type definitions |
 
+### TypeScript Version Pin Rationale
+
+`typescript` is strictly pinned to `6.0.3` because `typescript-eslint@8.72.2` declares a peer dependency constraint requiring a TypeScript version below `6.1.0` (`>=4.8.4 <6.1.0`). Bumping TypeScript to 7+ (as attempted by Dependabot) causes `npm ci` resolution failures. This pin will be revisited and upgraded when `typescript-eslint` officially adds support for a newer major version.
+
 ## Official GitHub Action Versions
 
 Verified via `git ls-remote --tags`:
@@ -37,13 +42,34 @@ Verified via `git ls-remote --tags`:
 | `actions/deploy-pages`          | `v5`          | `v5.0.1`         |
 | `github/codeql-action`          | `v4`          | `v4.39.3`        |
 
-## Docker Reference Command (PowerShell-safe)
+## Workflow Linting Tool (Docker Digest Pinned)
+
+Workflow YAML files in `.github/workflows/` are linted using `actionlint`:
+
+- **Image**: `rhysd/actionlint:latest`
+- **Digest**: `sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667`
+- **Verified Execution Command**:
+
+```powershell
+docker run --rm -v ($pwd.Path + ':/work') -w /work 'rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667'
+```
+
+## Docker Reference Command (PowerShell-safe with Spaces)
 
 When Docker execution is required on environments lacking native Node 24:
 
 ```powershell
 docker run --rm -v ($pwd.Path + ':/work') -v arunodaya-node-modules:/work/node_modules -w /work node:24-bookworm-slim@sha256:<digest> npm ci
 ```
+
+**Note on paths with spaces**: When the repository path contains spaces (e.g. `D:\Sem4 vac\...`), the PowerShell expression `($pwd.Path + ':/work')` safely evaluates into a single argument for the Docker `-v` parameter without shell argument fragmentation.
+
+## Dependabot Policy
+
+Dependabot runs weekly checks for `npm` and `github-actions`.
+
+- **TypeScript Major Ignore**: Dependabot is configured to ignore `version-update:semver-major` for `typescript` because `typescript-eslint@8.72.2` requires TypeScript `<6.1.0`. Once `typescript-eslint` supports TypeScript 7+, this rule will be removed.
+- **PR Rate Limiting**: `open-pull-requests-limit: 5` is configured for both ecosystems to prevent pull request storms and ensure reviewable updates.
 
 ## Android Tooling Policy
 

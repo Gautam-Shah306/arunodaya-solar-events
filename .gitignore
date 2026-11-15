@@ -14,3 +14,8 @@ build/
 .vscode/
 .DS_Store
 Thumbs.db
+
+collect-ci-failures-final.ps1
+collect-ci-failures-v2.ps1
+get-today-ci-failures.ps1
+ci-failures-report.txt

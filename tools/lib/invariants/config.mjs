@@ -63,6 +63,15 @@ export function loadConfig(configPathOrObj) {
 }
 
 /**
+ * Normalizes a relative path to forward slashes without leading ./ or /
+ * @param {string} p
+ * @returns {string}
+ */
+export function normalizeRelPath(p) {
+  return p.replace(/\\/g, '/').replace(/^\.\//, '').replace(/^\/+/, '');
+}
+
+/**
  * Checks whether an invariant rule is suppressed for a relative path
  * @param {any} config
  * @param {string} rule
@@ -71,12 +80,13 @@ export function loadConfig(configPathOrObj) {
  */
 export function isAllowed(config, rule, relPath) {
   if (!config?.allow || !Array.isArray(config.allow)) return false;
-  const normalized = relPath.replace(/\\/g, '/');
+  const normalized = normalizeRelPath(relPath);
 
   for (const entry of config.allow) {
     if (entry.rule !== rule) continue;
-    const allowPath = entry.path.replace(/\\/g, '/');
-    if (allowPath.endsWith('/')) {
+    const rawAllow = (entry.path || '').replace(/\\/g, '/');
+    const allowPath = normalizeRelPath(rawAllow);
+    if (rawAllow.endsWith('/')) {
       if (normalized.startsWith(allowPath)) return true;
     } else {
       if (normalized === allowPath) return true;

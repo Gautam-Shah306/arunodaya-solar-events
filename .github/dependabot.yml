@@ -4,6 +4,12 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
+    open-pull-requests-limit: 5
+    # Ignore semver-major updates for typescript because typescript-eslint 8.72.2 requires TypeScript <6.1.0;
+    # remove this ignore once typescript-eslint adds support for TypeScript 7+.
+    ignore:
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
     groups:
       dev-dependencies:
         patterns:
@@ -13,3 +19,4 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
+    open-pull-requests-limit: 5

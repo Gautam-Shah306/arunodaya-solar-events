@@ -4,6 +4,8 @@
 
 **Status labels:** **Decided** = explicitly requested or approved. **Proposed** = my recommendation, needs your confirmation or validation. **Open** = not yet decided.
 
+Authoritative copy: the repository copy of this specification is authoritative from the implementation start; the Claude document is no longer updated.
+
 ---
 
 ## 0. What changed from v1
@@ -36,6 +38,7 @@
 - **Purpose:** A calm, elegant India-focused sunrise/sunset and daily astronomy app, with **Navkarshi** prominent, live countdowns and Android home-screen widgets.
 - **Coverage (Decided):** India only. All displayed dates and times are **IST (`Asia/Kolkata`, fixed UTC+05:30)** regardless of device timezone. Because India has no daylight saving, a fixed +05:30 offset may be used internally to avoid depending on the WebView timezone database (Proposed).
 - **Platform (Decided):** Android app (Capacitor shell around the shared React app) with native Android widgets. iOS and iOS widgets are out of scope for now.
+- **Application ID (Decided):** in.gautam.arunodaya (permanent once published).
 - **Web build (Proposed, please confirm):** The React app still builds as an installable PWA for development and for Android Chrome users, but it is a secondary channel and not a supported iOS target.
 - **Minimum Android version (Open, Proposed: Android 8.0 / API 26):** Confirm against Capacitor's and Glance's current requirements at build time.
 - **Language (Decided):** English only. All user-facing strings live in a resource layer so Hindi/Gujarati can be added later without refactoring. Fonts for v1 need only Latin coverage.
@@ -406,7 +409,7 @@ function resolveTheme(choice: ThemeChoice, systemIsDark: boolean): ThemeDefiniti
 | Offline web | Service worker + Workbox for the secondary PWA channel |
 | Theming | Semantic design tokens as CSS variables; theme definitions in a shared package (§9.4) |
 | Hosting (web build) | GitHub Pages, deployed by GitHub Actions (§19) |
-| Source control and CI | Git + GitHub, pnpm monorepo, GitHub Actions (§18) |
+| Source control and CI | Git + GitHub, npm workspaces monorepo, GitHub Actions (§18) |
 
 ### 10.1 Snapshot contract (Proposed)
 
@@ -525,6 +528,9 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 - **Themes:** Light, Dark (charcoal-green), Pure Dark, Darker, and curated custom theme packs. Match system maps system light to Light and system dark to Pure Dark only, with no user-chosen pair.
 - **Theme pack lineup:** Navy, Burgundy, Aubergine, Midnight Teal (dark) and Porcelain, Sandstone (light). Palettes still Open.
 - **System design:** layered architecture with a framework-free domain core, versioned contracts and automated quality gates (§17).
+- **Licence (Decided):** MIT, with the LICENSE file created with the repository. Third-party data and fonts keep their own licences and are listed in a NOTICE file.
+- **Monorepo toolchain (Decided):** npm workspaces with a single committed package-lock.json.
+- **Application ID (Decided):** in.gautam.arunodaya (permanent once published).
 
 **Proposed (confirm)**
 
@@ -535,7 +541,7 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 - Moon/twilight/golden-hour start-ceil, end-floor rule; solar noon nearest; moon reference at 12:00 IST.
 - Golden hour = sunrise to +6°; supported date range 2000–2100.
 - Out-of-India behavior; per-widget location; 12-month PDF export.
-- Public repository (GitHub Pages on a free plan needs one), pnpm monorepo, trunk-based branching with pull requests, ADRs for key decisions.
+- Public repository (GitHub Pages on a free plan needs one), npm workspaces monorepo, trunk-based branching with pull requests, ADRs for key decisions.
 - Every theme pack keeps the solar accent in the gold/amber family; light packs use a darker gold text token.
 - Android release build without the INTERNET permission if Capacitor allows it.
 
@@ -546,7 +552,7 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 - Gazetteer and PIN datasets and licenses; PDF library.
 - Notification types and schedule; crash reporting approach.
 - Production copy for empty/error/stale states.
-- Licence; custom domain or the default github.io project URL.
+- Custom domain or the default github.io project URL.
 
 ---
 
@@ -635,7 +641,7 @@ Git and GitHub are installed and no repository exists yet. The plan below is Pro
 ### 18.1 Repository
 
 - **Name (Decided) and visibility (Proposed):** `arunodaya-solar-events`, **public**, under your GitHub account. GitHub Pages on a free plan serves public repositories only. A public repository is safe here because there is no backend and no secret in the code.
-- **Licence:** Open. Third-party data and fonts keep their own licences and are listed in a `NOTICE` file.
+- **Licence (Decided):** MIT, with the LICENSE file created with the repository. Third-party data and fonts keep their own licences and are listed in a `NOTICE` file.
 - **Default branch:** `main`.
 
 ### 18.2 Workflow
@@ -647,7 +653,7 @@ Git and GitHub are installed and no repository exists yet. The plan below is Pro
 
 ### 18.3 Monorepo layout (supersedes §10.2)
 
-pnpm workspaces with one lockfile.
+npm workspaces with one lockfile.
 
 ```text
 arunodaya-solar-events/
@@ -661,6 +667,10 @@ arunodaya-solar-events/
   docs/
     spec/                # this specification exported to Markdown
     adr/                 # architecture decision records
+    AGENT-RULES.md       # agent rules and governance (R1-R12)
+    ARCHITECTURE.md      # architectural layers and invariant rules
+    PLAN.md              # 12-prompt sequenced delivery plan
+    TOOLCHAIN.md         # runtime constraints and dependency pinning
   .github/
     workflows/           # CI, Pages deploy, Android build
   README.md  LICENSE  NOTICE
@@ -721,5 +731,9 @@ Also enable Dependabot and CodeQL scanning (free for public repositories).
 - Android signing material lives only in encrypted repository secrets (keystore as base64, passwords), used only by the tag-triggered workflow. Prefer Google Play App Signing.
 - **Rollback:** revert the commit on `main` and let the Pages workflow redeploy. Tags make any Android release reproducible.
 - **No staging environment** on Pages. Review changes by running the build locally or downloading the CI build artifact.
+
+## 20. Implementation plan
+
+The 12-prompt phased implementation plan and delivery tracker live in [docs/PLAN.md](../PLAN.md).
 
 *End of specification v2.*

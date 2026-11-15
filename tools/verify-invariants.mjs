@@ -5,6 +5,7 @@ export function main() {
   const args = process.argv.slice(2);
   let root = process.cwd();
   let jsonOutput = false;
+  let verbose = false;
   /** @type {string | undefined} */
   let configPath;
 
@@ -24,6 +25,8 @@ export function main() {
       }
     } else if (arg === '--json') {
       jsonOutput = true;
+    } else if (arg === '--verbose') {
+      verbose = true;
     } else {
       console.error(`Unknown argument: ${arg}`);
       process.exit(2);
@@ -58,8 +61,14 @@ export function main() {
         console.error(`  [${f.rule}] ${f.path}:${f.line} - ${f.message}`);
       }
     }
+    if (verbose && summary.ruleStats) {
+      console.log('Invariants rule execution breakdown:');
+      for (const [rule, count] of Object.entries(summary.ruleStats)) {
+        console.log(`  ${rule}: ${count} file(s) scanned`);
+      }
+    }
     console.log(
-      `invariants: ${summary.findingsCount} findings across ${summary.filesCount} files (${summary.rulesCount} rules)`,
+      `invariants: ${summary.findingsCount} findings across ${summary.filesScanned} files scanned (${summary.rulesRun} rules run)`,
     );
   }
 

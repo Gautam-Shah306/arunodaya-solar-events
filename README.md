@@ -44,6 +44,12 @@ npm run verify
 | `test:build`        | `vitest run --project=build`                               | Verify built output integrity and CSP headers        |
 | `verify`            | `node tools/verify.mjs`                                    | Execute the complete quality pipeline in sequence    |
 
+Run the invariants checker with `--verbose` to inspect scanned file breakdowns for each rule:
+
+```powershell
+npm run verify:invariants -- --verbose
+```
+
 ## Repository Layout
 
 ```text
@@ -67,6 +73,13 @@ arunodaya-solar-events/
 ├── LICENSE                  # MIT Licence
 └── NOTICE                   # Attribution and licensing notice
 ```
+
+## CI/CD and Automation
+
+- **Quality Suite (`.github/workflows/ci.yml`)**: Continuous integration running the 9-step verification pipeline on push and pull request.
+- **Code Scanning (`.github/workflows/codeql.yml`)**: CodeQL static analysis is enabled for JavaScript/TypeScript, executing on pushes, PRs, and weekly scheduled runs.
+- **Pages Deployment (`.github/workflows/pages.yml`)**: Automated deployment of the static web app to GitHub Pages.
+- **Dependabot (`.github/dependabot.yml`)**: Automated dependency scanning with major-version pin protection.
 
 ## GitHub Pages Deployment
 
