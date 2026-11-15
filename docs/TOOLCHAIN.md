@@ -1,4 +1,4 @@
-﻿# Toolchain Specification
+# Toolchain Specification
 
 ## Measured Environment
 

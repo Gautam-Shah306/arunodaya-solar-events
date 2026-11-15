@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { toRelPath, walkRepoFiles } from '../../lib/invariants/walk.mjs';

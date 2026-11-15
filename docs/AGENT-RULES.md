@@ -1,4 +1,4 @@
-﻿# Agent Rules (R1–R12)
+# Agent Rules (R1–R12)
 
 The following rules are mandatory for all agents and automated workflows operating in this repository.
 

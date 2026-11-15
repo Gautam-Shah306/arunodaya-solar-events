@@ -1,4 +1,4 @@
-﻿# Arunodaya Implementation Plan
+# Arunodaya Implementation Plan
 
 The project executes across a sequenced delivery plan.
 

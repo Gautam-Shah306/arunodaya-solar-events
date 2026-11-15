@@ -1,4 +1,4 @@
-﻿import fs from 'node:fs';
+import fs from 'node:fs';
 import path from 'node:path';
 
 const IGNORED_DIRS = new Set(['node_modules', 'dist', 'coverage', '.git', '.vite']);

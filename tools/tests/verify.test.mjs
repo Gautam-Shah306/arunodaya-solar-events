@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { runVerify, stripAnsi } from '../verify.mjs';
 
 describe('Verification pipeline runner and output formatting', () => {

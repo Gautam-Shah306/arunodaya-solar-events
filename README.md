@@ -32,20 +32,20 @@ npm run verify:linux
 
 ## Available Scripts
 
-| Script              | Command                                                    | Purpose                                              |
-| ------------------- | ---------------------------------------------------------- | ---------------------------------------------------- |
-| `check:toolchain`   | `node tools/check-toolchain.mjs`                           | Validate Node.js and npm version constraints         |
-| `verify:invariants` | `node tools/verify-invariants.mjs`                         | Verify AST architectural and security invariants     |
-| `lint`              | `eslint .`                                                 | Run ESLint with TypeScript strict type-checked rules |
-| `format`            | `prettier --write .`                                       | Format all source files with Prettier                |
-| `format:check`      | `prettier --check .`                                       | Verify code formatting compliance                    |
-| `typecheck`         | `node tools/typecheck.mjs`                                 | Run `tsc --noEmit` across all workspace projects     |
-| `test`              | `vitest run --project=tools --project=packages`            | Run unit tests for tools and packages                |
-| `test:coverage`     | `vitest run --coverage --project=tools --project=packages` | Enforce >=90% test coverage thresholds               |
-| `build:pages`       | `node tools/build-app.mjs --target=pages`                  | Build web application for GitHub Pages               |
-| `build:android`     | `node tools/build-app.mjs --target=android`                | Build web application for Android WebView container  |
-| `test:build`        | `vitest run --project=build`                               | Verify built output integrity and CSP headers        |
-| `verify`            | `node tools/verify.mjs`                                    | Execute the complete quality pipeline in sequence    |
+| Script              | Command                                                    | Purpose                                               |
+| ------------------- | ---------------------------------------------------------- | ----------------------------------------------------- |
+| `check:toolchain`   | `node tools/check-toolchain.mjs`                           | Validate Node.js and npm version constraints          |
+| `verify:invariants` | `node tools/verify-invariants.mjs`                         | Verify AST architectural and security invariants      |
+| `lint`              | `eslint .`                                                 | Run ESLint with TypeScript strict type-checked rules  |
+| `format`            | `prettier --write .`                                       | Format all source files with Prettier                 |
+| `format:check`      | `prettier --check .`                                       | Verify code formatting compliance                     |
+| `typecheck`         | `node tools/typecheck.mjs`                                 | Run `tsc --noEmit` across all workspace projects      |
+| `test`              | `vitest run --project=tools --project=packages`            | Run unit tests for tools and packages                 |
+| `test:coverage`     | `vitest run --coverage --project=tools --project=packages` | Enforce >=90% test coverage thresholds                |
+| `build:pages`       | `node tools/build-app.mjs --target=pages`                  | Build web application for GitHub Pages                |
+| `build:android`     | `node tools/build-app.mjs --target=android`                | Build web application for Android WebView container   |
+| `test:build`        | `vitest run --project=build`                               | Verify built output integrity and CSP headers         |
+| `verify`            | `node tools/verify.mjs`                                    | Execute the complete quality pipeline in sequence     |
 | `verify:linux`      | `node tools/verify-linux.mjs`                              | Run quality pipeline in digest-pinned Linux container |
 
 Run the invariants checker with `--verbose` to inspect scanned file breakdowns for each rule:

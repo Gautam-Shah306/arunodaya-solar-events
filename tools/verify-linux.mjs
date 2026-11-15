@@ -1,4 +1,4 @@
-﻿import path from 'node:path';
+import path from 'node:path';
 import { runVerifyLinux } from './lib/verify-linux.mjs';
 
 const repoRoot = path.resolve('.');
