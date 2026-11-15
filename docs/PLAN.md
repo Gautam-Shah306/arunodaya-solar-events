@@ -1,4 +1,4 @@
-# Arunodaya Implementation Plan
+﻿# Arunodaya Implementation Plan
 
 The project executes across a sequenced delivery plan.
 
@@ -6,6 +6,7 @@ The project executes across a sequenced delivery plan.
 | ------ | ----------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
 | 1      | Foundation                    | COMPLETE | Rules, docs, npm-workspaces monorepo, quality gates, invariants checker, app shell, CI and GitHub Pages deploy.       |
 | 1b     | Repair                        | COMPLETE | Invariants scanner real repo coverage, spec alignment to v2 contract, workflow lint, CodeQL and Dependabot hardening. |
+| 1c     | CI repair                     | COMPLETE | Linux CI reproduction and fix, verify:linux Docker script, CodeQL default mode alignment, readable verify CI logs.    |
 | 2      | Contracts and time core       | PENDING  | Data contracts, epoch-millisecond instant model, strict IST timezone handling, and time formatting utilities.         |
 | 3      | Astronomy engine and snapshot | PENDING  | Solar algorithms, sunrise/sunset, Navkarshi derivation, day/night division, and shared snapshot generator.            |
 | 4      | Theme system (10 themes)      | PENDING  | Contrast-checked theme tokens, color palettes, and theme registry with CSS custom properties.                         |

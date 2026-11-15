@@ -25,6 +25,9 @@ npm ci
 
 # Run all quality gates and build verification
 npm run verify
+
+# Verify full pipeline inside Linux Docker container (requires Docker)
+npm run verify:linux
 ```
 
 ## Available Scripts
@@ -43,6 +46,7 @@ npm run verify
 | `build:android`     | `node tools/build-app.mjs --target=android`                | Build web application for Android WebView container  |
 | `test:build`        | `vitest run --project=build`                               | Verify built output integrity and CSP headers        |
 | `verify`            | `node tools/verify.mjs`                                    | Execute the complete quality pipeline in sequence    |
+| `verify:linux`      | `node tools/verify-linux.mjs`                              | Run quality pipeline in digest-pinned Linux container |
 
 Run the invariants checker with `--verbose` to inspect scanned file breakdowns for each rule:
 
@@ -69,7 +73,7 @@ arunodaya-solar-events/
 │   └── TOOLCHAIN.md         # Measured runtime and dependency versions
 ├── tools/                   # Quality gates, verification CLI, build scripts
 ├── .github/
-│   └── workflows/           # CI, GitHub Pages, CodeQL, and Dependabot automation
+│   └── workflows/           # CI, GitHub Pages, and Dependabot automation
 ├── LICENSE                  # MIT Licence
 └── NOTICE                   # Attribution and licensing notice
 ```
@@ -77,7 +81,7 @@ arunodaya-solar-events/
 ## CI/CD and Automation
 
 - **Quality Suite (`.github/workflows/ci.yml`)**: Continuous integration running the 9-step verification pipeline on push and pull request.
-- **Code Scanning (`.github/workflows/codeql.yml`)**: CodeQL static analysis is enabled for JavaScript/TypeScript, executing on pushes, PRs, and weekly scheduled runs.
+- **Code Scanning**: CodeQL analysis runs through GitHub's default setup (Settings > Code security) with no custom workflow in the repository; a custom workflow must not be added while the default setup is on.
 - **Pages Deployment (`.github/workflows/pages.yml`)**: Automated deployment of the static web app to GitHub Pages.
 - **Dependabot (`.github/dependabot.yml`)**: Automated dependency scanning with major-version pin protection.
 

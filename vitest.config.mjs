@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+﻿import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
@@ -8,6 +8,7 @@ export default defineConfig({
           name: 'tools',
           environment: 'node',
           include: ['tools/tests/**/*.test.{mjs,js,ts}'],
+          testTimeout: 30000,
         },
       },
       {
@@ -15,6 +16,7 @@ export default defineConfig({
           name: 'packages',
           environment: 'node',
           include: ['packages/*/tests/**/*.test.{mjs,js,ts}'],
+          testTimeout: 30000,
         },
       },
       {

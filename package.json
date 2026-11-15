@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "arunodaya-solar-events",
   "version": "0.1.0",
   "private": true,
@@ -24,7 +24,8 @@
     "build:pages": "node tools/build-app.mjs --target=pages",
     "build:android": "node tools/build-app.mjs --target=android",
     "build": "node tools/build-app.mjs --target=pages",
-    "verify": "node tools/verify.mjs"
+    "verify": "node tools/verify.mjs",
+    "verify:linux": "node tools/verify-linux.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

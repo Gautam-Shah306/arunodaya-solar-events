@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -17,33 +17,20 @@ describe('Workflow and Automation Configurations', () => {
     expect(content).toContain('open-pull-requests-limit: 5');
   });
 
-  it('codeql workflow grants security-events write and analyzes javascript-typescript', () => {
+  it('no custom codeql workflow exists because default setup is used', () => {
     const codeqlPath = path.join(repoRoot, '.github', 'workflows', 'codeql.yml');
-    expect(fs.existsSync(codeqlPath)).toBe(true);
-    const content = fs.readFileSync(codeqlPath, 'utf8');
-
-    // Workflow permissions and job permissions
-    expect(content).toContain('contents: read');
-    expect(content).toContain('security-events: write');
-
-    // Init step with build-mode: none
-    expect(content).toContain('uses: github/codeql-action/init@v4');
-    expect(content).toContain('languages: javascript-typescript');
-    expect(content).toContain('build-mode: none');
-
-    // Analyze step with category
-    expect(content).toContain('uses: github/codeql-action/analyze@v4');
-    expect(content).toContain("category: '/language:javascript-typescript'");
+    expect(fs.existsSync(codeqlPath)).toBe(false);
   });
 
-  it('codeql workflow triggers on push pull_request and a weekly schedule', () => {
-    const codeqlPath = path.join(repoRoot, '.github', 'workflows', 'codeql.yml');
-    expect(fs.existsSync(codeqlPath)).toBe(true);
-    const content = fs.readFileSync(codeqlPath, 'utf8');
+  it('ci and pages workflows disable colour output', () => {
+    const ciPath = path.join(repoRoot, '.github', 'workflows', 'ci.yml');
+    const pagesPath = path.join(repoRoot, '.github', 'workflows', 'pages.yml');
 
-    // Trigger specifications
-    expect(content).toMatch(/push:\s+branches:\s+- main/);
-    expect(content).toMatch(/pull_request:\s+branches:\s+- main/);
-    expect(content).toMatch(/schedule:\s+- cron: '0 5 \* \* 1'/);
+    const ciContent = fs.readFileSync(ciPath, 'utf8');
+    const pagesContent = fs.readFileSync(pagesPath, 'utf8');
+
+    for (const content of [ciContent, pagesContent]) {
+      expect(content).toMatch(/env:\s+NO_COLOR:\s*'1'\s+FORCE_COLOR:\s*'0'/);
+    }
   });
 });

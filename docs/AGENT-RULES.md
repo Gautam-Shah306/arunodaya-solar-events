@@ -1,4 +1,4 @@
-# Agent Rules (R1–R12)
+﻿# Agent Rules (R1–R12)
 
 The following rules are mandatory for all agents and automated workflows operating in this repository.
 
@@ -26,6 +26,7 @@ Every subsequent prompt must begin with Part 0 verification to ensure workspace 
 3. Comprehensive verification: run `npm run verify`.
 4. Repair scope: repair only regressions or environment drift, never new features.
 5. Reporting: report results in the REPORT section.
+6. Linux verification: after Prompt 1c, when the prompt touches tests, tooling or workflows, also run `npm run verify:linux` and report it.
 
 ## Report format
 

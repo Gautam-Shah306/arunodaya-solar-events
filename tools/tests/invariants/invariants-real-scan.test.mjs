@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { toRelPath, walkRepoFiles } from '../../lib/invariants/walk.mjs';
@@ -37,6 +37,18 @@ describe('Invariants scanner and real repository verification', () => {
         }
       },
     );
+  });
+
+  it('toRelPath resolves windows drive paths portably on non-windows platforms', () => {
+    const winRoot = 'D:\\Sem4 vac\\arunodaya-solar-events';
+    const winInside = 'D:\\Sem4 vac\\arunodaya-solar-events\\apps\\app\\src\\main.ts';
+    expect(toRelPath(winRoot, winInside)).toBe('apps/app/src/main.ts');
+
+    const winSibling = 'D:\\Sem4 vac\\other-repo\\file.ts';
+    expect(toRelPath(winRoot, winSibling)).toBe('../other-repo/file.ts');
+
+    const winMixedDrive = 'd:\\Sem4 vac\\arunodaya-solar-events\\tools\\verify.mjs';
+    expect(toRelPath(winRoot, winMixedDrive)).toBe('tools/verify.mjs');
   });
 
   it('allowlist matching uses forward-slash relative paths', () => {

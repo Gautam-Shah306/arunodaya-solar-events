@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+﻿import fs from 'node:fs';
 import path from 'node:path';
 
 const IGNORED_DIRS = new Set(['node_modules', 'dist', 'coverage', '.git', '.vite']);
@@ -17,6 +17,11 @@ export function toRelPath(root, fullPath) {
   if (normFull.toLowerCase().startsWith(normRoot.toLowerCase())) {
     return normFull.slice(normRoot.length).replace(/^\/+/, '');
   }
+
+  if (/^[a-zA-Z]:/.test(root) || /^[a-zA-Z]:/.test(fullPath)) {
+    return path.win32.relative(root, fullPath).replace(/\\/g, '/');
+  }
+
   return path.relative(path.resolve(root), path.resolve(fullPath)).replace(/\\/g, '/');
 }
 

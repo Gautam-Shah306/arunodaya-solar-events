@@ -1,4 +1,4 @@
-# Toolchain Specification
+﻿# Toolchain Specification
 
 ## Measured Environment
 
@@ -40,7 +40,6 @@ Verified via `git ls-remote --tags`:
 | `actions/configure-pages`       | `v6`          | `v6.0.0`         |
 | `actions/upload-pages-artifact` | `v5`          | `v5.0.0`         |
 | `actions/deploy-pages`          | `v5`          | `v5.0.1`         |
-| `github/codeql-action`          | `v4`          | `v4.39.3`        |
 
 ## Workflow Linting Tool (Docker Digest Pinned)
 
@@ -59,10 +58,18 @@ docker run --rm -v ($pwd.Path + ':/work') -w /work 'rhysd/actionlint@sha256:b193
 When Docker execution is required on environments lacking native Node 24:
 
 ```powershell
-docker run --rm -v ($pwd.Path + ':/work') -v arunodaya-node-modules:/work/node_modules -w /work node:24-bookworm-slim@sha256:<digest> npm ci
+docker run --rm -v ($pwd.Path + ':/work') -v arunodaya-node-modules:/work/node_modules -w /work 'node:24-bookworm-slim@sha256:dc26ae92c9fb15cf6b1d63e20f0944b2efe0f115b20e00be48fb23fceb061c54' npm ci
 ```
 
 **Note on paths with spaces**: When the repository path contains spaces (e.g. `D:\Sem4 vac\...`), the PowerShell expression `($pwd.Path + ':/work')` safely evaluates into a single argument for the Docker `-v` parameter without shell argument fragmentation.
+
+## Linux CI Verification
+
+Linux verification executes the quality pipeline inside the digest-pinned Linux Node container to reproduce and guard against Linux-specific CI regressions:
+
+- **Digest-Pinned Image**: `node:24-bookworm-slim@sha256:dc26ae92c9fb15cf6b1d63e20f0944b2efe0f115b20e00be48fb23fceb061c54`
+- **Behavior**: `npm run verify:linux` exports tracked and non-ignored files into a temporary directory, mounts it at `/work` with an isolated Docker volume for `/work/node_modules`, runs `npm ci && npm run verify`, and returns the container exit code.
+- **Root Cause (Prompt 1c)**: Test failures on Linux were caused by non-portable Windows drive path resolution in the file walker and Vitest default timeouts under container CPU load. Path normalization was updated to use Windows path resolution portably when drive letters are present, and test timeouts were extended to 30s.
 
 ## Dependabot Policy
 
