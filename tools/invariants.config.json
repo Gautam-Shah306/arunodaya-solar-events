@@ -1,0 +1,33 @@
+{
+  "licenseAllowlist": [
+    "MIT",
+    "ISC",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Apache-2.0",
+    "0BSD",
+    "BlueOak-1.0.0",
+    "CC0-1.0",
+    "Python-2.0"
+  ],
+  "contractsAllowedPackages": [],
+  "excludeSpecFromLF": true,
+  "requiredDocs": [
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "docs/AGENT-RULES.md",
+    "docs/TOOLCHAIN.md",
+    "docs/ARCHITECTURE.md",
+    "docs/PLAN.md",
+    "docs/spec/ARUNODAYA-SPEC.md",
+    "docs/adr/README.md"
+  ],
+  "allow": [
+    {
+      "rule": "INV-TIME",
+      "path": "packages/engine/src/time/ist.ts",
+      "reason": "Exempt designated IST time calculation helper module"
+    }
+  ]
+}

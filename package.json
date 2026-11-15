@@ -1,0 +1,40 @@
+{
+  "name": "arunodaya-solar-events",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11.10"
+  },
+  "scripts": {
+    "check:toolchain": "node tools/check-toolchain.mjs",
+    "verify:invariants": "node tools/verify-invariants.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "node tools/typecheck.mjs",
+    "test": "vitest run --project=tools --project=packages",
+    "test:coverage": "vitest run --coverage --project=tools --project=packages",
+    "test:build": "vitest run --project=build",
+    "build:pages": "node tools/build-app.mjs --target=pages",
+    "build:android": "node tools/build-app.mjs --target=android",
+    "build": "node tools/build-app.mjs --target=pages",
+    "verify": "node tools/verify.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.6.6",
+    "@vitest/coverage-v8": "5.1.0",
+    "eslint": "10.15.0",
+    "prettier": "3.10.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.2",
+    "vite": "8.3.8",
+    "vitest": "5.1.0"
+  }
+}

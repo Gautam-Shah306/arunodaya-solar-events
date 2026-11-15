@@ -1,0 +1,11 @@
+{
+  "name": "@arunodaya/themes",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@arunodaya/contracts": "0.1.0"
+  }
+}

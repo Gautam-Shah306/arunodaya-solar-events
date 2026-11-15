@@ -1,0 +1,9 @@
+{
+  "name": "@arunodaya/app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@arunodaya/engine": "0.1.0"
+  }
+}

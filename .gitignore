@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+.vite/
+*.tsbuildinfo
+*.log
+.env*
+*.jks
+*.keystore
+local.properties
+.gradle/
+build/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
