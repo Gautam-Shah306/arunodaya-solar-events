@@ -3,4 +3,7 @@ Copyright (c) 2026 Gautam Shah
 
 This foundation build uses development-time tooling only. It contains zero third-party runtime code or runtime dependencies.
 
+Development Tooling:
+- fast-check (version 4.10.2, MIT): Property-based testing framework used for property tests verifying display rounding, countdown bounds, and temporal invariants.
+
 A comprehensive inventory of third-party assets, licences, and font attributions will be generated during final release hardening in Prompt 12.

@@ -105,7 +105,7 @@ Sunrise · Navkarshi · Sunset · Morning and evening golden hour · Daylight du
 - Sunrise/sunset are standard astronomical-horizon values, not terrain-obstructed visibility.
 - **Golden hour (Proposed):** morning = sunrise to solar altitude +6°; evening = +6° to sunset. Keeping the window inside daylight avoids a "golden hour" that starts before the displayed sunrise. An optional blue-hour entry (−4° to sunrise) can sit in the Astronomy tab only.
 - **Civil twilight:** sun at −6°. Nautical/astronomical twilight may appear in the Astronomy tab.
-- **Moon phase and illumination reference instant (Proposed):** live value at *now* on Home; **12:00 IST** for each forecast or picked date.
+- **Moon phase and illumination reference instant (Proposed):** live value at *now* on Home; **12:00 IST** for each forecast or picked date. Moon phase is defined as the lunation fraction in `[0, 1)` (with 0 at new moon and 0.5 at full moon); illumination is defined as a fraction in `[0, 1]`.
 - **Moon date attribution (Proposed):** a moon event is listed under the IST date on which it occurs. If a day has no moonrise or no moonset, show "No moonrise today" / "No moonset today". Never invent a time. If the paired event falls on the next IST day, show it with a `(+1)` marker.
 - **Accuracy (Decided approach):** engine chosen by benchmark against NOAA/JPL Horizons reference data. Proposed tolerance to pass: sun events ±1 min, moon events ±2 min. Document that printed local calendars may differ by a minute or two because of different sunrise conventions and city tables.
 - **Offline:** all calculation is local.
@@ -217,7 +217,7 @@ Greeting uses two fixed IST anchors (04:00 and 17:00) and two solar anchors at t
 | Good evening | 17:00 hours → sunset + 3 h (Proposed length) |
 | Good night | End of evening window → next day 04:00 hours |
 
-The hybrid keeps the morning and evening starts predictable (04:00 and 17:00) while noon and the end of the evening follow the sun. Edge case: in north-east India in winter, sunset can fall before 17:00 (about 16:30), so "Good afternoon" would run for up to roughly 40 minutes after dark. Proposed fix: evening starts at the earlier of 17:00 and sunset. Open: confirm that rule and the 3 h evening length.
+The hybrid keeps the morning and evening starts predictable (04:00 and 17:00) while noon and the end of the evening follow the sun. Edge case: in north-east India in winter, sunset can fall before 17:00 (about 16:30), so "Good afternoon" would run for up to roughly 40 minutes after dark. Proposed fix: evening starts at the earlier of 17:00 and sunset. The evening-start rule is implemented as a single config switch, default on (Proposed). Open: confirm that rule and the 3 h evening length.
 
 ---
 
@@ -295,7 +295,7 @@ Sunrise, Navkarshi, sunset times · date/day · greeting · working refresh butt
 
 ### 8.2 Data handoff (Decided)
 
-The widget cannot read WebView IndexedDB. The web app writes a **precomputed snapshot** of the next 60–90 days of events as JSON through a native-readable store (Capacitor Preferences / SharedPreferences, or a small custom plugin). The widget performs lookups only: no astronomy code on the hot path. A native fallback calculator (e.g. Astronomy Engine's Kotlin port, if chosen) is needed only after the snapshot expires, with TS↔Kotlin parity tests. The snapshot is regenerated on location change, app open and settings change.
+The widget cannot read WebView IndexedDB. The web app writes a **precomputed snapshot** of the next 60–90 days of events as JSON through a native-readable store (Capacitor Preferences / SharedPreferences, or a small custom plugin). The widget performs lookups only: no astronomy code on the hot path. Snapshot status is defined as `not_started`, `ready`, `expiring` (7 days or fewer remain, Proposed) and `expired`, after which widgets ask the user to open the app. A native fallback calculator (e.g. Astronomy Engine's Kotlin port, if chosen) is needed only after the snapshot expires, with TS↔Kotlin parity tests. The snapshot is regenerated on location change, app open and settings change.
 
 ### 8.3 Refresh, staleness and reliability (Decided)
 
@@ -537,7 +537,7 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 - Minimum Android 8.0 / API 26.
 - PWA kept as a secondary Android-browser channel.
 - Countdown label from whole IST clock minutes.
-- Evening greeting length 3 h, evening starting at the earlier of 17:00 and sunset; location thresholds; 20-min staleness threshold.
+- Evening greeting length 3 h, evening starting at the earlier of 17:00 and sunset; location thresholds; 20-min staleness threshold; snapshot expiring threshold of 7 days (7 days or fewer remain).
 - Moon/twilight/golden-hour start-ceil, end-floor rule; solar noon nearest; moon reference at 12:00 IST.
 - Golden hour = sunrise to +6°; supported date range 2000–2100.
 - Out-of-India behavior; per-widget location; 12-month PDF export.

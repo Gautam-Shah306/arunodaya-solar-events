@@ -34,6 +34,52 @@ export function getProjectFiles(repoRoot, { spawnFn = spawnSync } = {}) {
 }
 
 /**
+ * Returns all files currently in the git index.
+ * @param {string} repoRoot
+ * @param {{ spawnFn?: typeof spawnSync }} [options]
+ * @returns {string[]}
+ */
+export function getIndexFiles(repoRoot, { spawnFn = spawnSync } = {}) {
+  try {
+    const res = spawnFn('git', ['ls-files', '-z'], {
+      cwd: repoRoot,
+      encoding: 'utf8',
+    });
+
+    if (!res.error && res.status === 0) {
+      const raw = res.stdout || '';
+      return raw
+        .split('\0')
+        .filter((f) => f.length > 0)
+        .map((f) => f.replace(/\\/g, '/'));
+    }
+  } catch {
+    // Fall back to empty array
+  }
+
+  return [];
+}
+
+/**
+ * Exports the staged git index tree into destination directory using git checkout-index.
+ * @param {string} repoRoot
+ * @param {string} destDir
+ * @param {{ spawnFn?: typeof spawnSync }} [options]
+ */
+export function checkoutIndexTree(repoRoot, destDir, { spawnFn = spawnSync } = {}) {
+  const prefix = destDir.endsWith('/') || destDir.endsWith('\\') ? destDir : destDir + path.sep;
+  const res = spawnFn('git', ['checkout-index', '-a', '-f', `--prefix=${prefix}`], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+
+  if (res.error || res.status !== 0) {
+    const errMsg = res.stderr || res.error?.message || `exit code ${res.status}`;
+    throw new Error(`git checkout-index failed: ${errMsg}`);
+  }
+}
+
+/**
  * Extracts the Linux Node image string with sha256 digest from docs/TOOLCHAIN.md.
  * Throws a clear error if missing or malformed.
  * @param {string} toolchainDocPath
@@ -98,7 +144,7 @@ export function copyProjectFiles(fileList, sourceRoot, destDir) {
 
 /**
  * Orchestrates Linux verification in a clean temporary directory mounted into Docker.
- * @param {{ repoRoot?: string, toolchainPath?: string, dockerVolume?: string, dockerRunner?: typeof spawnSync }} [options]
+ * @param {{ repoRoot?: string, toolchainPath?: string, dockerVolume?: string, dockerRunner?: typeof spawnSync, gitRunner?: typeof spawnSync, index?: boolean }} [options]
  * @returns {number} Exit code of the docker process
  */
 export function runVerifyLinux({
@@ -106,19 +152,37 @@ export function runVerifyLinux({
   toolchainPath = path.join(repoRoot, 'docs', 'TOOLCHAIN.md'),
   dockerVolume = 'arunodaya-linux-modules',
   dockerRunner = spawnSync,
+  gitRunner = spawnSync,
+  index = false,
 } = {}) {
   const image = getLinuxImageDigest(toolchainPath);
   console.log(`[verify:linux] Using digest-pinned Linux image: ${image}`);
 
-  console.log('[verify:linux] Gathering tracked and non-ignored files...');
-  const files = getProjectFiles(repoRoot);
-  console.log(`[verify:linux] Found ${files.length} project files.`);
+  if (index) {
+    console.log('[verify:linux] Running in index mode (staged tree)...');
+    const indexFiles = getIndexFiles(repoRoot, { spawnFn: gitRunner });
+    if (indexFiles.length === 0) {
+      console.error(
+        '[verify:linux] Error: git index is empty. No files staged. Refusing to verify empty index.',
+      );
+      return 1;
+    }
+    console.log(`[verify:linux] Found ${indexFiles.length} file(s) in git index.`);
+  } else {
+    console.log('[verify:linux] Gathering tracked and non-ignored files...');
+  }
 
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'arunodaya-linux-verify-'));
   console.log(`[verify:linux] Staging repository files to: ${tempDir}`);
 
   try {
-    copyProjectFiles(files, repoRoot, tempDir);
+    if (index) {
+      checkoutIndexTree(repoRoot, tempDir, { spawnFn: gitRunner });
+    } else {
+      const files = getProjectFiles(repoRoot, { spawnFn: gitRunner });
+      console.log(`[verify:linux] Found ${files.length} project files.`);
+      copyProjectFiles(files, repoRoot, tempDir);
+    }
     console.log('[verify:linux] Files staged. Launching Docker container...');
 
     const dockerArgs = buildDockerArgs({

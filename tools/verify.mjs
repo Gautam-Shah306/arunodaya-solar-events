@@ -8,6 +8,7 @@ export const VERIFY_STEPS = [
   'format:check',
   'typecheck',
   'test:coverage',
+  'test:tz',
   'build:pages',
   'build:android',
   'test:build',

@@ -7,7 +7,7 @@ The following rules are mandatory for all agents and automated workflows operati
 - **R1 Contract first.** `docs/spec/ARUNODAYA-SPEC.md` is the contract. Spec section 3.3 (rounding), section 15 (guardrails) and the privacy rules (no backend, accounts, analytics, background location) are inviolable. A conflict means STOP and ask.
 - **R2 Never run git add, git commit, git push, git reset, git checkout or git stash.** Read-only git (status, diff, log, remote) is allowed. The user commits.
 - **R3 Toolchain: Node 24.x with npm >= 11.10 natively, else the digest-pinned Docker image recorded in docs/TOOLCHAIN.md.** No other package manager. `package-lock.json` is committed; after it exists, install with `npm ci`.
-- **R4 Windows and PowerShell safety: no double quotes inside native-command arguments (use single quotes); no && or || chaining; all repo scripts are Node .mjs files, never bash or batch; spawn npm with shell true only on win32 and only with fixed arguments; use path.join, never hard-coded separators; LF line endings everywhere.**
+- **R4 Windows and PowerShell safety: no double quotes inside native-command arguments (use single quotes); no && or || chaining; all repo scripts are Node .mjs files, never bash or batch; spawn npm with shell true only on win32 and only with fixed arguments; use path.join, never hard-coded separators; LF line endings everywhere; repository files are UTF-8 without BOM; Windows PowerShell 5.1 Set-Content, Out-File and the redirect operator write a BOM or UTF-16, so repository files are written with Node (fs.writeFileSync with a utf8 string) or the editor tools.**
 - **R5 Evidence over assertion: every claim in the REPORT is backed by a command and its output summary; anything not executed is UNVERIFIED.**
 - **R6 Tests: one test per named scenario, with the test title equal to the scenario text verbatim.** No skipped or focused tests. Coverage gates are enforced by configuration so a missed gate fails the command.
 - **R7 Privacy and supply chain: no network access at runtime, no analytics, no remote fonts, scripts or CDNs, no secrets or signing keys in the repo.** Dependencies are pinned to exact versions (save-exact), kept minimal, permissively licensed, and every new dependency is justified in the REPORT with its licence.
@@ -27,6 +27,7 @@ Every subsequent prompt must begin with Part 0 verification to ensure workspace 
 4. Repair scope: repair only regressions or environment drift, never new features.
 5. Reporting: report results in the REPORT section.
 6. Linux verification: after Prompt 1c, when the prompt touches tests, tooling or workflows, also run `npm run verify:linux` and report it.
+7. Index verification: before reporting, run `npm run verify:linux -- --index` only after the user has staged (skip with a note when the index is empty).
 
 ## Report format
 

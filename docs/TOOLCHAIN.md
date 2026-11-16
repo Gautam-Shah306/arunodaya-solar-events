@@ -22,6 +22,7 @@ All dependencies are exact-pinned devDependencies located at the repository root
 | `typescript-eslint`   | `8.72.2`  | MIT        | TypeScript AST rules for ESLint           |
 | `prettier`            | `3.10.1`  | MIT        | Code formatting                           |
 | `vite`                | `8.3.8`   | MIT        | Application bundler and dev server        |
+| `fast-check`          | `4.10.2`  | MIT        | Property-based testing framework          |
 | `@types/node`         | `26.6.6`  | MIT        | Node.js standard library type definitions |
 
 ### TypeScript Version Pin Rationale
@@ -69,7 +70,38 @@ Linux verification executes the quality pipeline inside the digest-pinned Linux 
 
 - **Digest-Pinned Image**: `node:24-bookworm-slim@sha256:dc26ae92c9fb15cf6b1d63e20f0944b2efe0f115b20e00be48fb23fceb061c54`
 - **Behavior**: `npm run verify:linux` exports tracked and non-ignored files into a temporary directory, mounts it at `/work` with an isolated Docker volume for `/work/node_modules`, runs `npm ci && npm run verify`, and returns the container exit code.
+- **Index Mode (`--index`)**: `npm run verify:linux -- --index` exports only files currently staged in the git index (`git checkout-index`) into the temporary directory. If the index is empty, it immediately halts with exit code 1.
 - **Root Cause (Prompt 1c)**: Test failures on Linux were caused by non-portable Windows drive path resolution in the file walker and Vitest default timeouts under container CPU load. Path normalization was updated to use Windows path resolution portably when drive letters are present, and test timeouts were extended to 30s.
+
+## Timezone Matrix Verification (`test:tz`)
+
+All application domain and time math is strictly India Standard Time (+05:30). To ensure calculations are completely independent of host machine locale and process timezone, `npm run test:tz` runs the packages test suite across six explicit timezones:
+
+- `UTC`
+- `Asia/Kolkata`
+- `America/Los_Angeles`
+- `Pacific/Kiritimati` (+14:00)
+- `Pacific/Pago_Pago` (-11:00)
+- `Europe/London`
+
+## Byte Order Mark Invariant (`INV-BOM`)
+
+All repository text files must be encoded as UTF-8 without a Byte Order Mark (BOM, `0xEF, 0xBB, 0xBF`). Windows PowerShell 5.1 cmdlets (`Set-Content`, `Out-File`) and shell redirection operators (`>`, `>>`) default to UTF-16LE or prepend a UTF-8 BOM, breaking Linux build toolchains and linters. Repository files must be edited using Node (`fs.writeFileSync`) or IDE tools, and compliance is automatically enforced by `INV-BOM`.
+
+## Recommended Commit Flow
+
+To ensure no uncommitted files or unstaged changes cause CI divergence:
+
+```powershell
+# 1. Stage changes
+git add -A
+
+# 2. Verify exact staged snapshot inside clean Linux container
+npm run verify:linux -- --index
+
+# 3. Commit verified staged tree
+git commit -m "feat: description"
+```
 
 ## Dependabot Policy
 

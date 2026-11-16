@@ -12,6 +12,7 @@ import { checkInvDeps } from './rule-deps.mjs';
 import { checkInvLicense } from './rule-license.mjs';
 import { checkInvLf } from './rule-lf.mjs';
 import { checkInvDocs } from './rule-docs.mjs';
+import { checkInvBom, BOM_EXTENSIONS } from './rule-bom.mjs';
 
 /**
  * Executes repository invariants verification
@@ -44,6 +45,7 @@ export function runInvariants({ root = process.cwd(), config } = {}) {
     'INV-LICENSE': 0,
     'INV-LF': 0,
     'INV-DOCS': 0,
+    'INV-BOM': 0,
   };
 
   const rawFindings = [];
@@ -128,6 +130,14 @@ export function runInvariants({ root = process.cwd(), config } = {}) {
   }
   ruleStats['INV-DOCS'] = requiredDocs.length;
   rawFindings.push(...checkInvDocs(resolvedRoot, loadedConfig));
+
+  // INV-BOM
+  const bomFiles = repoFiles.filter((f) => BOM_EXTENSIONS.has(path.extname(f).toLowerCase()));
+  for (const relPath of bomFiles) {
+    scannedFiles.add(relPath);
+  }
+  ruleStats['INV-BOM'] = bomFiles.length;
+  rawFindings.push(...checkInvBom(resolvedRoot, repoFiles));
 
   // Filter against allowlist
   const findings = rawFindings.filter((f) => !isAllowed(loadedConfig, f.rule, f.path));

@@ -12,7 +12,22 @@
 ## Package Map
 
 - `packages/engine` (`@arunodaya/engine`): Astronomical calculations, solar and lunar ephemeris, Navkarshi derivation, twilight and golden-hour math.
-- `packages/contracts` (`@arunodaya/contracts`): Shared data contracts, snapshot schema versions, coordinate models.
+  - `src/config.ts`: Centralized engine configuration (`NAVKARSHI_OFFSET_MINUTES = 48`, `GREETING`, `SUPPORTED_YEARS`, `SNAPSHOT_POLICY`).
+  - `src/clock.ts`: Clock abstraction interface (`Clock`) with test implementations (`createFixedClock`, `createManualClock`).
+  - `src/time/ist.ts`: Strict IST (+05:30) civil time representation, millisecond conversions, and clock formatters.
+  - `src/time/rounding.ts`: Start/end/nearest display rounding, `makeEvent`, `makeNavkarshi`, and daylight duration calculations.
+  - `src/time/occurrences.ts`: Chronological series indexing, `nextOccurrence`, `previousOccurrence`, and day record lookups.
+  - `src/time/countdown.ts`: Wall-clock countdown derivation, progress fraction, formatting, and live snapshot target evaluation.
+  - `src/time/greeting.ts`: Solar-aware greeting selection (`morning`, `afternoon`, `evening`, `night`).
+  - `src/time/day-night.ts`: Day/night phase selection based on displayed sunrise and sunset boundaries.
+  - `src/time/snapshot-status.ts`: Snapshot lifecycle status derivation (`not_started`, `ready`, `expiring`, `expired`).
+- `packages/contracts` (`@arunodaya/contracts`): Shared data contracts, snapshot schema versions, coordinate models, and validation.
+  - `src/result.ts`: Zero-dependency `Result<T, E>` algebraic type and builders (`ok`, `err`).
+  - `src/civil-date.ts`: Pure integer Gregorian algorithms (`isLeapYear`, `daysInMonth`, `daysFromCivil`, `civilFromDays`, `weekdayFromDays`, `parseCivilDate`, `formatCivilDate`, `addDaysToCivilDate`). **Architectural Rule**: All civil-date calendar primitives live in contracts so both contracts validators and domain engines share a single source of date arithmetic without cross-package circularity.
+  - `src/ev.ts`: Core astronomical event instant model (`Ev`) carrying exact (`exactMs`) and displayed (`displayMs`) epoch timestamps.
+  - `src/snapshot.ts`: Schema v1 definitions (`SnapshotV1`, `DayRecord`, `MoonEvent`, `SnapshotLocation`, `SCHEMA_VERSIONS`).
+  - `src/validate.ts`: Hand-written, zero-dependency validation suite accumulating path-annotated `ValidationIssue` entries.
+  - `src/migrate.ts`: Snapshot schema version migration pipeline.
 - `packages/themes` (`@arunodaya/themes`): Design tokens, theme definitions, contrast guarantees.
 - `apps/app` (`@arunodaya/app`): Web/PWA application shell and future Capacitor host.
 - `tools`: Monorepo build, verification, typechecking, and invariants enforcement utilities.
@@ -43,3 +58,4 @@ No package may import from `apps/*`.
 | `INV-SECRETS` | Blocks credentials, private keys, keystores, and environment configuration files.                                                                                                                                                                |
 | `INV-LF`      | Enforces repository-wide LF line endings.                                                                                                                                                                                                        |
 | `INV-DOCS`    | Ensures all mandatory project specifications, ADRs, and guides exist.                                                                                                                                                                            |
+| `INV-BOM`     | Enforces that repository text files are UTF-8 without a Byte Order Mark (BOM).                                                                                                                                                                   |

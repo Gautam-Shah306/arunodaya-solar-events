@@ -99,14 +99,14 @@ describe('Invariants scanner and real repository verification', () => {
       (root) => {
         const { findings, summary } = runInvariants({ root });
         expect(findings).toHaveLength(0);
-        expect(summary.rulesRun).toBe(10);
+        expect(summary.rulesRun).toBe(11);
         expect(summary.filesScanned).toBeGreaterThan(0);
         expect(summary.ruleStats).toBeDefined();
-        expect(Object.keys(summary.ruleStats)).toHaveLength(10);
+        expect(Object.keys(summary.ruleStats)).toHaveLength(11);
 
         // Also test fallback defaults when config has no requiredDocs
         const fallback = runInvariants({ root, config: {} });
-        expect(fallback.summary.rulesRun).toBe(10);
+        expect(fallback.summary.rulesRun).toBe(11);
       },
     );
   });
@@ -126,7 +126,7 @@ describe('Invariants scanner and real repository verification', () => {
         });
         expect(res.status).toBe(0);
         expect(res.stdout).toMatch(
-          /invariants: 0 findings across \d+ files scanned \(10 rules run\)/,
+          /invariants: 0 findings across \d+ files scanned \(11 rules run\)/,
         );
       },
     );
@@ -158,12 +158,13 @@ describe('Invariants scanner and real repository verification', () => {
           'INV-LICENSE',
           'INV-LF',
           'INV-DOCS',
+          'INV-BOM',
         ];
         for (const rule of expectedRules) {
           expect(res.stdout).toMatch(new RegExp(`${rule}: \\d+ file\\(s\\) scanned`));
         }
         expect(res.stdout).toMatch(
-          /invariants: 0 findings across \d+ files scanned \(10 rules run\)/,
+          /invariants: 0 findings across \d+ files scanned \(11 rules run\)/,
         );
       },
     );
@@ -195,12 +196,12 @@ describe('Invariants scanner and real repository verification', () => {
         expect(layerFinding).toBeDefined();
         expect(layerFinding?.path).toBe('packages/engine/src/index.ts');
         expect(layerFinding?.message).toContain('window');
-        expect(summary.rulesRun).toBe(10);
+        expect(summary.rulesRun).toBe(11);
       },
     );
   });
 
-  it('real repository scan covers apps packages tools and docs and runs all ten rules', () => {
+  it('real repository scan covers apps packages tools and docs and runs all eleven rules', () => {
     const allFiles = walkRepoFiles(repoRoot);
     const hasApps = allFiles.some((f) => f.startsWith('apps/'));
     const hasPackages = allFiles.some((f) => f.startsWith('packages/'));
@@ -215,7 +216,7 @@ describe('Invariants scanner and real repository verification', () => {
     const { findings, summary } = runInvariants({ root: repoRoot });
 
     expect(summary.filesScanned).toBeGreaterThan(50);
-    expect(summary.rulesRun).toBe(10);
+    expect(summary.rulesRun).toBe(11);
     expect(findings).toHaveLength(0);
   });
 });

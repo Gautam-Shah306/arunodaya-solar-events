@@ -167,4 +167,151 @@ describe('One-command Linux verification helpers', () => {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
+
+  it('verify:linux index mode exports the staged tree with checkout-index', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-index-mode-'));
+    const toolchainDoc = path.join(tmpDir, 'TOOLCHAIN.md');
+    fs.writeFileSync(
+      toolchainDoc,
+      'node:24-bookworm-slim@sha256:dc26ae92c9fb15cf6b1d63e20f0944b2efe0f115b20e00be48fb23fceb061c54',
+      'utf8',
+    );
+
+    let checkoutIndexCalled = false;
+    const mockGitRunner = (cmd, args) => {
+      if (args[0] === 'ls-files') {
+        return { status: 0, stdout: 'staged-file.txt\0' };
+      }
+      if (args[0] === 'checkout-index') {
+        checkoutIndexCalled = true;
+        expect(args).toContain('-a');
+        expect(args).toContain('-f');
+        const prefixArg = args.find((a) => a.startsWith('--prefix='));
+        expect(prefixArg).toBeDefined();
+        const destPrefix = prefixArg.slice('--prefix='.length);
+        expect(destPrefix.endsWith(path.sep) || destPrefix.endsWith('/')).toBe(true);
+        // Simulate checkout-index writing the staged file into destPrefix
+        fs.writeFileSync(path.join(destPrefix, 'staged-file.txt'), 'staged content', 'utf8');
+        return { status: 0 };
+      }
+      return { status: 0 };
+    };
+
+    let stagedFileFoundInContainer = false;
+    const mockDockerRunner = (cmd, args) => {
+      const vArgIndex = args.indexOf('-v');
+      const mountArg = args[vArgIndex + 1];
+      const workDir = mountArg.split(':/work')[0];
+      const stagedFilePath = path.join(workDir, 'staged-file.txt');
+      if (fs.existsSync(stagedFilePath)) {
+        stagedFileFoundInContainer = true;
+      }
+      return { status: 0 };
+    };
+
+    try {
+      const code = runVerifyLinux({
+        repoRoot: tmpDir,
+        toolchainPath: toolchainDoc,
+        dockerRunner: mockDockerRunner,
+        gitRunner: mockGitRunner,
+        index: true,
+      });
+
+      expect(code).toBe(0);
+      expect(checkoutIndexCalled).toBe(true);
+      expect(stagedFileFoundInContainer).toBe(true);
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it('verify:linux index mode refuses an empty index', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-empty-index-'));
+    const toolchainDoc = path.join(tmpDir, 'TOOLCHAIN.md');
+    fs.writeFileSync(
+      toolchainDoc,
+      'node:24-bookworm-slim@sha256:dc26ae92c9fb15cf6b1d63e20f0944b2efe0f115b20e00be48fb23fceb061c54',
+      'utf8',
+    );
+
+    const emptyGitRunner = (cmd, args) => {
+      if (args[0] === 'ls-files') {
+        return { status: 0, stdout: '' };
+      }
+      return { status: 0 };
+    };
+
+    let dockerCalled = false;
+    const mockDockerRunner = () => {
+      dockerCalled = true;
+      return { status: 0 };
+    };
+
+    try {
+      const code = runVerifyLinux({
+        repoRoot: tmpDir,
+        toolchainPath: toolchainDoc,
+        dockerRunner: mockDockerRunner,
+        gitRunner: emptyGitRunner,
+        index: true,
+      });
+
+      expect(code).toBe(1);
+      expect(dockerCalled).toBe(false);
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it('verify:linux default mode still copies tracked and untracked non-ignored files', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-default-mode-'));
+    const toolchainDoc = path.join(tmpDir, 'TOOLCHAIN.md');
+    fs.writeFileSync(
+      toolchainDoc,
+      'node:24-bookworm-slim@sha256:dc26ae92c9fb15cf6b1d63e20f0944b2efe0f115b20e00be48fb23fceb061c54',
+      'utf8',
+    );
+    fs.writeFileSync(path.join(tmpDir, 'tracked.txt'), 'tracked', 'utf8');
+    fs.writeFileSync(path.join(tmpDir, 'untracked.txt'), 'untracked', 'utf8');
+
+    const mockGitRunner = (cmd, args) => {
+      if (args[0] === 'ls-files') {
+        expect(args).toContain('--cached');
+        expect(args).toContain('--others');
+        expect(args).toContain('--exclude-standard');
+        return { status: 0, stdout: 'tracked.txt\0untracked.txt\0' };
+      }
+      return { status: 0 };
+    };
+
+    let filesFound = false;
+    const mockDockerRunner = (cmd, args) => {
+      const vArgIndex = args.indexOf('-v');
+      const mountArg = args[vArgIndex + 1];
+      const workDir = mountArg.split(':/work')[0];
+      if (
+        fs.existsSync(path.join(workDir, 'tracked.txt')) &&
+        fs.existsSync(path.join(workDir, 'untracked.txt'))
+      ) {
+        filesFound = true;
+      }
+      return { status: 0 };
+    };
+
+    try {
+      const code = runVerifyLinux({
+        repoRoot: tmpDir,
+        toolchainPath: toolchainDoc,
+        dockerRunner: mockDockerRunner,
+        gitRunner: mockGitRunner,
+        index: false,
+      });
+
+      expect(code).toBe(0);
+      expect(filesFound).toBe(true);
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
 });

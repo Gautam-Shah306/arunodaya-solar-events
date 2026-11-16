@@ -42,11 +42,24 @@ npm run verify:linux
 | `typecheck`         | `node tools/typecheck.mjs`                                 | Run `tsc --noEmit` across all workspace projects      |
 | `test`              | `vitest run --project=tools --project=packages`            | Run unit tests for tools and packages                 |
 | `test:coverage`     | `vitest run --coverage --project=tools --project=packages` | Enforce >=90% test coverage thresholds                |
+| `test:tz`           | `node tools/test-tz.mjs`                                   | Run unit tests across 6 timezones (UTC, IST, etc.)    |
 | `build:pages`       | `node tools/build-app.mjs --target=pages`                  | Build web application for GitHub Pages                |
 | `build:android`     | `node tools/build-app.mjs --target=android`                | Build web application for Android WebView container   |
 | `test:build`        | `vitest run --project=build`                               | Verify built output integrity and CSP headers         |
 | `verify`            | `node tools/verify.mjs`                                    | Execute the complete quality pipeline in sequence     |
 | `verify:linux`      | `node tools/verify-linux.mjs`                              | Run quality pipeline in digest-pinned Linux container |
+
+### Pre-Commit Linux Verification
+
+To verify that the exact staged tree passes all quality gates before committing:
+
+```powershell
+git add -A
+npm run verify:linux -- --index
+git commit -m "feat: your commit message"
+```
+
+Property-based testing is powered by `fast-check` (MIT, version 4.10.2). Repository files are strictly UTF-8 without BOM (enforced by `INV-BOM`).
 
 Run the invariants checker with `--verbose` to inspect scanned file breakdowns for each rule:
 
