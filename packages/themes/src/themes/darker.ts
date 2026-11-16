@@ -1,0 +1,50 @@
+import type { ThemeDefinition } from '../types.js';
+
+/**
+ * Very Dark Green Darker theme definition.
+ */
+export const themeDarker: ThemeDefinition = {
+  id: 'darker',
+  name: 'Darker',
+  family: 'built_in',
+  baseMode: 'dark',
+  tokens: {
+    canvas: '#07150E',
+    layer1: '#0E1E15',
+    layer2: '#15281D',
+    layer3: '#1C3326',
+    border: '#294334',
+    borderStrong: '#5E7E6B',
+    textPrimary: '#EAE0CB',
+    textSecondary: '#9EAF9F',
+    textTertiary: '#738676',
+    textOnAccent: '#07150E',
+    accent: '#D8B96C',
+    accentText: '#D8B96C',
+    solar: '#E3B75A',
+    solarText: '#E3B75A',
+    daySun: '#E3B75A',
+    nightMoon: '#A0BCDB',
+    countdownFill: '#EAE0CB',
+    countdownShade: '#52715F',
+    focus: '#4BA1FF',
+    positive: '#42BA66',
+    warning: '#F5A623',
+    critical: '#FF6B6B',
+    scrim: '#07150E99',
+  },
+  widget: {
+    surface: '#0E1E15',
+    surfaceAlt: '#15281D',
+    border: '#294334',
+    textPrimary: '#EAE0CB',
+    textSecondary: '#9EAF9F',
+    accent: '#D8B96C',
+    solar: '#E3B75A',
+    countdownFill: '#EAE0CB',
+    countdownShade: '#52715F',
+    day: '#E3B75A',
+    night: '#A0BCDB',
+    stale: '#9EAF9F',
+  },
+};

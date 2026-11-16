@@ -381,45 +381,78 @@ describe('Contracts and snapshot specification', () => {
       false,
     );
     expect(
-      validateSnapshot({ ...snapshot, location: { ...badLocBase, label: 'x'.repeat(85) } }).ok,
+      validateSnapshot({
+        ...snapshot,
+        location: { ...badLocBase, label: 'x'.repeat(85) },
+      }).ok,
     ).toBe(false);
     expect(validateSnapshot({ ...snapshot, location: { ...badLocBase, label: 123 } }).ok).toBe(
       false,
     );
     expect(
-      validateSnapshot({ ...snapshot, location: { ...badLocBase, source: 'invalid' } }).ok,
-    ).toBe(false);
-    expect(validateSnapshot({ ...snapshot, location: { ...badLocBase, fixAtMs: -1 } }).ok).toBe(
-      false,
-    );
-    expect(validateSnapshot({ ...snapshot, location: { ...badLocBase, fixAtMs: 12.3 } }).ok).toBe(
-      false,
-    );
-    expect(validateSnapshot({ ...snapshot, location: { ...badLocBase, fixAtMs: 'now' } }).ok).toBe(
-      false,
-    );
-    expect(
-      validateSnapshot({ ...snapshot, location: { ...badLocBase, elevationM: 'high' } }).ok,
+      validateSnapshot({
+        ...snapshot,
+        location: { ...badLocBase, source: 'invalid' },
+      }).ok,
     ).toBe(false);
     expect(
-      validateSnapshot({ ...snapshot, location: { ...badLocBase, elevationM: -600 } }).ok,
+      validateSnapshot({
+        ...snapshot,
+        location: { ...badLocBase, fixAtMs: -1 },
+      }).ok,
     ).toBe(false);
     expect(
-      validateSnapshot({ ...snapshot, location: { ...badLocBase, elevationM: 10000 } }).ok,
+      validateSnapshot({
+        ...snapshot,
+        location: { ...badLocBase, fixAtMs: 12.3 },
+      }).ok,
     ).toBe(false);
-    expect(validateSnapshot({ ...snapshot, location: { ...badLocBase, accuracyM: -5 } }).ok).toBe(
-      false,
-    );
     expect(
-      validateSnapshot({ ...snapshot, location: { ...badLocBase, accuracyM: 'good' } }).ok,
+      validateSnapshot({
+        ...snapshot,
+        location: { ...badLocBase, fixAtMs: 'now' },
+      }).ok,
+    ).toBe(false);
+    expect(
+      validateSnapshot({
+        ...snapshot,
+        location: { ...badLocBase, elevationM: 'high' },
+      }).ok,
+    ).toBe(false);
+    expect(
+      validateSnapshot({
+        ...snapshot,
+        location: { ...badLocBase, elevationM: -600 },
+      }).ok,
+    ).toBe(false);
+    expect(
+      validateSnapshot({
+        ...snapshot,
+        location: { ...badLocBase, elevationM: 10000 },
+      }).ok,
+    ).toBe(false);
+    expect(
+      validateSnapshot({
+        ...snapshot,
+        location: { ...badLocBase, accuracyM: -5 },
+      }).ok,
+    ).toBe(false);
+    expect(
+      validateSnapshot({
+        ...snapshot,
+        location: { ...badLocBase, accuracyM: 'good' },
+      }).ok,
     ).toBe(false);
 
     // Days array bounds
     expect(validateSnapshot({ ...snapshot, days: undefined }).ok).toBe(false);
     expect(validateSnapshot({ ...snapshot, days: [] }).ok).toBe(false);
-    expect(validateSnapshot({ ...snapshot, days: new Array(405).fill(snapshot.days[0]) }).ok).toBe(
-      false,
-    );
+    expect(
+      validateSnapshot({
+        ...snapshot,
+        days: new Array(405).fill(snapshot.days[0]),
+      }).ok,
+    ).toBe(false);
     expect(validateSnapshot({ ...snapshot, days: [{ istDate: 123 }] }).ok).toBe(false);
 
     // Day internal ordering and validity
@@ -427,13 +460,19 @@ describe('Contracts and snapshot specification', () => {
     if (d0) {
       const badCivilDawn = {
         ...d0,
-        civilDawn: { exactMs: d0.sunrise.exactMs + 1000, displayMs: d0.sunrise.displayMs + 60000 },
+        civilDawn: {
+          exactMs: d0.sunrise.exactMs + 1000,
+          displayMs: d0.sunrise.displayMs + 60000,
+        },
       };
       expect(validateSnapshot({ ...snapshot, days: [badCivilDawn] }).ok).toBe(false);
 
       const badCivilDusk = {
         ...d0,
-        civilDusk: { exactMs: d0.sunset.exactMs - 1000, displayMs: d0.sunset.displayMs - 60000 },
+        civilDusk: {
+          exactMs: d0.sunset.exactMs - 1000,
+          displayMs: d0.sunset.displayMs - 60000,
+        },
       };
       expect(validateSnapshot({ ...snapshot, days: [badCivilDusk] }).ok).toBe(false);
 
@@ -467,23 +506,41 @@ describe('Contracts and snapshot specification', () => {
       const nonObjMoonPhase = { ...d0, moonPhaseAtNoon: 'full' };
       expect(validateSnapshot({ ...snapshot, days: [nonObjMoonPhase] }).ok).toBe(false);
 
-      const badMoonPhaseVal = { ...d0, moonPhaseAtNoon: { phase: -0.1, illumination: 0.5 } };
+      const badMoonPhaseVal = {
+        ...d0,
+        moonPhaseAtNoon: { phase: -0.1, illumination: 0.5 },
+      };
       expect(validateSnapshot({ ...snapshot, days: [badMoonPhaseVal] }).ok).toBe(false);
 
-      const badMoonPhaseType = { ...d0, moonPhaseAtNoon: { phase: 'new', illumination: 0.5 } };
+      const badMoonPhaseType = {
+        ...d0,
+        moonPhaseAtNoon: { phase: 'new', illumination: 0.5 },
+      };
       expect(validateSnapshot({ ...snapshot, days: [badMoonPhaseType] }).ok).toBe(false);
 
-      const badIllumVal = { ...d0, moonPhaseAtNoon: { phase: 0.5, illumination: -0.1 } };
+      const badIllumVal = {
+        ...d0,
+        moonPhaseAtNoon: { phase: 0.5, illumination: -0.1 },
+      };
       expect(validateSnapshot({ ...snapshot, days: [badIllumVal] }).ok).toBe(false);
 
-      const badIllumType = { ...d0, moonPhaseAtNoon: { phase: 0.5, illumination: 'full' } };
+      const badIllumType = {
+        ...d0,
+        moonPhaseAtNoon: { phase: 0.5, illumination: 'full' },
+      };
       expect(validateSnapshot({ ...snapshot, days: [badIllumType] }).ok).toBe(false);
 
       // Ev validation branches
-      const nonIntExact = { ...d0, sunrise: { exactMs: 12.3, displayMs: 60000 } };
+      const nonIntExact = {
+        ...d0,
+        sunrise: { exactMs: 12.3, displayMs: 60000 },
+      };
       expect(validateSnapshot({ ...snapshot, days: [nonIntExact] }).ok).toBe(false);
 
-      const nonIntDisplay = { ...d0, sunrise: { exactMs: 60000, displayMs: 60000.5 } };
+      const nonIntDisplay = {
+        ...d0,
+        sunrise: { exactMs: 60000, displayMs: 60000.5 },
+      };
       expect(validateSnapshot({ ...snapshot, days: [nonIntDisplay] }).ok).toBe(false);
 
       const largeDiff = { ...d0, sunrise: { exactMs: 0, displayMs: 120000 } };
@@ -500,7 +557,10 @@ describe('Contracts and snapshot specification', () => {
       );
       expect(validateSnapshot({ ...snapshot, moonEvents: [null] }).ok).toBe(false);
       expect(
-        validateSnapshot({ ...snapshot, moonEvents: [{ kind: 'zenith', ev: m0.ev }] }).ok,
+        validateSnapshot({
+          ...snapshot,
+          moonEvents: [{ kind: 'zenith', ev: m0.ev }],
+        }).ok,
       ).toBe(false);
     }
   });
@@ -548,7 +608,10 @@ describe('Contracts and snapshot specification', () => {
   });
 
   it('migrateSnapshot wraps validation issues as an invalid error', () => {
-    const result = migrateSnapshot({ schemaVersion: 1, location: 'not an object' });
+    const result = migrateSnapshot({
+      schemaVersion: 1,
+      location: 'not an object',
+    });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.error.code).toBe('invalid');

@@ -1,13 +1,13 @@
 import path from 'node:path';
 import { build } from 'vite';
 import { resolveBase } from './lib/build-targets.mjs';
-import { cspPlugin } from './lib/csp.mjs';
 
 /**
  * Builds the application using Vite's JavaScript API
  * @param {'pages' | 'android'} target
  */
 export async function buildApp(target) {
+  process.env.BUILD_TARGET = target;
   const root = path.resolve('apps/app');
   const base = resolveBase(target);
   const outDir = path.resolve(root, 'dist', target);
@@ -17,12 +17,10 @@ export async function buildApp(target) {
   await build({
     root,
     base,
-    plugins: [cspPlugin()],
     build: {
       outDir,
       emptyOutDir: true,
     },
-    configFile: false,
   });
 
   console.log(`Build complete: ${outDir}`);

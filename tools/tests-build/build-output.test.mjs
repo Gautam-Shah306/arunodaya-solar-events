@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { buildApp } from '../build-app.mjs';
 import { CSP_POLICY } from '../lib/csp.mjs';
@@ -61,5 +62,75 @@ describe('build-output', () => {
     expect(bundleContent).toContain('Foundation build');
     // ENGINE_API_VERSION = 1
     expect(bundleContent).toMatch(/ENGINE_API_VERSION|id="engine-api-version">1/);
+  });
+
+  it('themes gallery page is built for the pages target under the repository base path', () => {
+    const themesHtmlPath = path.join(pagesDist, 'themes.html');
+    expect(fs.existsSync(themesHtmlPath)).toBe(true);
+
+    const html = fs.readFileSync(themesHtmlPath, 'utf8');
+    expect(html).toContain('/arunodaya-solar-events/');
+    expect(html).toMatch(/src=["']\/arunodaya-solar-events\/assets\//);
+  });
+
+  it('themes gallery page is not part of the android build', () => {
+    const themesAndroidPath = path.join(androidDist, 'themes.html');
+    expect(fs.existsSync(themesAndroidPath)).toBe(false);
+  });
+
+  it('built themes page carries the CSP meta tag and no inline scripts or style attributes', () => {
+    const themesHtmlPath = path.join(pagesDist, 'themes.html');
+    const html = fs.readFileSync(themesHtmlPath, 'utf8');
+
+    expect(html).toContain('<meta http-equiv="Content-Security-Policy"');
+    expect(html).toContain(CSP_POLICY);
+
+    // No inline scripts with executable code
+    const scriptMatches = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)];
+    for (const match of scriptMatches) {
+      const inlineCode = match[1]?.trim() ?? '';
+      expect(inlineCode).toBe('');
+    }
+
+    // No inline style attributes
+    expect(html).not.toMatch(/\sstyle=["'][^"']*["']/i);
+  });
+
+  it('built themes page references no remote URLs', () => {
+    const themesHtmlPath = path.join(pagesDist, 'themes.html');
+    const html = fs.readFileSync(themesHtmlPath, 'utf8');
+
+    // Should not reference remote URLs
+    expect(html).not.toMatch(/https?:\/\//i);
+    expect(html).not.toMatch(/href=["']\/\//i);
+    expect(html).not.toMatch(/src=["']\/\//i);
+  });
+
+  it('pages build main bundle stays under 2 KB gzip', () => {
+    const assetsDir = path.join(pagesDist, 'assets');
+    const files = fs.readdirSync(assetsDir);
+    const mainJsFile = files.find(
+      (f) => (f.startsWith('index-') || f.startsWith('main-')) && f.endsWith('.js'),
+    );
+    expect(mainJsFile).toBeDefined();
+
+    const content = fs.readFileSync(path.join(assetsDir, mainJsFile || ''));
+    const gzipSize = zlib.gzipSync(content).length;
+
+    // Must stay under 2 KB (2048 bytes)
+    expect(gzipSize).toBeLessThanOrEqual(2048);
+  });
+
+  it('themes gallery bundle stays under 40 KB gzip', () => {
+    const assetsDir = path.join(pagesDist, 'assets');
+    const files = fs.readdirSync(assetsDir);
+    const themesJsFile = files.find((f) => f.startsWith('themes-') && f.endsWith('.js'));
+    expect(themesJsFile).toBeDefined();
+
+    const content = fs.readFileSync(path.join(assetsDir, themesJsFile || ''));
+    const gzipSize = zlib.gzipSync(content).length;
+
+    // Must stay under 40 KB (40960 bytes)
+    expect(gzipSize).toBeLessThanOrEqual(40960);
   });
 });

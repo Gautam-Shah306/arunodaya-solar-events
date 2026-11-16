@@ -1,0 +1,50 @@
+import type { ThemeDefinition } from '../types.js';
+
+/**
+ * Warm Sand custom pack theme definition with rich espresso text and terracotta accents.
+ */
+export const themePackSandstone: ThemeDefinition = {
+  id: 'pack-sandstone',
+  name: 'Sandstone',
+  family: 'pack',
+  baseMode: 'light',
+  tokens: {
+    canvas: '#F2E3C6',
+    layer1: '#FAF1DE',
+    layer2: '#E8D4B4',
+    layer3: '#DFC39E',
+    border: '#CBB08C',
+    borderStrong: '#7A644D',
+    textPrimary: '#2E1D12',
+    textSecondary: '#543D2F',
+    textTertiary: '#786153',
+    textOnAccent: '#FFFFFF',
+    accent: '#85540B',
+    accentText: '#704305',
+    solar: '#9E6114',
+    solarText: '#704106',
+    daySun: '#8A5208',
+    nightMoon: '#304863',
+    countdownFill: '#2E1D12',
+    countdownShade: '#8E7561',
+    focus: '#0062B8',
+    positive: '#17662E',
+    warning: '#855100',
+    critical: '#991B1B',
+    scrim: '#F2E3C699',
+  },
+  widget: {
+    surface: '#3A2418',
+    surfaceAlt: '#4B3021',
+    border: '#624130',
+    textPrimary: '#F6EBDD',
+    textSecondary: '#D2BEB0',
+    accent: '#E0B45C',
+    solar: '#E8B24E',
+    countdownFill: '#F6EBDD',
+    countdownShade: '#916B55',
+    day: '#E8B24E',
+    night: '#9DB3C9',
+    stale: '#D2BEB0',
+  },
+};

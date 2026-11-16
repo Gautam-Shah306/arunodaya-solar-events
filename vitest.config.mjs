@@ -21,6 +21,14 @@ export default defineConfig({
       },
       {
         test: {
+          name: 'app',
+          environment: 'node',
+          include: ['apps/app/tests/**/*.test.{mjs,js,ts}'],
+          testTimeout: 30000,
+        },
+      },
+      {
+        test: {
           name: 'build',
           environment: 'node',
           include: ['tools/tests-build/**/*.test.{mjs,js,ts}'],

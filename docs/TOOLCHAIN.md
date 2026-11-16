@@ -167,6 +167,20 @@ Dependabot runs weekly checks for `npm` and `github-actions`.
 - **Shared Tolerances**: Benchmark tolerances and tight regression guards are defined once in `packages/engine/tests/data/astro-tolerances-v1.json`.
 - **Nightly Workflow (`.github/workflows/nightly.yml`)**: Daily automated run at 02:17 UTC executing `test:golden`, `verify:invariants`, and `npm audit --omit=dev --audit-level=high`.
 
+## Vitest Workspace Projects
+
+Vitest executes unit tests across multi-project configurations in `vitest.config.mjs`:
+
+- **`tools`**: Verification CLI, invariants checker, build target logic (`tools/tests/**/*.test.mjs`).
+- **`packages`**: Pure TypeScript domain logic, data contracts, astronomy provider, and theme system (`packages/*/tests/**/*.test.ts`).
+- **`app`**: Web application helper functions, early theme application, DOM integration (`apps/app/tests/**/*.test.ts`, happy-dom environment).
+- **`build`**: Post-build distribution validation and security header tests (`tools/tests-build/**/*.test.mjs`).
+- **`golden`**: Full 2,814 city-day astronomical regression tests (`packages/engine/tests-golden/**/*.test.ts`).
+
+## Local Pages Preview (`preview:pages`)
+
+The `preview:pages` script (`node tools/preview-app.mjs`) starts an HTTP static file server on port 4173 serving `apps/app/dist/pages` under the GitHub Pages base path `/arunodaya-solar-events/`. It serves the production build with real MIME types (HTML, JS, CSS, SVG) and security headers matching GitHub Pages hosting.
+
 ## Android Tooling Policy
 
 Android tooling (Android SDK, Gradle, Capacitor CLI, Jetpack Glance) is not required in Prompt 1 (Foundation) and will be introduced in Prompt 10 (Android shell and bridge) and Prompt 11 (Widgets).

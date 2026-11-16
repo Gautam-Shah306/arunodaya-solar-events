@@ -42492,19 +42492,75 @@
           "n": 2814,
           "unmatched": 0
         },
-        "sunset": { "extra": 0, "maxSeconds": 25.89, "meanSeconds": 0.9, "n": 2814, "unmatched": 0 }
+        "sunset": {
+          "extra": 0,
+          "maxSeconds": 25.89,
+          "meanSeconds": 0.9,
+          "n": 2814,
+          "unmatched": 0
+        }
       },
       "worst": [
-        { "city": "new-delhi", "date": "2100-12-31", "kind": "sunrise", "seconds": 28.42 },
-        { "city": "kibithu", "date": "2100-12-31", "kind": "sunrise", "seconds": 28.41 },
-        { "city": "rajkot", "date": "2100-12-31", "kind": "sunrise", "seconds": 28.33 },
-        { "city": "dwarka", "date": "2100-12-31", "kind": "sunrise", "seconds": 28.33 },
-        { "city": "kolkata", "date": "2100-12-31", "kind": "sunrise", "seconds": 28.33 },
-        { "city": "chennai", "date": "2100-12-31", "kind": "sunrise", "seconds": 28.25 },
-        { "city": "rajkot", "date": "2100-12-31", "kind": "solarNoon", "seconds": 27.09 },
-        { "city": "dwarka", "date": "2100-12-31", "kind": "solarNoon", "seconds": 27.09 },
-        { "city": "new-delhi", "date": "2100-12-31", "kind": "sun6Morning", "seconds": 27.09 },
-        { "city": "kolkata", "date": "2100-12-31", "kind": "solarNoon", "seconds": 27.09 }
+        {
+          "city": "new-delhi",
+          "date": "2100-12-31",
+          "kind": "sunrise",
+          "seconds": 28.42
+        },
+        {
+          "city": "kibithu",
+          "date": "2100-12-31",
+          "kind": "sunrise",
+          "seconds": 28.41
+        },
+        {
+          "city": "rajkot",
+          "date": "2100-12-31",
+          "kind": "sunrise",
+          "seconds": 28.33
+        },
+        {
+          "city": "dwarka",
+          "date": "2100-12-31",
+          "kind": "sunrise",
+          "seconds": 28.33
+        },
+        {
+          "city": "kolkata",
+          "date": "2100-12-31",
+          "kind": "sunrise",
+          "seconds": 28.33
+        },
+        {
+          "city": "chennai",
+          "date": "2100-12-31",
+          "kind": "sunrise",
+          "seconds": 28.25
+        },
+        {
+          "city": "rajkot",
+          "date": "2100-12-31",
+          "kind": "solarNoon",
+          "seconds": 27.09
+        },
+        {
+          "city": "dwarka",
+          "date": "2100-12-31",
+          "kind": "solarNoon",
+          "seconds": 27.09
+        },
+        {
+          "city": "new-delhi",
+          "date": "2100-12-31",
+          "kind": "sun6Morning",
+          "seconds": 27.09
+        },
+        {
+          "city": "kolkata",
+          "date": "2100-12-31",
+          "kind": "solarNoon",
+          "seconds": 27.09
+        }
       ]
     },
     "dayCount": 2814,

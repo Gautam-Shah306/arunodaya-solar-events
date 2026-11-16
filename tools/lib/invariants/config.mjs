@@ -91,7 +91,9 @@ export function loadConfig(configPathOrObj) {
       config = JSON.parse(raw);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      throw new Error(`Invalid JSON in invariants config: ${msg}`, { cause: e });
+      throw new Error(`Invalid JSON in invariants config: ${msg}`, {
+        cause: e,
+      });
     }
   } else {
     config = configPathOrObj;

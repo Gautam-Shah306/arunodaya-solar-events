@@ -236,7 +236,9 @@ describe('Engine time core', () => {
 
     // Simulate different TZ env in-process if global process is available
     const proc = (
-      globalThis as unknown as { process?: { env: Record<string, string | undefined> } }
+      globalThis as unknown as {
+        process?: { env: Record<string, string | undefined> };
+      }
     ).process;
     if (proc) {
       const origTz = proc.env['TZ'];
@@ -491,7 +493,10 @@ describe('Engine time core', () => {
 
   it('countdown targets at 04:00 are all today', () => {
     // Snapshot includes yesterday (2026-11-14) per SNAPSHOT_POLICY so previous occurrences exist
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-14', dayCount: 4 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-14',
+      dayCount: 4,
+    });
     const dayStart = (istDateToStartMs('2026-11-15') as { ok: true; value: number }).value;
     const nowMs = dayStart + 4 * 3600 * 1000; // 04:00 IST
 
@@ -513,7 +518,10 @@ describe('Engine time core', () => {
 
   it('countdown targets between sunrise and navkarshi', () => {
     // Snapshot includes yesterday (2026-11-14) per SNAPSHOT_POLICY so previous occurrences exist
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-14', dayCount: 4 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-14',
+      dayCount: 4,
+    });
     const dayStart = (istDateToStartMs('2026-11-15') as { ok: true; value: number }).value;
     // Between sunrise (06:48) and navkarshi (07:36): 07:00 IST
     const nowMs = dayStart + 7 * 3600 * 1000;
@@ -538,7 +546,10 @@ describe('Engine time core', () => {
   });
 
   it('countdown targets between navkarshi and sunset', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-14', dayCount: 4 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-14',
+      dayCount: 4,
+    });
     const dayStart = (istDateToStartMs('2026-11-15') as { ok: true; value: number }).value;
     // Between navkarshi and sunset: 12:00 IST
     const nowMs = dayStart + 12 * 3600 * 1000;
@@ -560,7 +571,10 @@ describe('Engine time core', () => {
   });
 
   it('countdown targets after sunset are all tomorrow', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-14', dayCount: 4 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-14',
+      dayCount: 4,
+    });
     const dayStart = (istDateToStartMs('2026-11-15') as { ok: true; value: number }).value;
     // After sunset: 20:00 IST
     const nowMs = dayStart + 20 * 3600 * 1000;
@@ -582,7 +596,10 @@ describe('Engine time core', () => {
   });
 
   it('countdown rolls over at midnight and across a month and a year boundary', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-12-31', dayCount: 5 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-12-31',
+      dayCount: 5,
+    });
     const dec31Start = (istDateToStartMs('2026-12-31') as { ok: true; value: number }).value;
     const justBeforeMidnight = dec31Start + MS_PER_DAY - 1000; // 23:59:59 IST
     const justAfterMidnight = dec31Start + MS_PER_DAY + 1000; // 00:00:01 IST on 2027-01-01
@@ -600,7 +617,10 @@ describe('Engine time core', () => {
   });
 
   it('getCountdownTargets reports horizon_exhausted when the snapshot runs out', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-15', dayCount: 1 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-15',
+      dayCount: 1,
+    });
     const dayStart = (istDateToStartMs('2026-11-15') as { ok: true; value: number }).value;
     const pastHorizon = dayStart + 2 * MS_PER_DAY;
 
@@ -611,7 +631,10 @@ describe('Engine time core', () => {
   });
 
   it('buildOccurrenceSeries extracts sunrise navkarshi sunset and moonrise in ascending order', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-15', dayCount: 5 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-15',
+      dayCount: 5,
+    });
     const series = buildOccurrenceSeries(fixture);
 
     expect(isAscending(series.sunrise)).toBe(true);
@@ -629,7 +652,10 @@ describe('Engine time core', () => {
   });
 
   it('moonrise series ignores moon set events', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-15', dayCount: 3 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-15',
+      dayCount: 3,
+    });
     const series = buildOccurrenceSeries(fixture);
     expect(fixture.moonEvents.some((m) => m.kind === 'set')).toBe(true);
     // Moonrise must contain only 3 items (one per day), ignoring the 3 set items
@@ -637,7 +663,10 @@ describe('Engine time core', () => {
   });
 
   it('findDay returns the day record for an IST date', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-15', dayCount: 3 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-15',
+      dayCount: 3,
+    });
     const found = findDay(fixture, '2026-11-16');
     expect(found).toBeDefined();
     expect(found?.istDate).toBe('2026-11-16');
@@ -732,9 +761,11 @@ describe('Engine time core', () => {
     };
     // At 16:50 with earlier-of disabled, evening starts strictly at 17:00
     const nowMs = dayStart + (16 * 3600 + 50 * 60) * 1000;
-    expect(selectGreeting(nowMs, anchors, { eveningStartsAtEarlierOfFixedAndSunset: false })).toBe(
-      'afternoon',
-    );
+    expect(
+      selectGreeting(nowMs, anchors, {
+        eveningStartsAtEarlierOfFixedAndSunset: false,
+      }),
+    ).toBe('afternoon');
   });
 
   it('greeting is evening until sunset plus three hours and night from then', () => {
@@ -783,7 +814,10 @@ describe('Engine time core', () => {
   it('dayNight is night before the displayed sunrise minute and day from it', () => {
     const sunriseDisplay = 60000 * 400; // 06:40
     const sunsetDisplay = 60000 * 1070; // 17:50
-    const endpoints = { sunriseDisplayMs: sunriseDisplay, sunsetDisplayMs: sunsetDisplay };
+    const endpoints = {
+      sunriseDisplayMs: sunriseDisplay,
+      sunsetDisplayMs: sunsetDisplay,
+    };
 
     expect(dayNight(sunriseDisplay - 1, endpoints)).toBe('night');
     expect(dayNight(sunriseDisplay, endpoints)).toBe('day');
@@ -793,7 +827,10 @@ describe('Engine time core', () => {
   it('dayNight switches to night at the displayed sunset minute', () => {
     const sunriseDisplay = 60000 * 400;
     const sunsetDisplay = 60000 * 1070;
-    const endpoints = { sunriseDisplayMs: sunriseDisplay, sunsetDisplayMs: sunsetDisplay };
+    const endpoints = {
+      sunriseDisplayMs: sunriseDisplay,
+      sunsetDisplayMs: sunsetDisplay,
+    };
 
     expect(dayNight(sunsetDisplay - 1, endpoints)).toBe('day');
     expect(dayNight(sunsetDisplay, endpoints)).toBe('night');
@@ -802,20 +839,29 @@ describe('Engine time core', () => {
   });
 
   it('getSnapshotStatus is not_started before the first day', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-15', dayCount: 30 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-15',
+      dayCount: 30,
+    });
     const dayStart = (istDateToStartMs('2026-11-15') as { ok: true; value: number }).value;
     expect(getSnapshotStatus(fixture, dayStart - 1000)).toBe('not_started');
   });
 
   it('getSnapshotStatus is ready in the middle of the horizon', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-15', dayCount: 30 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-15',
+      dayCount: 30,
+    });
     const dayStart = (istDateToStartMs('2026-11-15') as { ok: true; value: number }).value;
     // Day 10 is well within the 30-day horizon (> 7 days remaining)
     expect(getSnapshotStatus(fixture, dayStart + 10 * MS_PER_DAY)).toBe('ready');
   });
 
   it('getSnapshotStatus is expiring within seven days of the last day', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-15', dayCount: 30 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-15',
+      dayCount: 30,
+    });
     const lastDay = fixture.days[fixture.days.length - 1];
     expect(lastDay).toBeDefined();
     if (lastDay) {
@@ -831,7 +877,10 @@ describe('Engine time core', () => {
   });
 
   it('getSnapshotStatus is expired after the last day ends', () => {
-    const fixture = makeSnapshotFixture({ startIstDate: '2026-11-15', dayCount: 30 });
+    const fixture = makeSnapshotFixture({
+      startIstDate: '2026-11-15',
+      dayCount: 30,
+    });
     const lastDay = fixture.days[fixture.days.length - 1];
     expect(lastDay).toBeDefined();
     if (lastDay) {
@@ -847,7 +896,10 @@ describe('Engine time core', () => {
     expect(getSnapshotStatus({ ...fixture, days: [] }, 1000)).toBe('expired');
     expect(
       getSnapshotStatus(
-        { ...fixture, days: [{ istDate: 'invalid' } as unknown as (typeof fixture.days)[0]] },
+        {
+          ...fixture,
+          days: [{ istDate: 'invalid' } as unknown as (typeof fixture.days)[0]],
+        },
         1000,
       ),
     ).toBe('expired');

@@ -1,0 +1,50 @@
+import type { ThemeDefinition } from '../types.js';
+
+/**
+ * Editorial Premium Light theme definition.
+ */
+export const themeLight: ThemeDefinition = {
+  id: 'light',
+  name: 'Light',
+  family: 'built_in',
+  baseMode: 'light',
+  tokens: {
+    canvas: '#F7F2E7',
+    layer1: '#FFFCF5',
+    layer2: '#EDF0E2',
+    layer3: '#E2E8D6',
+    border: '#D8DECD',
+    borderStrong: '#768574',
+    textPrimary: '#14301F',
+    textSecondary: '#354E3D',
+    textTertiary: '#5C7062',
+    textOnAccent: '#FFFFFF',
+    accent: '#8C6417',
+    accentText: '#73500C',
+    solar: '#A9741A',
+    solarText: '#734D09',
+    daySun: '#8F5E0C',
+    nightMoon: '#264669',
+    countdownFill: '#14301F',
+    countdownShade: '#809183',
+    focus: '#0062B8',
+    positive: '#17662E',
+    warning: '#855100',
+    critical: '#991B1B',
+    scrim: '#F7F2E799',
+  },
+  widget: {
+    surface: '#1B3A2A',
+    surfaceAlt: '#234935',
+    border: '#335E46',
+    textPrimary: '#F7F2E7',
+    textSecondary: '#C5D4BD',
+    accent: '#D8B96C',
+    solar: '#E3B75A',
+    countdownFill: '#F7F2E7',
+    countdownShade: '#6B8D78',
+    day: '#E3B75A',
+    night: '#9AB6CE',
+    stale: '#C5D4BD',
+  },
+};

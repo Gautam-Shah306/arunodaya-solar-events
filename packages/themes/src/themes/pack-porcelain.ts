@@ -1,0 +1,50 @@
+import type { ThemeDefinition } from '../types.js';
+
+/**
+ * Cool Off-White Porcelain custom pack theme definition with deep navy ink text.
+ */
+export const themePackPorcelain: ThemeDefinition = {
+  id: 'pack-porcelain',
+  name: 'Porcelain',
+  family: 'pack',
+  baseMode: 'light',
+  tokens: {
+    canvas: '#F2F5F8',
+    layer1: '#FFFFFF',
+    layer2: '#E6ECF2',
+    layer3: '#D9E2EC',
+    border: '#CAD5E2',
+    borderStrong: '#6E8299',
+    textPrimary: '#0F2238',
+    textSecondary: '#334E6C',
+    textTertiary: '#5C748F',
+    textOnAccent: '#FFFFFF',
+    accent: '#82580F',
+    accentText: '#704B09',
+    solar: '#9C660F',
+    solarText: '#704705',
+    daySun: '#8A5809',
+    nightMoon: '#284668',
+    countdownFill: '#0F2238',
+    countdownShade: '#7C93AB',
+    focus: '#0062B8',
+    positive: '#17662E',
+    warning: '#855100',
+    critical: '#991B1B',
+    scrim: '#F2F5F899',
+  },
+  widget: {
+    surface: '#12253F',
+    surfaceAlt: '#1B3454',
+    border: '#2A4A73',
+    textPrimary: '#F2F5F8',
+    textSecondary: '#B9CCDF',
+    accent: '#D8B96C',
+    solar: '#E3B75A',
+    countdownFill: '#F2F5F8',
+    countdownShade: '#56779D',
+    day: '#E3B75A',
+    night: '#9EBBDC',
+    stale: '#B9CCDF',
+  },
+};

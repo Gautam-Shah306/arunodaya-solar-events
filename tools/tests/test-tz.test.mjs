@@ -9,13 +9,14 @@ import {
 
 describe('Timezone matrix runner', () => {
   it('test:tz covers UTC IST and extreme offset zones', () => {
-    expect(TARGET_TIMEZONES).toContain('UTC');
-    expect(TARGET_TIMEZONES).toContain('Asia/Kolkata');
-    expect(TARGET_TIMEZONES).toContain('America/Los_Angeles');
-    expect(TARGET_TIMEZONES).toContain('Pacific/Kiritimati');
-    expect(TARGET_TIMEZONES).toContain('Pacific/Pago_Pago');
-    expect(TARGET_TIMEZONES).toContain('Europe/London');
-    expect(TARGET_TIMEZONES).toHaveLength(6);
+    expect(TARGET_TIMEZONES).toEqual([
+      'UTC',
+      'Asia/Kolkata',
+      'America/Los_Angeles',
+      'Pacific/Kiritimati',
+      'Pacific/Pago_Pago',
+      'Europe/London',
+    ]);
   });
 
   it('test:tz builds a vitest command limited to the packages project', () => {

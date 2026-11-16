@@ -1,0 +1,50 @@
+import type { ThemeDefinition } from '../types.js';
+
+/**
+ * Charcoal-Green Dark theme definition.
+ */
+export const themeDark: ThemeDefinition = {
+  id: 'dark',
+  name: 'Dark',
+  family: 'built_in',
+  baseMode: 'dark',
+  tokens: {
+    canvas: '#14211A',
+    layer1: '#1C2B22',
+    layer2: '#23342B',
+    layer3: '#2C3E34',
+    border: '#394E42',
+    borderStrong: '#698574',
+    textPrimary: '#EFE6D2',
+    textSecondary: '#A6B8AD',
+    textTertiary: '#7B8F83',
+    textOnAccent: '#14211A',
+    accent: '#D8B96C',
+    accentText: '#D8B96C',
+    solar: '#E3B75A',
+    solarText: '#E3B75A',
+    daySun: '#E3B75A',
+    nightMoon: '#A4C0D9',
+    countdownFill: '#EFE6D2',
+    countdownShade: '#5E7A6B',
+    focus: '#4BA1FF',
+    positive: '#42BA66',
+    warning: '#F5A623',
+    critical: '#FF6B6B',
+    scrim: '#14211A99',
+  },
+  widget: {
+    surface: '#1C2B22',
+    surfaceAlt: '#23342B',
+    border: '#394E42',
+    textPrimary: '#EFE6D2',
+    textSecondary: '#A6B8AD',
+    accent: '#D8B96C',
+    solar: '#E3B75A',
+    countdownFill: '#EFE6D2',
+    countdownShade: '#5E7A6B',
+    day: '#E3B75A',
+    night: '#A4C0D9',
+    stale: '#A6B8AD',
+  },
+};

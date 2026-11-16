@@ -342,7 +342,7 @@ Arunodaya ships four built-in themes and a set of curated theme packs. Every the
 - **No free colour picker in v1 (Proposed):** curated packs only, because arbitrary colours can produce unreadable combinations.
 - **Selector (Proposed):** Settings, Appearance shows the Match system switch and a gallery of theme cards. Each card previews real components (event times and a countdown), not swatches.
 - **Other outputs (Proposed):** the monthly PDF uses a fixed light paper palette. The share card renders in the current theme or in Light, the user's choice. This replaces the earlier "light and dark variants" wording in §7.3.
-- **Open:** exact hex values, which are designed in one token sheet and then pass the contrast gate in §9.4.
+- **Palettes (Decided):** the ten themes are defined in packages/themes and documented in docs/THEMES.md; every theme passes the contrast gate (section 9.4).
 
 **Launch theme packs (lineup Decided; palettes Open)**
 
@@ -374,7 +374,7 @@ Themes are data, not code: components read semantic tokens and never hard-code a
 - **Resolution:** a `system` choice resolves to Light or Pure Dark from the system setting. An unknown id (for example a removed pack) falls back to the system rule.
 - **Applying:** the root element gets a `data-theme` attribute, CSS variables and `color-scheme`; Tailwind reads the variables. Capacitor sets the status and navigation bar style from `baseMode`. A tiny inline script reads a mirrored copy of the choice before first paint so the wrong theme never flashes.
 - **Widgets:** widgets can't read CSS variables, so the resolved widget palette (about a dozen hex values) travels with the snapshot through the native-readable store (§8.2). Default is "follow app theme", with an optional separate widget theme. A theme change triggers a widget re-render.
-- **Contrast gate (Decided direction):** CI computes WCAG contrast for every theme and token pair: 4.5:1 for body text, 3:1 for large text and UI components. Champagne gold must pass on every canvas; gold text on ivory is the likely failure, so Light needs a darker gold text token. A theme that fails can't merge.
+- **Contrast gate (Decided direction):** CI computes WCAG contrast for every theme and token pair: 4.5:1 for body text, 3:1 for large text and UI components. Champagne gold must pass on every canvas; gold text on ivory is the likely failure, so Light needs a darker gold text token. A theme that fails can't merge. The required pairs and ratios are listed in docs/THEMES.md (primary text 7:1 on the canvas, other text 4.5:1, tertiary text and UI components 3:1; Proposed). A distinctness test keeps every canvas visibly different, including Midnight Teal against Darker.
 - **Visual regression:** CI screenshots Home, Forecast, Settings and the widget previews in every theme.
 - **Adding a pack** is one data file in the theme package plus passing both gates. No component changes.
 - **Not used:** Android dynamic colour (Material You), to keep the brand palette. The Android splash screen typically follows only the system light/dark setting, so verify how it looks in each theme.
@@ -534,6 +534,7 @@ Exact epoch instants are stored, never display strings. `solarNoonMs` holds the 
 - **Monorepo toolchain (Decided):** npm workspaces with a single committed package-lock.json.
 - **Application ID (Decided):** in.gautam.arunodaya (permanent once published).
 - **Astronomy engine:** Astronomy Engine (astronomy-engine 2.1.19), chosen by benchmark against the committed reference dataset (docs/ASTRONOMY.md, ADR 0008).
+- **Theme palettes:** ten themes defined in packages/themes (docs/THEMES.md) and passing the contrast gate.
 
 **Proposed (confirm)**
 
@@ -548,10 +549,11 @@ Exact epoch instants are stored, never display strings. `solarNoonMs` holds the 
 - Public repository (GitHub Pages on a free plan needs one), npm workspaces monorepo, trunk-based branching with pull requests, ADRs for key decisions.
 - Every theme pack keeps the solar accent in the gold/amber family; light packs use a darker gold text token.
 - Android release build without the INTERNET permission if Capacitor allows it.
+- Contrast thresholds as listed in docs/THEMES.md.
 
 **Open**
 
-- Final serif and sans selection after glyph test; palette and token values for every theme.
+- Final serif and sans selection after glyph test.
 - Gazetteer and PIN datasets and licenses; PDF library.
 - Notification types and schedule; crash reporting approach.
 - Production copy for empty/error/stale states.

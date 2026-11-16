@@ -1,0 +1,50 @@
+import type { ThemeDefinition } from '../types.js';
+
+/**
+ * Warm Burgundy custom pack theme definition.
+ */
+export const themePackBurgundy: ThemeDefinition = {
+  id: 'pack-burgundy',
+  name: 'Burgundy',
+  family: 'pack',
+  baseMode: 'dark',
+  tokens: {
+    canvas: '#1A0A10',
+    layer1: '#25111A',
+    layer2: '#301823',
+    layer3: '#3D202D',
+    border: '#532D3F',
+    borderStrong: '#8F5370',
+    textPrimary: '#F3E8DA',
+    textSecondary: '#BA9EA8',
+    textTertiary: '#88707A',
+    textOnAccent: '#1A0A10',
+    accent: '#D8B96C',
+    accentText: '#D8B96C',
+    solar: '#E3B75A',
+    solarText: '#E3B75A',
+    daySun: '#E3B75A',
+    nightMoon: '#BFB2C8',
+    countdownFill: '#F3E8DA',
+    countdownShade: '#8A576E',
+    focus: '#4BA1FF',
+    positive: '#42BA66',
+    warning: '#F5A623',
+    critical: '#FF6B6B',
+    scrim: '#1A0A1099',
+  },
+  widget: {
+    surface: '#25111A',
+    surfaceAlt: '#301823',
+    border: '#532D3F',
+    textPrimary: '#F3E8DA',
+    textSecondary: '#BA9EA8',
+    accent: '#D8B96C',
+    solar: '#E3B75A',
+    countdownFill: '#F3E8DA',
+    countdownShade: '#8A576E',
+    day: '#E3B75A',
+    night: '#BFB2C8',
+    stale: '#BA9EA8',
+  },
+};

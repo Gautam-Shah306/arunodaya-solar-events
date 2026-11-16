@@ -52,6 +52,11 @@ describe('astronomical golden tests (full set)', () => {
     expect(decisionEval.maxErrors.illumination).toBeLessThanOrEqual(config.tolerances.illumination);
   });
 
+  it('golden full: processed every decision city-day and compared at least 24000 events', () => {
+    expect(decisionEval.cityDays).toBe(2790);
+    expect(decisionEval.eventsCompared).toBeGreaterThanOrEqual(24000);
+  });
+
   it('golden extended: the 24 extended-range city-days stay within the extended guard', () => {
     expect(extendedEval.totalDays).toBe(24);
     expect(extendedEval.maxErrors.sunSeconds).toBeLessThanOrEqual(

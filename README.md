@@ -32,25 +32,26 @@ npm run verify:linux
 
 ## Available Scripts
 
-| Script               | Command                                                    | Purpose                                               |
-| -------------------- | ---------------------------------------------------------- | ----------------------------------------------------- |
-| `check:toolchain`    | `node tools/check-toolchain.mjs`                           | Validate Node.js and npm version constraints          |
-| `verify:invariants`  | `node tools/verify-invariants.mjs`                         | Verify AST architectural and security invariants      |
-| `lint`               | `eslint .`                                                 | Run ESLint with TypeScript strict type-checked rules  |
-| `format`             | `prettier --write .`                                       | Format all source files with Prettier                 |
-| `format:check`       | `prettier --check .`                                       | Verify code formatting compliance                     |
-| `typecheck`          | `node tools/typecheck.mjs`                                 | Run `tsc --noEmit` across all workspace projects      |
-| `test`               | `vitest run --project=tools --project=packages`            | Run unit tests for tools and packages                 |
-| `test:coverage`      | `vitest run --coverage --project=tools --project=packages` | Enforce >=90% test coverage thresholds                |
-| `test:tz`            | `node tools/test-tz.mjs`                                   | Run unit tests across 6 timezones (UTC, IST, etc.)    |
-| `test:golden`        | `vitest run --project=golden`                              | Run full 2,814 city-day golden regression tests       |
-| `build:pages`        | `node tools/build-app.mjs --target=pages`                  | Build web application for GitHub Pages                |
-| `build:android`      | `node tools/build-app.mjs --target=android`                | Build web application for Android WebView container   |
-| `test:build`         | `vitest run --project=build`                               | Verify built output integrity and CSP headers         |
-| `reference:generate` | `node tools/generate-reference.mjs`                        | Generate Skyfield/PyEphem reference dataset in Docker |
-| `bench:astro`        | `node tools/bench-astro.mjs`                               | Run empirical astronomy accuracy benchmark            |
-| `verify`             | `node tools/verify.mjs`                                    | Execute the complete quality pipeline in sequence     |
-| `verify:linux`       | `node tools/verify-linux.mjs`                              | Run quality pipeline in digest-pinned Linux container |
+| Script               | Command                                                    | Purpose                                                |
+| -------------------- | ---------------------------------------------------------- | ------------------------------------------------------ |
+| `check:toolchain`    | `node tools/check-toolchain.mjs`                           | Validate Node.js and npm version constraints           |
+| `verify:invariants`  | `node tools/verify-invariants.mjs`                         | Verify AST architectural and security invariants       |
+| `lint`               | `eslint .`                                                 | Run ESLint with TypeScript strict type-checked rules   |
+| `format`             | `prettier --write .`                                       | Format all source files with Prettier                  |
+| `format:check`       | `prettier --check .`                                       | Verify code formatting compliance                      |
+| `typecheck`          | `node tools/typecheck.mjs`                                 | Run `tsc --noEmit` across all workspace projects       |
+| `test`               | `vitest run --project=tools --project=packages`            | Run unit tests for tools and packages                  |
+| `test:coverage`      | `vitest run --coverage --project=tools --project=packages` | Enforce >=90% test coverage thresholds                 |
+| `test:tz`            | `node tools/test-tz.mjs`                                   | Run unit tests across 6 timezones (UTC, IST, etc.)     |
+| `test:golden`        | `vitest run --project=golden`                              | Run full 2,814 city-day golden regression tests        |
+| `build:pages`        | `node tools/build-app.mjs --target=pages`                  | Build web application for GitHub Pages                 |
+| `build:android`      | `node tools/build-app.mjs --target=android`                | Build web application for Android WebView container    |
+| `preview:pages`      | `node tools/preview-app.mjs`                               | Preview built GitHub Pages target locally on port 4173 |
+| `test:build`         | `vitest run --project=build`                               | Verify built output integrity and CSP headers          |
+| `reference:generate` | `node tools/generate-reference.mjs`                        | Generate Skyfield/PyEphem reference dataset in Docker  |
+| `bench:astro`        | `node tools/bench-astro.mjs`                               | Run empirical astronomy accuracy benchmark             |
+| `verify`             | `node tools/verify.mjs`                                    | Execute the complete quality pipeline in sequence      |
+| `verify:linux`       | `node tools/verify-linux.mjs`                              | Run quality pipeline in digest-pinned Linux container  |
 
 ### Pre-Commit Linux Verification
 
@@ -105,6 +106,14 @@ arunodaya-solar-events/
 ## Astronomy Provider and Golden Verification
 
 The core astronomical calculations are provided by `astronomy-engine` (MIT, version 2.1.19), encapsulated under `packages/engine/src/astro/` via a path-scoped dependency allowance (`INV-LAYERS`). All astronomical calculations are verified against a committed reference dataset of 2,814 city-days (`packages/engine/tests/data/astro-reference-v1.json`) generated using NASA JPL DE440s ephemerides via Skyfield with PyEphem cross-checking. Accuracy tolerances and tight regression guards are defined once in `packages/engine/tests/data/astro-tolerances-v1.json`.
+
+## Themes and Contrast Validation
+
+Arunodaya ships ten curated themes (four built-in and six custom theme packs) designed around high-contrast editorial and dark aesthetics. Every theme is defined as typed data in `packages/themes` and enforced by an automated 45-point contrast gate in CI (`npm run test`):
+
+- **Documentation & Token Reference**: [docs/THEMES.md](docs/THEMES.md)
+- **Architecture & Contrast Decision**: [docs/adr/0011-theme-system.md](docs/adr/0011-theme-system.md)
+- **Live Theme Gallery**: [https://gautam-shah306.github.io/arunodaya-solar-events/themes.html](https://gautam-shah306.github.io/arunodaya-solar-events/themes.html)
 
 ## GitHub Pages Deployment
 

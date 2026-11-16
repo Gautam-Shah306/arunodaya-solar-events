@@ -1,5 +1,6 @@
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { resolveBase, REPO_BASE_PATH } from '../lib/build-targets.mjs';
+import { resolveBase, resolveHtmlInputs, REPO_BASE_PATH } from '../lib/build-targets.mjs';
 
 describe('build-targets', () => {
   it('resolveBase returns the GitHub Pages base for target pages', () => {
@@ -18,5 +19,35 @@ describe('build-targets', () => {
   it('resolveBase rejects an unknown target', () => {
     // @ts-expect-error Testing invalid target input
     expect(() => resolveBase('ios')).toThrow(/Unknown build target/);
+  });
+
+  it('resolveHtmlInputs includes the themes page for the pages target', () => {
+    const root = '/mock/app';
+    const inputs = resolveHtmlInputs('pages', root);
+    expect(inputs).toEqual({
+      main: path.join(root, 'index.html'),
+      themes: path.join(root, 'themes.html'),
+    });
+  });
+
+  it('resolveHtmlInputs includes the themes page for the dev target', () => {
+    const root = '/mock/app';
+    const inputs = resolveHtmlInputs('dev', root);
+    expect(inputs).toEqual({
+      main: path.join(root, 'index.html'),
+      themes: path.join(root, 'themes.html'),
+    });
+  });
+
+  it('resolveHtmlInputs excludes the themes page for the android target', () => {
+    const root = '/mock/app';
+    const inputs = resolveHtmlInputs('android', root);
+    expect(inputs).toEqual({
+      main: path.join(root, 'index.html'),
+    });
+    expect(inputs.themes).toBeUndefined();
+
+    // @ts-expect-error test invalid target
+    expect(() => resolveHtmlInputs('unknown', root)).toThrow(/Unknown build target/);
   });
 });

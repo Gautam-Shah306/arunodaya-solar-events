@@ -1,0 +1,50 @@
+import type { ThemeDefinition } from '../types.js';
+
+/**
+ * Deep Navy custom pack theme definition.
+ */
+export const themePackNavy: ThemeDefinition = {
+  id: 'pack-navy',
+  name: 'Navy',
+  family: 'pack',
+  baseMode: 'dark',
+  tokens: {
+    canvas: '#0A1426',
+    layer1: '#101D36',
+    layer2: '#17284A',
+    layer3: '#1F3560',
+    border: '#2A4374',
+    borderStrong: '#5B79B5',
+    textPrimary: '#F1EBDD',
+    textSecondary: '#A2B6D6',
+    textTertiary: '#7388A9',
+    textOnAccent: '#0A1426',
+    accent: '#D8B96C',
+    accentText: '#D8B96C',
+    solar: '#E3B75A',
+    solarText: '#E3B75A',
+    daySun: '#E3B75A',
+    nightMoon: '#A4C3E8',
+    countdownFill: '#F1EBDD',
+    countdownShade: '#526F9E',
+    focus: '#4BA1FF',
+    positive: '#42BA66',
+    warning: '#F5A623',
+    critical: '#FF6B6B',
+    scrim: '#0A142699',
+  },
+  widget: {
+    surface: '#101D36',
+    surfaceAlt: '#17284A',
+    border: '#2A4374',
+    textPrimary: '#F1EBDD',
+    textSecondary: '#A2B6D6',
+    accent: '#D8B96C',
+    solar: '#E3B75A',
+    countdownFill: '#F1EBDD',
+    countdownShade: '#526F9E',
+    day: '#E3B75A',
+    night: '#A4C3E8',
+    stale: '#A2B6D6',
+  },
+};

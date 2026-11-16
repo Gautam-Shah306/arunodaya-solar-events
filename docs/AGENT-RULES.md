@@ -12,7 +12,7 @@ The following rules are mandatory for all agents and automated workflows operati
 - **R6 Tests: one test per named scenario, with the test title equal to the scenario text verbatim.** No skipped or focused tests. Coverage gates are enforced by configuration so a missed gate fails the command.
 - **R7 Privacy and supply chain: no network access at runtime, no analytics, no remote fonts, scripts or CDNs, no secrets or signing keys in the repo.** Dependencies are pinned to exact versions (save-exact), kept minimal, permissively licensed, and every new dependency is justified in the REPORT with its licence.
 - **R8 Time rule: only packages/engine/src/time/ist.ts may use local-time APIs.** Instants are epoch milliseconds; IST is fixed +05:30. The pure packages never read the system clock; the clock is injected.
-- **R9 Colour rule: no colour literals outside packages/themes; everything else uses tokens or CSS system-colour keywords.**
+- _*R9 Colour rule: colour literals live only in packages/themes; everything else uses custom properties named --ar-* or CSS system-colour keywords; theme application uses CSSOM (element.style.setProperty), never inline style attributes or style elements (CSP style-src 'self')._*
 - **R10 Docs ride with code: behaviour or decision changes update the spec, ADRs and README in the same prompt.** Spec edits are minimal, listed in the REPORT with section numbers.
 - **R11 Failure protocol: after two failed attempts at the same thing, stop retrying, record the exact command and error, and continue with the remaining independent work.**
 - **R12 Scope: do only what the prompt asks.** No extra features, no refactors outside scope. Out-of-scope findings go under FOLLOW-UPS. Never modify LICENSE.
@@ -28,6 +28,7 @@ Every subsequent prompt must begin with Part 0 verification to ensure workspace 
 5. Reporting: report results in the REPORT section.
 6. Linux verification: after Prompt 1c, when the prompt touches tests, tooling or workflows, also run `npm run verify:linux` and report it.
 7. Index verification: before reporting, run `npm run verify:linux -- --index` only after the user has staged (skip with a note when the index is empty).
+8. Theme contrast gate: the theme contrast gate runs inside `npm run test:coverage`.
 
 ## Report format
 

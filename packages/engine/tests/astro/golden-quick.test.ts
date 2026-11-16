@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { computeAstroDay } from '../../src/astro/astro-day.js';
 import {
   evaluateGoldenDays,
   loadReferenceDataset,
@@ -51,5 +52,28 @@ describe('astronomical golden tests (quick subset)', () => {
   it('golden quick set: moon phase and illumination match the reference', () => {
     expect(evalResult.maxErrors.phaseFraction).toBeLessThanOrEqual(config.tolerances.phaseFraction);
     expect(evalResult.maxErrors.illumination).toBeLessThanOrEqual(config.tolerances.illumination);
+  });
+
+  it('golden quick set: processed 156 city-days', () => {
+    expect(evalResult.cityDays).toBe(156);
+  });
+
+  it('golden harness fails when the provider is off by two minutes', () => {
+    const smallDays = quickDays.slice(0, 5);
+    const brokenProvider = (observer: { lat: number; lon: number }, date: string) => {
+      const real = computeAstroDay(observer, date);
+      if (!real.ok) return real;
+      return {
+        ok: true as const,
+        value: {
+          ...real.value,
+          sunrise: real.value.sunrise + 120000,
+        },
+      };
+    };
+
+    const brokenEval = evaluateGoldenDays(smallDays, ref.cities, brokenProvider);
+    expect(brokenEval.maxima.sunriseSeconds).toBeGreaterThan(config.tolerances.sunSeconds);
+    expect(brokenEval.maxima.sunriseSeconds).toBeGreaterThanOrEqual(118);
   });
 });

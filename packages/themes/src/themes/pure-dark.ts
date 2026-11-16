@@ -1,0 +1,50 @@
+import type { ThemeDefinition } from '../types.js';
+
+/**
+ * Pure Dark theme definition with absolute black canvas and neutral grey steps.
+ */
+export const themePureDark: ThemeDefinition = {
+  id: 'pure-dark',
+  name: 'Pure Dark',
+  family: 'built_in',
+  baseMode: 'dark',
+  tokens: {
+    canvas: '#000000',
+    layer1: '#0D0D0D',
+    layer2: '#171717',
+    layer3: '#212121',
+    border: '#2E2E2E',
+    borderStrong: '#666666',
+    textPrimary: '#FFFFFF',
+    textSecondary: '#C7C7C7',
+    textTertiary: '#8A8A8A',
+    textOnAccent: '#000000',
+    accent: '#D8B96C',
+    accentText: '#D8B96C',
+    solar: '#E3B75A',
+    solarText: '#E3B75A',
+    daySun: '#E3B75A',
+    nightMoon: '#A8C4E0',
+    countdownFill: '#FFFFFF',
+    countdownShade: '#616161',
+    focus: '#4BA1FF',
+    positive: '#42BA66',
+    warning: '#F5A623',
+    critical: '#FF6B6B',
+    scrim: '#00000099',
+  },
+  widget: {
+    surface: '#0D0D0D',
+    surfaceAlt: '#171717',
+    border: '#2E2E2E',
+    textPrimary: '#FFFFFF',
+    textSecondary: '#C7C7C7',
+    accent: '#D8B96C',
+    solar: '#E3B75A',
+    countdownFill: '#FFFFFF',
+    countdownShade: '#616161',
+    day: '#E3B75A',
+    night: '#A8C4E0',
+    stale: '#C7C7C7',
+  },
+};

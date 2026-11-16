@@ -1,0 +1,508 @@
+:root {
+  color-scheme: light dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 1.5rem;
+  background-color: var(--ar-canvas, Canvas);
+  color: var(--ar-text-primary, CanvasText);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+.gallery-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.gallery-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--ar-border, GrayText);
+}
+
+.gallery-review-banner {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background-color: var(--ar-layer-2, ButtonFace);
+  color: var(--ar-warning, CanvasText);
+  border: 1px solid var(--ar-border-strong, CanvasText);
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.gallery-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.gallery-intro {
+  margin: 0 0 1.25rem 0;
+  color: var(--ar-text-secondary, GrayText);
+  max-width: 75ch;
+}
+
+.match-system-card {
+  padding: 1rem 1.25rem;
+  background-color: var(--ar-layer-1, Canvas);
+  border: 1px solid var(--ar-border, GrayText);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.match-system-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.match-system-details {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ar-text-secondary, GrayText);
+}
+
+.match-system-badge {
+  font-weight: 700;
+  color: var(--ar-solar-text, CanvasText);
+}
+
+.themes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .themes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.theme-section {
+  min-width: 0;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background-color: var(--ar-canvas, Canvas);
+  color: var(--ar-text-primary, CanvasText);
+  border: 1px solid var(--ar-border-strong, GrayText);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.theme-heading-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--ar-border, GrayText);
+  padding-bottom: 0.75rem;
+}
+
+.theme-name {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.theme-meta-badges {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--ar-text-secondary, GrayText);
+}
+
+.meta-badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background-color: var(--ar-layer-2, ButtonFace);
+  border: 1px solid var(--ar-border, GrayText);
+}
+
+/* Sample Home Screen Preview */
+.sample-home-card {
+  padding: 1.25rem;
+  background-color: var(--ar-layer-1, Canvas);
+  border-radius: 10px;
+  border: 1px solid var(--ar-border, GrayText);
+}
+
+.sample-home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.sample-greeting {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--ar-text-primary, CanvasText);
+}
+
+.sample-date-location {
+  font-size: 0.875rem;
+  color: var(--ar-text-secondary, GrayText);
+  margin: 0.25rem 0 0 0;
+}
+
+.sample-clock {
+  font-family: ui-serif, Georgia, Cambria, serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ar-solar-text, CanvasText);
+}
+
+.event-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.event-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  background-color: var(--ar-layer-2, ButtonFace);
+  border: 1px solid var(--ar-border, GrayText);
+}
+
+.event-lead {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.event-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-sun {
+  fill: var(--ar-day-sun, CanvasText);
+  stroke: var(--ar-day-sun, CanvasText);
+}
+
+.icon-moon {
+  fill: var(--ar-night-moon, CanvasText);
+  stroke: var(--ar-night-moon, CanvasText);
+}
+
+.event-label {
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+.event-time {
+  font-family: ui-serif, Georgia, Cambria, serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-right: 0.75rem;
+}
+
+.countdown-progress-text {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  background-image: linear-gradient(
+    to right,
+    var(--ar-countdown-fill, CanvasText) 0%,
+    var(--ar-countdown-fill, CanvasText) calc(var(--ar-progress, 0) * 100%),
+    var(--ar-countdown-shade, CanvasText) calc(var(--ar-progress, 0) * 100%),
+    var(--ar-countdown-shade, CanvasText) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.sample-note {
+  font-size: 0.75rem;
+  color: var(--ar-text-tertiary, GrayText);
+  margin-top: 0.75rem;
+  text-align: right;
+  font-style: italic;
+}
+
+/* Layer Swatches */
+.layer-swatches-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.section-subhead {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ar-text-secondary, GrayText);
+}
+
+.swatches-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.swatch-box {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--ar-border, GrayText);
+  text-align: center;
+}
+
+.swatch-box-canvas {
+  background-color: var(--ar-canvas, Canvas);
+}
+
+.swatch-box-layer1 {
+  background-color: var(--ar-layer-1, Canvas);
+}
+
+.swatch-box-layer2 {
+  background-color: var(--ar-layer-2, Canvas);
+}
+
+.swatch-box-layer3 {
+  background-color: var(--ar-layer-3, Canvas);
+}
+
+.swatch-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.swatch-hex {
+  display: block;
+  font-size: 0.6875rem;
+  font-family: monospace;
+  opacity: 0.85;
+}
+
+/* Controls and Buttons Row */
+.controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-primary {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background-color: var(--ar-accent, Highlight);
+  color: var(--ar-text-on-accent, HighlightText);
+  min-height: 44px;
+}
+
+.btn-secondary {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid var(--ar-border, ButtonBorder);
+  cursor: pointer;
+  background-color: var(--ar-layer-2, ButtonFace);
+  color: var(--ar-text-primary, ButtonText);
+  min-height: 44px;
+}
+
+.btn-focus {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid var(--ar-border, ButtonBorder);
+  cursor: pointer;
+  background-color: var(--ar-layer-2, ButtonFace);
+  color: var(--ar-text-primary, ButtonText);
+  outline: 2px solid var(--ar-focus, Highlight);
+  outline-offset: 2px;
+  min-height: 44px;
+}
+
+.status-chip {
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--ar-layer-2, ButtonFace);
+  border: 1px solid var(--ar-border, GrayText);
+}
+
+.chip-positive {
+  color: var(--ar-positive, CanvasText);
+}
+
+.chip-warning {
+  color: var(--ar-warning, CanvasText);
+}
+
+.chip-critical {
+  color: var(--ar-critical, CanvasText);
+}
+
+/* Widget Preview */
+.widget-preview-card {
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  background-color: var(--ar-widget-surface, Canvas);
+  color: var(--ar-widget-text-primary, CanvasText);
+  border: 1px solid var(--ar-widget-border, CanvasText);
+}
+
+.widget-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+}
+
+.widget-preview-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ar-widget-text-secondary, CanvasText);
+  margin: 0;
+}
+
+.widget-stale-stamp {
+  font-size: 0.75rem;
+  color: var(--ar-widget-stale, CanvasText);
+}
+
+.widget-times-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.widget-time-block {
+  padding: 0.5rem;
+  border-radius: 6px;
+  background-color: var(--ar-widget-surface-alt, ButtonFace);
+}
+
+.widget-time-name {
+  font-size: 0.6875rem;
+  color: var(--ar-widget-text-secondary, CanvasText);
+  display: block;
+}
+
+.widget-time-val {
+  font-family: ui-serif, Georgia, Cambria, serif;
+  font-size: 1rem;
+  font-weight: 700;
+  display: block;
+  color: var(--ar-widget-text-primary, CanvasText);
+}
+
+.widget-countdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+}
+
+.widget-countdown-label {
+  color: var(--ar-widget-text-secondary, CanvasText);
+}
+
+.widget-countdown-val {
+  font-weight: 700;
+  color: var(--ar-widget-solar, CanvasText);
+}
+
+/* Contrast Table Details */
+.contrast-details {
+  border: 1px solid var(--ar-border, GrayText);
+  border-radius: 8px;
+  background-color: var(--ar-layer-1, Canvas);
+  overflow: hidden;
+}
+
+.contrast-summary {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  outline: none;
+}
+
+.contrast-summary:focus-visible {
+  outline: 2px solid var(--ar-focus, Highlight);
+}
+
+.contrast-table-wrapper {
+  overflow-x: auto;
+  padding: 0.5rem 1rem 1rem 1rem;
+}
+
+.contrast-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.contrast-table th,
+.contrast-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--ar-border, GrayText);
+}
+
+.contrast-table th {
+  font-weight: 600;
+  color: var(--ar-text-secondary, GrayText);
+  background-color: var(--ar-layer-2, ButtonFace);
+}
+
+.pass-badge {
+  color: var(--ar-positive, CanvasText);
+  font-weight: 700;
+}
+
+.fail-badge {
+  color: var(--ar-critical, CanvasText);
+  font-weight: 700;
+}

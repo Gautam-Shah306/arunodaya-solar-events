@@ -34,8 +34,21 @@
   - `src/snapshot.ts`: Schema v1 definitions (`SnapshotV1`, `DayRecord`, `MoonEvent`, `SnapshotLocation`, `SCHEMA_VERSIONS`).
   - `src/validate.ts`: Hand-written, zero-dependency validation suite accumulating path-annotated `ValidationIssue` entries.
   - `src/migrate.ts`: Snapshot schema version migration pipeline.
-- `packages/themes` (`@arunodaya/themes`): Design tokens, theme definitions, contrast guarantees.
-- `apps/app` (`@arunodaya/app`): Web/PWA application shell and future Capacitor host.
+- `packages/themes` (`@arunodaya/themes`): Design tokens, theme definitions, contrast guarantees, colour maths, and widget palettes. **Architectural Rule**: The themes package imports nothing outside itself (no DOM globals, no system clock, no imports from contracts or engine).
+  - `src/types.ts`: Semantic token names (23 tokens), widget token names (12 tokens), theme definitions, and theme choice types.
+  - `src/color.ts`: Pure colour maths: hex parsing, relative luminance (WCAG sRGB), contrast ratio, HSL, CIE L*a*b*, CIE76 Delta E, and hue distance.
+  - `src/contrast-spec.ts`: Typed contrast specification checks across token and widget scopes.
+  - `src/contrast.ts`: Theme evaluator returning per-check contrast results and pairwise canvas distinctness evaluator.
+  - `src/registry.ts`: Ten theme definitions registry, ID lists, system theme resolution (`light` for light mode, `pure-dark` for dark mode), parser, and serializer.
+  - `src/css.ts`: CSS custom property generator (`--ar-*`) and canvas meta color extractor.
+  - `src/android.ts`: Signed 32-bit ARGB integer conversion (`toAndroidColorInt`) and widget palette conversion for Android Glance/RemoteViews.
+  - `src/preview-model.ts`: Pure preview model builder (`buildThemePreviewModel`) for test swatches, contrast tables, and static sample UI.
+  - `src/themes/`: Individual theme definition files (4 built-in themes, 6 custom pack themes).
+- `apps/app` (`@arunodaya/app`): Web/PWA application shell, theme application helper, and themes gallery review page.
+  - `src/theme/apply-theme.ts`: Runtime CSP-compliant theme application helper via CSSOM (`element.style.setProperty`), setting `--ar-*` custom properties and `data-theme`.
+  - `themes.html`: Standalone review gallery page for visual inspection of all ten themes across viewports, with dynamic "Match system" preview and contrast status tables.
+  - `src/themes-gallery.ts`: Client script powering the review gallery.
+  - `src/themes.css`: Scoped gallery styling referencing only `--ar-*` tokens with system-colour fallbacks.
 - `tools`: Monorepo build, verification, typechecking, and invariants enforcement utilities.
 
 ## Dependency Rules
@@ -43,7 +56,7 @@
 ```text
 packages/engine    --> relative modules, @arunodaya/contracts, and astronomy-engine (strictly inside src/astro/)
 packages/contracts --> relative modules only
-packages/themes    --> relative modules, @arunodaya/contracts
+packages/themes    --> relative modules only (imports nothing outside itself)
 apps/app           --> all workspace packages (@arunodaya/*)
 tools              --> standalone Node scripts; cannot be imported by runtime packages
 ```

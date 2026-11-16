@@ -97,7 +97,10 @@ describe('INV-LAYERS', () => {
         'packages/engine/src/astro/test.ts': "import * as Astronomy from 'astronomy-engine';",
       },
       (root) => {
-        const { findings } = runInvariants({ root, config: configWithAllowance });
+        const { findings } = runInvariants({
+          root,
+          config: configWithAllowance,
+        });
         const layerFindings = findings.filter((f) => f.rule === 'INV-LAYERS');
         expect(layerFindings).toHaveLength(0);
       },
@@ -122,7 +125,10 @@ describe('INV-LAYERS', () => {
         'packages/engine/src/clock.ts': "import * as Astronomy from 'astronomy-engine';",
       },
       (root) => {
-        const { findings } = runInvariants({ root, config: configWithAllowance });
+        const { findings } = runInvariants({
+          root,
+          config: configWithAllowance,
+        });
         const layerFindings = findings.filter((f) => f.rule === 'INV-LAYERS');
         expect(layerFindings.length).toBeGreaterThanOrEqual(1);
         expect(layerFindings[0]?.message).toContain('Engine layer violation');
@@ -148,7 +154,10 @@ describe('INV-LAYERS', () => {
         'packages/contracts/src/bad.ts': "import * as Astronomy from 'astronomy-engine';",
       },
       (root) => {
-        const { findings } = runInvariants({ root, config: configWithAllowance });
+        const { findings } = runInvariants({
+          root,
+          config: configWithAllowance,
+        });
         const layerFindings = findings.filter((f) => f.rule === 'INV-LAYERS');
         expect(layerFindings.length).toBeGreaterThanOrEqual(1);
         expect(layerFindings[0]?.message).toContain('Contracts layer violation');
@@ -174,7 +183,10 @@ describe('INV-LAYERS', () => {
         'packages/engine/src/astro/other.ts': "import suncalc from 'suncalc';",
       },
       (root) => {
-        const { findings } = runInvariants({ root, config: configWithAllowance });
+        const { findings } = runInvariants({
+          root,
+          config: configWithAllowance,
+        });
         const layerFindings = findings.filter((f) => f.rule === 'INV-LAYERS');
         expect(layerFindings.length).toBeGreaterThanOrEqual(1);
         expect(layerFindings[0]?.message).toContain('Engine layer violation');
@@ -202,6 +214,22 @@ describe('INV-LAYERS', () => {
         expect(() => runInvariants({ root, config: invalidConfig })).toThrow(
           /requires a reason of at least 10 characters/,
         );
+      },
+    );
+  });
+
+  it('INV-LAYERS flags themes importing contracts or using DOM globals', async () => {
+    await makeTree(
+      {
+        'packages/themes/src/bad.ts':
+          'import { Result } from "@arunodaya/contracts"; export const w = window.innerWidth;',
+      },
+      (root) => {
+        const { findings } = runInvariants({ root, config });
+        const layerFindings = findings.filter((f) => f.rule === 'INV-LAYERS');
+        expect(layerFindings.length).toBeGreaterThanOrEqual(2);
+        expect(layerFindings[0]?.message).toContain('Themes layer violation');
+        expect(layerFindings[1]?.message).toContain('Host/DOM global');
       },
     );
   });

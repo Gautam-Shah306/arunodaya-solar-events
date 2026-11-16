@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import type { Result } from '../../../contracts/src/result.js';
+import type { AstroDay, AstroError, Observer } from '../../src/astro/types.js';
 import { istDateToStartMs, MS_PER_DAY } from '../../src/time/ist.js';
 import { computeAstroDay } from '../../src/astro/astro-day.js';
 
@@ -55,25 +57,43 @@ export interface TolerancesConfig {
   };
 }
 
-export interface GoldenEvaluationResult {
-  totalDays: number;
-  maxErrors: {
-    sunSeconds: number;
-    solarNoonSeconds: number;
-    twilightSeconds: number;
-    moonSeconds: number;
-    phaseFraction: number;
-    illumination: number;
-    sunriseSeconds: number;
-    sunsetSeconds: number;
-    civilDawnSeconds: number;
-    civilDuskSeconds: number;
-    sun6MorningSeconds: number;
-    sun6EveningSeconds: number;
-  };
-  boundaryCases: Array<{ city: string; date: string; kind: string; time: number }>;
-  unmatchedAwayFromBoundary: Array<{ city: string; date: string; kind: string; time: number }>;
+export interface Maxima {
+  sunSeconds: number;
+  solarNoonSeconds: number;
+  twilightSeconds: number;
+  moonSeconds: number;
+  phaseFraction: number;
+  illumination: number;
+  sunriseSeconds: number;
+  sunsetSeconds: number;
+  civilDawnSeconds: number;
+  civilDuskSeconds: number;
+  sun6MorningSeconds: number;
+  sun6EveningSeconds: number;
 }
+
+export interface GoldenEvaluationResult {
+  cityDays: number;
+  totalDays: number;
+  eventsCompared: number;
+  maxima: Maxima;
+  maxErrors: Maxima;
+  boundaryCases: Array<{
+    city: string;
+    date: string;
+    kind: string;
+    time: number;
+  }>;
+  unmatched: Array<{ city: string; date: string; kind: string; time: number }>;
+  unmatchedAwayFromBoundary: Array<{
+    city: string;
+    date: string;
+    kind: string;
+    time: number;
+  }>;
+}
+
+export type AstroComputeFn = (observer: Observer, date: string) => Result<AstroDay, AstroError>;
 
 /**
  * Type guard for RefDataset structure.
@@ -135,6 +155,7 @@ export function loadTolerancesConfig(customPath?: string): TolerancesConfig {
 export function evaluateGoldenDays(
   days: readonly RefDay[],
   cities: readonly RefCity[],
+  computeFn: AstroComputeFn = computeAstroDay,
 ): GoldenEvaluationResult {
   const citiesMap = new Map<string, RefCity>(cities.map((c) => [c.id, c]));
 
@@ -148,8 +169,14 @@ export function evaluateGoldenDays(
   let maxMoon = 0;
   let maxPhase = 0;
   let maxIllum = 0;
+  let eventsCompared = 0;
 
-  const boundaryCases: Array<{ city: string; date: string; kind: string; time: number }> = [];
+  const boundaryCases: Array<{
+    city: string;
+    date: string;
+    kind: string;
+    time: number;
+  }> = [];
   const unmatchedAwayFromBoundary: Array<{
     city: string;
     date: string;
@@ -166,9 +193,9 @@ export function evaluateGoldenDays(
       throw new Error(`Unknown city id: ${day.c}`);
     }
 
-    const res = computeAstroDay({ lat: city.lat, lon: city.lon }, day.d);
+    const res = computeFn({ lat: city.lat, lon: city.lon }, day.d);
     if (!res.ok) {
-      throw new Error(`computeAstroDay failed for ${day.c} on ${day.d}: ${res.error.message}`);
+      throw new Error(`computeFn failed for ${day.c} on ${day.d}: ${res.error.message}`);
     }
 
     const prov = res.value;
@@ -193,6 +220,8 @@ export function evaluateGoldenDays(
     const illumErr = Math.abs(prov.moonPhase.illumination - day.moonPhase.illumination);
     maxPhase = Math.max(maxPhase, phaseErr);
     maxIllum = Math.max(maxIllum, illumErr);
+
+    eventsCompared += 9; // 7 solar + 2 lunar phase/illumination
 
     // Resolve day bounds
     const dayStartRes = istDateToStartMs(day.d);
@@ -221,10 +250,16 @@ export function evaluateGoldenDays(
       }
       if (bestIdx >= 0) {
         maxMoon = Math.max(maxMoon, bestDiff / 1000);
+        eventsCompared += 1;
         provRise.splice(bestIdx, 1);
       } else {
         if (isNearBoundary(refRise)) {
-          boundaryCases.push({ city: day.c, date: day.d, kind: 'moonrise_ref', time: refRise });
+          boundaryCases.push({
+            city: day.c,
+            date: day.d,
+            kind: 'moonrise_ref',
+            time: refRise,
+          });
         } else {
           unmatchedAwayFromBoundary.push({
             city: day.c,
@@ -239,7 +274,12 @@ export function evaluateGoldenDays(
     // Remaining computed moonrise
     for (const extraRise of provRise) {
       if (isNearBoundary(extraRise)) {
-        boundaryCases.push({ city: day.c, date: day.d, kind: 'moonrise_prov', time: extraRise });
+        boundaryCases.push({
+          city: day.c,
+          date: day.d,
+          kind: 'moonrise_prov',
+          time: extraRise,
+        });
       } else {
         unmatchedAwayFromBoundary.push({
           city: day.c,
@@ -266,10 +306,16 @@ export function evaluateGoldenDays(
       }
       if (bestIdx >= 0) {
         maxMoon = Math.max(maxMoon, bestDiff / 1000);
+        eventsCompared += 1;
         provSet.splice(bestIdx, 1);
       } else {
         if (isNearBoundary(refSet)) {
-          boundaryCases.push({ city: day.c, date: day.d, kind: 'moonset_ref', time: refSet });
+          boundaryCases.push({
+            city: day.c,
+            date: day.d,
+            kind: 'moonset_ref',
+            time: refSet,
+          });
         } else {
           unmatchedAwayFromBoundary.push({
             city: day.c,
@@ -283,7 +329,12 @@ export function evaluateGoldenDays(
 
     for (const extraSet of provSet) {
       if (isNearBoundary(extraSet)) {
-        boundaryCases.push({ city: day.c, date: day.d, kind: 'moonset_prov', time: extraSet });
+        boundaryCases.push({
+          city: day.c,
+          date: day.d,
+          kind: 'moonset_prov',
+          time: extraSet,
+        });
       } else {
         unmatchedAwayFromBoundary.push({
           city: day.c,
@@ -298,23 +349,29 @@ export function evaluateGoldenDays(
   const twilightSeconds = Math.max(maxCivilDawn, maxCivilDusk, maxSun6M, maxSun6E);
   const sunSeconds = Math.max(maxSunrise, maxSunset, twilightSeconds);
 
+  const maxima: Maxima = {
+    sunSeconds,
+    solarNoonSeconds: maxSolarNoon,
+    twilightSeconds,
+    moonSeconds: maxMoon,
+    phaseFraction: maxPhase,
+    illumination: maxIllum,
+    sunriseSeconds: maxSunrise,
+    sunsetSeconds: maxSunset,
+    civilDawnSeconds: maxCivilDawn,
+    civilDuskSeconds: maxCivilDusk,
+    sun6MorningSeconds: maxSun6M,
+    sun6EveningSeconds: maxSun6E,
+  };
+
   return {
+    cityDays: days.length,
     totalDays: days.length,
-    maxErrors: {
-      sunSeconds,
-      solarNoonSeconds: maxSolarNoon,
-      twilightSeconds,
-      moonSeconds: maxMoon,
-      phaseFraction: maxPhase,
-      illumination: maxIllum,
-      sunriseSeconds: maxSunrise,
-      sunsetSeconds: maxSunset,
-      civilDawnSeconds: maxCivilDawn,
-      civilDuskSeconds: maxCivilDusk,
-      sun6MorningSeconds: maxSun6M,
-      sun6EveningSeconds: maxSun6E,
-    },
+    eventsCompared,
+    maxima,
+    maxErrors: maxima,
     boundaryCases,
+    unmatched: unmatchedAwayFromBoundary,
     unmatchedAwayFromBoundary,
   };
 }

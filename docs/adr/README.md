@@ -36,3 +36,4 @@ This directory documents key architectural decisions for Arunodaya.
 - [0008: Reference data and astronomy engine selection](0008-reference-data-and-engine-selection.md)
 - [0009: Astronomy provider boundary and encapsulation](0009-astronomy-provider-boundary.md)
 - [0010: Snapshot builder, shared tolerances, and golden tests](0010-snapshot-builder-and-golden-tests.md)
+- [0011: Theme system architecture and contrast gate](0011-theme-system.md)

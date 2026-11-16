@@ -35,7 +35,9 @@ export function checkInvLayers(root, relPath, config = {}) {
   const isThemes = relPath.startsWith('packages/themes/');
   const isPackage = relPath.startsWith('packages/');
   const isPurePackageSrc =
-    relPath.startsWith('packages/engine/src/') || relPath.startsWith('packages/contracts/src/');
+    relPath.startsWith('packages/engine/src/') ||
+    relPath.startsWith('packages/contracts/src/') ||
+    relPath.startsWith('packages/themes/src/');
 
   const allowedContractsPackages = new Set(config?.contractsAllowedPackages || []);
 
@@ -109,17 +111,15 @@ export function checkInvLayers(root, relPath, config = {}) {
       }
     }
 
-    // Themes: relative modules and @arunodaya/contracts only
+    // Themes: relative modules only
     if (isThemes) {
       const isRelative = specifier.startsWith('.');
-      const isContractsImport =
-        specifier === '@arunodaya/contracts' || specifier.startsWith('@arunodaya/contracts/');
-      if (!isRelative && !isContractsImport) {
+      if (!isRelative) {
         findings.push({
           rule: 'INV-LAYERS',
           path: relPath,
           line: lineNum,
-          message: `Themes layer violation: themes may only import relative modules and @arunodaya/contracts ('${specifier}')`,
+          message: `Themes layer violation: themes may only import relative modules ('${specifier}')`,
         });
       }
     }
