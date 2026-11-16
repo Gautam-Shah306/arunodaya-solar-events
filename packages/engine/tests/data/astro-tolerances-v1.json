@@ -1,0 +1,17 @@
+{
+  "regressionGuard": {
+    "extendedSeconds": 45,
+    "moonSeconds": 15,
+    "solarNoonSeconds": 2,
+    "sunSeconds": 5
+  },
+  "tolerances": {
+    "crossCheckMoonSeconds": 90,
+    "crossCheckSunSeconds": 30,
+    "illumination": 0.005,
+    "moonSeconds": 120,
+    "phaseFraction": 0.003,
+    "solarNoonSeconds": 30,
+    "sunSeconds": 60
+  }
+}

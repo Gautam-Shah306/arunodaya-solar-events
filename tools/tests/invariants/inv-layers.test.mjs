@@ -78,4 +78,131 @@ describe('INV-LAYERS', () => {
       },
     );
   });
+
+  it('INV-LAYERS allows astronomy-engine inside packages/engine/src/astro', async () => {
+    const configWithAllowance = {
+      requiredDocs: [],
+      layers: {
+        externalAllow: [
+          {
+            package: 'astronomy-engine',
+            path: 'packages/engine/src/astro/',
+            reason: 'astronomy provider boundary (ADR 0009)',
+          },
+        ],
+      },
+    };
+    await makeTree(
+      {
+        'packages/engine/src/astro/test.ts': "import * as Astronomy from 'astronomy-engine';",
+      },
+      (root) => {
+        const { findings } = runInvariants({ root, config: configWithAllowance });
+        const layerFindings = findings.filter((f) => f.rule === 'INV-LAYERS');
+        expect(layerFindings).toHaveLength(0);
+      },
+    );
+  });
+
+  it('INV-LAYERS flags astronomy-engine elsewhere in the engine', async () => {
+    const configWithAllowance = {
+      requiredDocs: [],
+      layers: {
+        externalAllow: [
+          {
+            package: 'astronomy-engine',
+            path: 'packages/engine/src/astro/',
+            reason: 'astronomy provider boundary (ADR 0009)',
+          },
+        ],
+      },
+    };
+    await makeTree(
+      {
+        'packages/engine/src/clock.ts': "import * as Astronomy from 'astronomy-engine';",
+      },
+      (root) => {
+        const { findings } = runInvariants({ root, config: configWithAllowance });
+        const layerFindings = findings.filter((f) => f.rule === 'INV-LAYERS');
+        expect(layerFindings.length).toBeGreaterThanOrEqual(1);
+        expect(layerFindings[0]?.message).toContain('Engine layer violation');
+      },
+    );
+  });
+
+  it('INV-LAYERS flags astronomy-engine imported by contracts', async () => {
+    const configWithAllowance = {
+      requiredDocs: [],
+      layers: {
+        externalAllow: [
+          {
+            package: 'astronomy-engine',
+            path: 'packages/engine/src/astro/',
+            reason: 'astronomy provider boundary (ADR 0009)',
+          },
+        ],
+      },
+    };
+    await makeTree(
+      {
+        'packages/contracts/src/bad.ts': "import * as Astronomy from 'astronomy-engine';",
+      },
+      (root) => {
+        const { findings } = runInvariants({ root, config: configWithAllowance });
+        const layerFindings = findings.filter((f) => f.rule === 'INV-LAYERS');
+        expect(layerFindings.length).toBeGreaterThanOrEqual(1);
+        expect(layerFindings[0]?.message).toContain('Contracts layer violation');
+      },
+    );
+  });
+
+  it('INV-LAYERS flags another third-party package inside the astro directory', async () => {
+    const configWithAllowance = {
+      requiredDocs: [],
+      layers: {
+        externalAllow: [
+          {
+            package: 'astronomy-engine',
+            path: 'packages/engine/src/astro/',
+            reason: 'astronomy provider boundary (ADR 0009)',
+          },
+        ],
+      },
+    };
+    await makeTree(
+      {
+        'packages/engine/src/astro/other.ts': "import suncalc from 'suncalc';",
+      },
+      (root) => {
+        const { findings } = runInvariants({ root, config: configWithAllowance });
+        const layerFindings = findings.filter((f) => f.rule === 'INV-LAYERS');
+        expect(layerFindings.length).toBeGreaterThanOrEqual(1);
+        expect(layerFindings[0]?.message).toContain('Engine layer violation');
+      },
+    );
+  });
+
+  it('INV-LAYERS external allowance without a reason is rejected', async () => {
+    const invalidConfig = {
+      requiredDocs: [],
+      layers: {
+        externalAllow: [
+          {
+            package: 'astronomy-engine',
+            path: 'packages/engine/src/astro/',
+          },
+        ],
+      },
+    };
+    await makeTree(
+      {
+        'packages/engine/src/astro/test.ts': "import * as Astronomy from 'astronomy-engine';",
+      },
+      (root) => {
+        expect(() => runInvariants({ root, config: invalidConfig })).toThrow(
+          /requires a reason of at least 10 characters/,
+        );
+      },
+    );
+  });
 });

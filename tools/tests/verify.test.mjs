@@ -1,7 +1,24 @@
+import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { runVerify, stripAnsi } from '../verify.mjs';
+import { runVerify, stripAnsi, VERIFY_STEPS } from '../verify.mjs';
 
 describe('Verification pipeline runner and output formatting', () => {
+  it('verify runs the golden tests after the timezone matrix', () => {
+    const tzIdx = VERIFY_STEPS.indexOf('test:tz');
+    const goldenIdx = VERIFY_STEPS.indexOf('test:golden');
+    expect(tzIdx).toBeGreaterThanOrEqual(0);
+    expect(goldenIdx).toBe(tzIdx + 1);
+    expect(VERIFY_STEPS.length).toBe(11);
+  });
+
+  it('test:golden is excluded from the coverage run', () => {
+    const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    const coverageCmd = pkg.scripts['test:coverage'];
+    expect(coverageCmd).toBeDefined();
+    expect(coverageCmd).not.toContain('golden');
+    expect(coverageCmd).toContain('--project=tools');
+    expect(coverageCmd).toContain('--project=packages');
+  });
   it('verify prints the tail of a failing step after the summary', () => {
     const logs = [];
     const logger = (msg) => logs.push(String(msg));

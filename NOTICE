@@ -1,11 +1,11 @@
 Arunodaya
 Copyright (c) 2026 Gautam Shah
 
-This foundation build uses development-time tooling only. It contains zero third-party runtime code or runtime dependencies.
+Runtime dependencies:
+- astronomy-engine (version 2.1.19, MIT): Production astronomy engine encapsulated inside packages/engine/src/astro/ for solar and lunar calculations across India (ADR 0008, ADR 0009).
 
 Development Tooling:
 - fast-check (version 4.10.2, MIT): Property-based testing framework used for property tests verifying display rounding, countdown bounds, and temporal invariants.
-- astronomy-engine (version 2.1.19, MIT): Astronomical calculation engine evaluated during engine selection benchmark (selected winner).
 - suncalc (version 2.1.4, BSD-2-Clause): Astronomical calculation library evaluated during engine selection benchmark.
 
-A comprehensive inventory of third-party assets, licences, and font attributions will be generated during final release hardening in Prompt 12.
+A comprehensive inventory of third-party assets, licences, and font attributions will be generated during final release hardening in Prompt 13.

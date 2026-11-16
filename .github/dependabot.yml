@@ -11,6 +11,10 @@ updates:
       - dependency-name: 'typescript'
         update-types: ['version-update:semver-major']
     groups:
+      # Pull requests for astronomy-engine must pass test:golden before merge to guard against calculation drift
+      astronomy:
+        patterns:
+          - 'astronomy-engine'
       dev-dependencies:
         patterns:
           - '*'

@@ -4,6 +4,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   buildReferenceDockerArgs,
+  extractForwardedFlags,
   readPythonImageFromToolchain,
 } from '../../lib/reference-docker.mjs';
 
@@ -79,5 +80,35 @@ describe('reference-docker', () => {
     expect(shIndex).toBeGreaterThanOrEqual(0);
     const shCommand = args[shIndex + 1];
     expect(shCommand).toContain('--primary ephem');
+  });
+
+  it('extractForwardedFlags handles arrays without double dash', () => {
+    expect(extractForwardedFlags(['--flag', 'val'])).toEqual(['--flag', 'val']);
+  });
+
+  it('readPythonImageFromToolchain throws when file is missing', () => {
+    expect(() => readPythonImageFromToolchain('nonexistent-path.md')).toThrow(
+      /Toolchain document not found/,
+    );
+  });
+
+  it('buildReferenceDockerArgs throws when image cannot be resolved', () => {
+    expect(() =>
+      buildReferenceDockerArgs({
+        repoRoot: 'C:/repo',
+        pythonImage: '',
+        toolchainPath: 'nonexistent-path.md',
+      }),
+    ).toThrow();
+  });
+
+  it('buildReferenceDockerArgs throws if arg contains double quote', () => {
+    expect(() =>
+      buildReferenceDockerArgs({
+        repoRoot: 'C:/repo',
+        pythonImage: 'python:3.12-slim@sha256:1234',
+        forwardedFlags: ['--bad="flag"'],
+      }),
+    ).toThrow(/contains forbidden double quote/);
   });
 });

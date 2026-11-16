@@ -27,6 +27,14 @@ export default defineConfig({
           testTimeout: 180000,
         },
       },
+      {
+        test: {
+          name: 'golden',
+          environment: 'node',
+          include: ['packages/engine/tests-golden/**/*.test.ts'],
+          testTimeout: 300000,
+        },
+      },
     ],
     coverage: {
       provider: 'v8',

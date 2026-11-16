@@ -27,6 +27,14 @@ All dependencies are exact-pinned devDependencies located at the repository root
 | `astronomy-engine`    | `2.1.19`  | MIT          | Astronomical calculation benchmark candidate (winning engine) |
 | `suncalc`             | `2.1.4`   | BSD-2-Clause | Astronomical calculation benchmark candidate                  |
 
+## Production Runtime Dependencies
+
+The application core minimizes runtime dependencies to guarantee long-term stability and auditability. The only third-party runtime package in `packages/engine` is:
+
+| Package            | Version  | Licence | Scope & Justification                                                                                                                                                                                      |
+| :----------------- | :------- | :------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `astronomy-engine` | `2.1.19` | MIT     | Encapsulated under `packages/engine/src/astro/` via path-scoped allowance (`INV-LAYERS`). Evaluated in Prompt 3 benchmark; achieves 1.6s max sun accuracy and 7.2s max moon accuracy (ADR 0008, ADR 0009). |
+
 ### TypeScript Version Pin Rationale
 
 `typescript` is strictly pinned to `6.0.3` because `typescript-eslint@8.72.2` declares a peer dependency constraint requiring a TypeScript version below `6.1.0` (`>=4.8.4 <6.1.0`). Bumping TypeScript to 7+ (as attempted by Dependabot) causes `npm ci` resolution failures. This pin will be revisited and upgraded when `typescript-eslint` officially adds support for a newer major version.
@@ -149,8 +157,15 @@ git commit -m "feat: description"
 
 Dependabot runs weekly checks for `npm` and `github-actions`.
 
+- **Astronomy Group**: `astronomy-engine` updates are grouped under `astronomy`. Pull requests updating this package must pass `npm run test:golden` before merging to prevent calculation drift.
 - **TypeScript Major Ignore**: Dependabot is configured to ignore `version-update:semver-major` for `typescript` because `typescript-eslint@8.72.2` requires TypeScript `<6.1.0`. Once `typescript-eslint` supports TypeScript 7+, this rule will be removed.
 - **PR Rate Limiting**: `open-pull-requests-limit: 5` is configured for both ecosystems to prevent pull request storms and ensure reviewable updates.
+
+## Golden Test Suite and Nightly Automation
+
+- **Golden Test Runner**: `npm run test:golden` (`vitest run --project=golden`, 300 s timeout) verifies 2,814 city-days against `packages/engine/tests/data/astro-reference-v1.json` (Skyfield with NASA JPL DE440s).
+- **Shared Tolerances**: Benchmark tolerances and tight regression guards are defined once in `packages/engine/tests/data/astro-tolerances-v1.json`.
+- **Nightly Workflow (`.github/workflows/nightly.yml`)**: Daily automated run at 02:17 UTC executing `test:golden`, `verify:invariants`, and `npm audit --omit=dev --audit-level=high`.
 
 ## Android Tooling Policy
 

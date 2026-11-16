@@ -43,6 +43,7 @@ npm run verify:linux
 | `test`               | `vitest run --project=tools --project=packages`            | Run unit tests for tools and packages                 |
 | `test:coverage`      | `vitest run --coverage --project=tools --project=packages` | Enforce >=90% test coverage thresholds                |
 | `test:tz`            | `node tools/test-tz.mjs`                                   | Run unit tests across 6 timezones (UTC, IST, etc.)    |
+| `test:golden`        | `vitest run --project=golden`                              | Run full 2,814 city-day golden regression tests       |
 | `build:pages`        | `node tools/build-app.mjs --target=pages`                  | Build web application for GitHub Pages                |
 | `build:android`      | `node tools/build-app.mjs --target=android`                | Build web application for Android WebView container   |
 | `test:build`         | `vitest run --project=build`                               | Verify built output integrity and CSP headers         |
@@ -95,10 +96,15 @@ arunodaya-solar-events/
 
 ## CI/CD and Automation
 
-- **Quality Suite (`.github/workflows/ci.yml`)**: Continuous integration running the 9-step verification pipeline on push and pull request.
+- **Quality Suite (`.github/workflows/ci.yml`)**: Continuous integration running the 11-step verification pipeline on push and pull request.
+- **Nightly Golden Suite (`.github/workflows/nightly.yml`)**: Scheduled daily verification (02:17 UTC) running full golden tests (`test:golden`), invariant validation, and high-severity production dependency security audits (`npm audit --omit=dev --audit-level=high`).
 - **Code Scanning**: CodeQL analysis runs through GitHub's default setup (Settings > Code security) with no custom workflow in the repository; a custom workflow must not be added while the default setup is on.
 - **Pages Deployment (`.github/workflows/pages.yml`)**: Automated deployment of the static web app to GitHub Pages.
-- **Dependabot (`.github/dependabot.yml`)**: Automated dependency scanning with major-version pin protection.
+- **Dependabot (`.github/dependabot.yml`)**: Automated dependency scanning with dedicated grouping for `astronomy-engine` and major-version pin protection.
+
+## Astronomy Provider and Golden Verification
+
+The core astronomical calculations are provided by `astronomy-engine` (MIT, version 2.1.19), encapsulated under `packages/engine/src/astro/` via a path-scoped dependency allowance (`INV-LAYERS`). All astronomical calculations are verified against a committed reference dataset of 2,814 city-days (`packages/engine/tests/data/astro-reference-v1.json`) generated using NASA JPL DE440s ephemerides via Skyfield with PyEphem cross-checking. Accuracy tolerances and tight regression guards are defined once in `packages/engine/tests/data/astro-tolerances-v1.json`.
 
 ## GitHub Pages Deployment
 

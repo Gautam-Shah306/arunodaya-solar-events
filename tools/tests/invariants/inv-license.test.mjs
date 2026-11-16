@@ -79,4 +79,26 @@ describe('INV-LICENSE', () => {
       },
     );
   });
+
+  it('INV-LICENSE accepts astronomy-engine as a production dependency under MIT', async () => {
+    await makeTree(
+      {
+        'package-lock.json': JSON.stringify({
+          name: 'test',
+          lockfileVersion: 3,
+          packages: {
+            'node_modules/astronomy-engine': {
+              version: '2.1.19',
+              license: 'MIT',
+            },
+          },
+        }),
+      },
+      (root) => {
+        const { findings } = runInvariants({ root, config });
+        const licFindings = findings.filter((f) => f.rule === 'INV-LICENSE');
+        expect(licFindings).toHaveLength(0);
+      },
+    );
+  });
 });

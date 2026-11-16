@@ -225,4 +225,116 @@ describe('astro-benchmark', () => {
     expect(advice.suncalc.maxYear).toBe(2035);
     expect(advice.suncalc.sentence).toContain('after 2035');
   });
+
+  it('benchmark matches empty or null events cleanly', () => {
+    expect(matchEvents(null, null).pairs).toHaveLength(0);
+    expect(matchEvents(100, null).unmatchedRef).toEqual([100]);
+    expect(matchEvents(null, 200).extraCand).toEqual([200]);
+  });
+
+  it('errorStats handles empty input gracefully', () => {
+    expect(errorStats([])).toEqual({ n: 0, maxAbs: 0, mean: 0, p95: 0 });
+  });
+
+  it('decideEngine selects single passing candidate', () => {
+    const scores = {
+      candA: {
+        allPassed: true,
+        maxSunError: 3.5,
+      },
+      candB: {
+        allPassed: false,
+        maxSunError: 99.0,
+      },
+    };
+    const res = decideEngine(scores);
+    expect(res.chosen).toBe('candA');
+    expect(res.reasons[0]).toContain('candB failed');
+  });
+
+  it('decideEngine picks lowest maximum sun error when multiple candidates pass', () => {
+    const scores = {
+      candA: {
+        allPassed: true,
+        maxSunError: 2.0,
+      },
+      candB: {
+        allPassed: true,
+        maxSunError: 8.0,
+      },
+    };
+    const res = decideEngine(scores);
+    expect(res.chosen).toBe('candA');
+    expect(res.reasons.some((r) => r.includes('lowest maximum sun error'))).toBe(true);
+  });
+
+  it('decideEngine tiebreak when astronomy-engine is not in the tie', () => {
+    const scores = {
+      candX: {
+        allPassed: true,
+        maxSunError: 2.1,
+      },
+      candY: {
+        allPassed: true,
+        maxSunError: 2.3,
+      },
+    };
+    const res = decideEngine(scores);
+    expect(res.chosen).toBe('candX');
+  });
+
+  it('scoreCandidate populates extendedByYear statistics for extended set', () => {
+    const dStr = '2035-03-20';
+    const dayStart = istDayStartMs(dStr);
+    const noon = dayStart + 12 * 3600 * 1000;
+    const ds = {
+      cities: [
+        {
+          id: 'rajkot',
+          name: 'Rajkot',
+          lat: 22.3,
+          lon: 70.8,
+          elevationM: 130,
+          role: 'core',
+        },
+      ],
+      days: [
+        {
+          c: 'rajkot',
+          d: dStr,
+          s: 'extended',
+          sunrise: noon - 6 * 3600 * 1000,
+          sunset: noon + 6 * 3600 * 1000,
+          solarNoon: noon,
+          civilDawn: noon - 6.5 * 3600 * 1000,
+          civilDusk: noon + 6.5 * 3600 * 1000,
+          sun6Morning: noon - 5.5 * 3600 * 1000,
+          sun6Evening: noon + 5.5 * 3600 * 1000,
+          moonrise: [noon - 2 * 3600 * 1000],
+          moonset: [noon + 2 * 3600 * 1000],
+          moonPhase: { fraction: 0.2, illumination: 0.3 },
+        },
+      ],
+    };
+
+    const cand = {
+      id: 'test-cand',
+      computeDay: () => ({
+        sunrise: noon - 6 * 3600 * 1000 + 5000,
+        sunset: noon + 6 * 3600 * 1000 + 5000,
+        solarNoon: noon + 1000,
+        civilDawn: noon - 6.5 * 3600 * 1000,
+        civilDusk: noon + 6.5 * 3600 * 1000,
+        sun6Morning: noon - 5.5 * 3600 * 1000,
+        sun6Evening: noon + 5.5 * 3600 * 1000,
+        moonrise: [noon - 2 * 3600 * 1000],
+        moonset: [noon + 2 * 3600 * 1000],
+        moonPhase: { fraction: 0.2, illumination: 0.3 },
+      }),
+    };
+
+    const score = scoreCandidate(ds, cand, TOLERANCES);
+    expect(score.extendedByYear['2035']).toBeDefined();
+    expect(score.extendedByYear['2035'].length).toBeGreaterThan(0);
+  });
 });

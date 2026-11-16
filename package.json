@@ -21,6 +21,7 @@
     "test": "vitest run --project=tools --project=packages",
     "test:coverage": "vitest run --coverage --project=tools --project=packages",
     "test:tz": "node tools/test-tz.mjs",
+    "test:golden": "vitest run --project=golden",
     "test:build": "vitest run --project=build",
     "build:pages": "node tools/build-app.mjs --target=pages",
     "build:android": "node tools/build-app.mjs --target=android",

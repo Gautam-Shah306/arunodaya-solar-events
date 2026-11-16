@@ -62,18 +62,36 @@ export function checkInvLayers(root, relPath, config = {}) {
       }
     }
 
-    // Engine: relative modules and @arunodaya/contracts only
+    // Engine: relative modules, @arunodaya/contracts, or path-scoped external allowances
     if (isEngine) {
       const isRelative = specifier.startsWith('.');
       const isContractsImport =
         specifier === '@arunodaya/contracts' || specifier.startsWith('@arunodaya/contracts/');
       if (!isRelative && !isContractsImport) {
-        findings.push({
-          rule: 'INV-LAYERS',
-          path: relPath,
-          line: lineNum,
-          message: `Engine layer violation: engine may only import relative modules and @arunodaya/contracts ('${specifier}')`,
-        });
+        const externalAllow = config?.layers?.externalAllow || [];
+        const isAllowed = externalAllow.some(
+          (/** @type {{ package: string, path: string }} */ entry) => {
+            if (entry.package !== specifier && !specifier.startsWith(entry.package + '/')) {
+              return false;
+            }
+            if (!entry.path.startsWith('packages/engine/')) {
+              return false;
+            }
+            if (entry.path.endsWith('/')) {
+              return relPath.startsWith(entry.path);
+            }
+            return relPath === entry.path;
+          },
+        );
+
+        if (!isAllowed) {
+          findings.push({
+            rule: 'INV-LAYERS',
+            path: relPath,
+            line: lineNum,
+            message: `Engine layer violation: engine may only import relative modules and @arunodaya/contracts ('${specifier}')`,
+          });
+        }
       }
     }
 

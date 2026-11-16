@@ -41,4 +41,26 @@ describe('astro candidates', () => {
       }
     }
   });
+
+  it('candidates compute all events across diverse seasons and extreme latitudes', () => {
+    const dates = ['2026-06-21', '2026-12-21', '2000-01-01', '2028-02-29'];
+    const cities = [
+      { id: 'leh', lat: 34.16, lon: 77.58, elevationM: 3500 },
+      { id: 'kanyakumari', lat: 8.08, lon: 77.54, elevationM: 10 },
+    ];
+
+    for (const city of cities) {
+      for (const d of dates) {
+        const resAstro = astronomyEngineAdapter.computeDay(city, d);
+        expect(resAstro.sunrise).toBeTypeOf('number');
+        expect(resAstro.sunset).toBeTypeOf('number');
+        expect(resAstro.solarNoon).toBeTypeOf('number');
+
+        const resSun = suncalcAdapter.computeDay(city, d);
+        expect(resSun.sunrise).toBeTypeOf('number');
+        expect(resSun.sunset).toBeTypeOf('number');
+        expect(resSun.solarNoon).toBeTypeOf('number');
+      }
+    }
+  });
 });

@@ -51,4 +51,18 @@ describe('INV-CLOCK', () => {
       },
     );
   });
+
+  it('INV-CLOCK still flags Date.now inside the astro directory', async () => {
+    await makeTree(
+      {
+        'packages/engine/src/astro/test.ts': 'export const t = Date.now();',
+      },
+      (root) => {
+        const { findings } = runInvariants({ root, config });
+        const clockFindings = findings.filter((f) => f.rule === 'INV-CLOCK');
+        expect(clockFindings.length).toBeGreaterThan(0);
+        expect(clockFindings[0]?.message).toContain('Date.now()');
+      },
+    );
+  });
 });

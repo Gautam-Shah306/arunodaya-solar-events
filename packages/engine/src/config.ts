@@ -49,6 +49,23 @@ export const SUPPORTED_YEARS = {
 } as const;
 
 /**
+ * Production astronomy computation engine identifier and version.
+ * (Decided per ADR 0008 and spec §3.2).
+ */
+export const ASTRONOMY_ENGINE = {
+  name: 'astronomy-engine',
+  version: '2.1.19',
+} as const;
+
+/**
+ * Astronomical accuracy tier thresholds.
+ * (Proposed per spec §3.2 and ADR 0009).
+ */
+export const ACCURACY = {
+  standardThroughYear: 2035,
+} as const;
+
+/**
  * Snapshot precomputation and expiration horizon policy.
  * (Proposed per spec §8.2 and §10.1).
  */
@@ -62,6 +79,11 @@ export const SNAPSHOT_POLICY = {
    * Future days precomputed ahead of the generation date (default 90).
    */
   daysAhead: 90,
+
+  /**
+   * Lookahead days past the last day for moon events (default 2).
+   */
+  moonLookaheadDays: 2,
 
   /**
    * Threshold in whole days before the horizon ends when status transitions to 'expiring' (7 days).

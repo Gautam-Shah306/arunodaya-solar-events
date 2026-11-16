@@ -33,6 +33,45 @@ export function validateConfig(config) {
     }
   }
 
+  if (config.layers !== undefined) {
+    if (!config.layers || typeof config.layers !== 'object') {
+      throw new Error('Config layers must be an object');
+    }
+    if (config.layers.externalAllow !== undefined) {
+      if (!Array.isArray(config.layers.externalAllow)) {
+        throw new Error('layers.externalAllow must be an array');
+      }
+      for (let i = 0; i < config.layers.externalAllow.length; i++) {
+        const entry = config.layers.externalAllow[i];
+        if (!entry || typeof entry !== 'object') {
+          throw new Error(`layers.externalAllow entry at index ${i} must be an object`);
+        }
+        if (!entry.package || typeof entry.package !== 'string') {
+          throw new Error(
+            `layers.externalAllow entry at index ${i} requires a non-empty package string`,
+          );
+        }
+        if (!entry.path || typeof entry.path !== 'string') {
+          throw new Error(
+            `layers.externalAllow entry at index ${i} requires a non-empty path string`,
+          );
+        }
+        const isDirPrefix = entry.path.endsWith('/');
+        const isExactFile = Boolean(entry.path.match(/\.[a-zA-Z0-9]+$/));
+        if (!isDirPrefix && !isExactFile) {
+          throw new Error(
+            `layers.externalAllow entry at index ${i} path must be an exact file or a directory prefix ending with a slash`,
+          );
+        }
+        if (!entry.reason || typeof entry.reason !== 'string' || entry.reason.trim().length < 10) {
+          throw new Error(
+            `layers.externalAllow entry for ${entry.package} at index ${i} requires a reason of at least 10 characters`,
+          );
+        }
+      }
+    }
+  }
+
   return true;
 }
 

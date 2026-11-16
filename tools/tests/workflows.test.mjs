@@ -33,4 +33,36 @@ describe('Workflow and Automation Configurations', () => {
       expect(content).toMatch(/env:\s+NO_COLOR:\s*'1'\s+FORCE_COLOR:\s*'0'/);
     }
   });
+
+  it('nightly workflow runs the golden tests on a schedule', () => {
+    const nightlyPath = path.join(repoRoot, '.github', 'workflows', 'nightly.yml');
+    expect(fs.existsSync(nightlyPath)).toBe(true);
+    const content = fs.readFileSync(nightlyPath, 'utf8');
+
+    expect(content).toContain("cron: '17 2 * * *'");
+    expect(content).toContain('workflow_dispatch:');
+    expect(content).toContain('npm run test:golden');
+    expect(content).toContain('npm run verify:invariants');
+    expect(content).toContain("NO_COLOR: '1'");
+    expect(content).toContain("FORCE_COLOR: '0'");
+    expect(content).toMatch(/permissions:\s+contents:\s+read/);
+  });
+
+  it('nightly workflow audits production dependencies', () => {
+    const nightlyPath = path.join(repoRoot, '.github', 'workflows', 'nightly.yml');
+    expect(fs.existsSync(nightlyPath)).toBe(true);
+    const content = fs.readFileSync(nightlyPath, 'utf8');
+
+    expect(content).toContain('npm audit --omit=dev --audit-level=high');
+  });
+
+  it('dependabot groups astronomy-engine separately', () => {
+    const dependabotPath = path.join(repoRoot, '.github', 'dependabot.yml');
+    expect(fs.existsSync(dependabotPath)).toBe(true);
+    const content = fs.readFileSync(dependabotPath, 'utf8');
+
+    expect(content).toContain('astronomy:');
+    expect(content).toContain("- 'astronomy-engine'");
+    expect(content).toContain('test:golden');
+  });
 });

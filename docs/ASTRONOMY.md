@@ -141,6 +141,63 @@ Median execution time across 3 runs for 92 consecutive days (2026-04-01 through 
 
 `astronomy-engine` is selected as the production astronomy engine for Arunodaya. It achieves sub-second accuracy across all solar events (max sun error 1.61s vs 60s tolerance, solar noon 0.30s vs 30s tolerance) and complete moon coverage (max error 7.23s vs 120s tolerance, 0 unmatched events), completely satisfying spec section 3.2.
 
+## Production Provider
+
+The production astronomy module lives under `packages/engine/src/astro/` (ADR 0009). It encapsulates `astronomy-engine` and exposes a pure, synchronous API for event calculations and multi-day snapshot building.
+
+### Core Functions
+
+- `computeAstroDay(observer, istDate): Result<AstroDay, AstroError>`: Computes exact astronomical event instants for an observer on a single IST civil date.
+- `toDayRecord(astroDay): DayRecord`: Applies specification section 3.3 rounding rules to an `AstroDay` to create a contracts-compliant `DayRecord`.
+- `computeDayRecord(observer, istDate): Result<DayRecord, AstroError>`: Convenience pipe composing `computeAstroDay` and `toDayRecord`.
+- `computeMoonEvents(observer, istDate): Result<MoonEvent[], AstroError>`: Extracts sorted, rounded moon rise/set events for an IST day.
+- `planSnapshotWindow(nowMs): { startIstDate, dayCount }`: Plans the 92-day snapshot window (`SNAPSHOT_POLICY`: yesterday, today, and 90 days ahead).
+- `buildSnapshot({ location, startIstDate, dayCount, generatedAtMs }): Result<SnapshotV1, SnapshotBuildError>`: Generates a self-validated multi-day snapshot spanning `dayCount` days plus 2 moon lookahead days.
+- `buildSnapshotAround(clock, location)`: Invokes `buildSnapshot` around the current time provided by an injected `Clock`.
+
+### Library Mapping & Calling Conventions
+
+The provider replicates the exact API calls used in the benchmark adapter (`tools/lib/candidates/astronomy-engine.mjs`):
+
+- **Observer**: Created with `new Observer(observer.lat, observer.lon, 0)`. Observer elevation is ignored in v1.
+- **Search Boundaries**: The search start time is set to 12 hours before IST day start (`dayStart - 12h`) with a search limit of `2.0 days`. Any event occurring before `dayStart` is advanced, ensuring every event occurring within `[dayStart, dayEnd)` is captured and none outside.
+- **Sunrise & Sunset**: `SearchRiseSet(Body.Sun, observer, +1, startTime, limitDays)` (Rise) and `SearchRiseSet(Body.Sun, observer, -1, startTime, limitDays)` (Set). Includes standard 34' refraction and solar limb semidiameter by default.
+- **Solar Noon**: `SearchHourAngle(Body.Sun, observer, 0, startTime)`. Extracted via `event.time.date.getTime()`.
+- **Civil Dawn & Dusk**: `SearchAltitude(Body.Sun, observer, +1, startTime, limitDays, -6.0)` and `SearchAltitude(Body.Sun, observer, -1, startTime, limitDays, -6.0)` without refraction.
+- **Golden Hour Boundaries**: `SearchAltitude(Body.Sun, observer, +1, startTime, limitDays, 6.0)` (`sun6Morning`) and `SearchAltitude(Body.Sun, observer, -1, startTime, limitDays, 6.0)` (`sun6Evening`).
+- **Moonrise & Moonset**: Forward-searched iteratively inside the IST day using `SearchRiseSet(Body.Moon, observer, +1/-1, startTime, limitDays)` with a hard iteration cap of 5 to avoid infinite loops.
+- **Moon Phase & Illumination**: Evaluated at 12:00:00 IST via `MoonPhase(noonTime)` (normalized so $360^\circ \to 0.0$) and `Illumination(Body.Moon, noonTime).phase_fraction` (clamped to $[0, 1]$).
+
+### The Date Pitfall
+
+`astronomy-engine` accepts JavaScript `Date` instances. If a primitive number is passed to its time functions, the library interprets the value as **Julian days since J2000** (`2000-01-01 12:00 UTC`), not epoch milliseconds. Passing a raw epoch millisecond number (e.g. `1763188800000`) corrupts calculations by millennia.
+
+Therefore, `new Date(epochMs)` (with a single finite integer argument) and `date.getTime()` are used strictly at the provider boundary as instant carriers. Zero-argument `new Date()` is forbidden by `INV-CLOCK`, and all local-time getters are banned by `INV-TIME`.
+
+### Day Attribution and Rounding
+
+- **Attribution**: Events belong strictly to the IST date on which their exact instant lands: $[ \text{startMs}, \text{endMs} )$.
+- **Rounding Rules**:
+  - `start` (ceil to next whole minute): sunrise, navkarshi, civil dawn, golden morning end (+6° crossing), and moonrise.
+  - `end` (floor to previous whole minute): sunset, civil dusk, golden evening start (+6° crossing), and moonset.
+  - `nearest` (round to nearest minute): solar noon for display.
+  - `Navkarshi`: Calculated from exact sunrise (`exactSunrise + 48 min`), then ceiling-rounded. Because $\lceil s \rceil + 48 = \lceil s + 48 \rceil$, the displayed gap between sunrise and Navkarshi is guaranteed to be exactly 48 minutes on screen.
+
+### Accuracy Tiers
+
+- **`standard`**: `2000-01-01` through `2035-12-31`. Maximum confidence; empirical $\Delta T$ uncertainty is negligible.
+- **`approximate`**: `2036-01-01` through `2100-12-31`. Sun accuracy is maintained within $\pm 1$ minute across India, but times are labelled approximate due to future Earth rotation drift.
+- **`unsupported`**: Dates before `2000-01-01` or after `2100-12-31`.
+
+### Regression Guards
+
+While contractual accuracy tolerances are $\pm 60$ s (sun), $\pm 30$ s (noon), and $\pm 120$ s (moon), continuous integration applies tighter regression guards (`packages/engine/tests/data/astro-tolerances-v1.json`) to catch subtle calculation drift:
+
+- Sun events: $\le 5$ s
+- Solar noon: $\le 2$ s
+- Moon events: $\le 15$ s
+- Extended range: $\le 45$ s
+
 ## Regeneration
 
 To regenerate the reference dataset and execute the candidate benchmark:

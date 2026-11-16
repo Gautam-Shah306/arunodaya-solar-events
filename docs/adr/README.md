@@ -34,3 +34,5 @@ This directory documents key architectural decisions for Arunodaya.
 - [0006: Instants and civil dates](0006-instants-and-civil-dates.md)
 - [0007: Greeting configuration and keys](0007-greeting-config-and-keys.md)
 - [0008: Reference data and astronomy engine selection](0008-reference-data-and-engine-selection.md)
+- [0009: Astronomy provider boundary and encapsulation](0009-astronomy-provider-boundary.md)
+- [0010: Snapshot builder, shared tolerances, and golden tests](0010-snapshot-builder-and-golden-tests.md)

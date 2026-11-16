@@ -68,4 +68,29 @@ describe('INV-DEPS', () => {
       },
     );
   });
+
+  it('astronomy-engine version is identical in the root devDependencies and the engine package', async () => {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const rootPkg = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf8'));
+    const enginePkg = JSON.parse(
+      fs.readFileSync(path.resolve('packages/engine/package.json'), 'utf8'),
+    );
+    expect(rootPkg.devDependencies['astronomy-engine']).toBeDefined();
+    expect(enginePkg.dependencies['astronomy-engine']).toBeDefined();
+    expect(rootPkg.devDependencies['astronomy-engine']).toBe(
+      enginePkg.dependencies['astronomy-engine'],
+    );
+  });
+
+  it('tolerances are defined once in the shared json file', async () => {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const { REGRESSION_GUARD, TOLERANCES } = await import('../../lib/astro-tolerances.mjs');
+    const sharedPath = path.resolve('packages/engine/tests/data/astro-tolerances-v1.json');
+    expect(fs.existsSync(sharedPath)).toBe(true);
+    const raw = JSON.parse(fs.readFileSync(sharedPath, 'utf8'));
+    expect(raw.tolerances).toEqual(TOLERANCES);
+    expect(raw.regressionGuard).toEqual(REGRESSION_GUARD);
+  });
 });

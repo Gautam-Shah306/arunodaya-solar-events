@@ -131,4 +131,281 @@ describe('reference-schema', () => {
       result.issues.some((i) => i.message.includes('must be either "decision" or "extended"')),
     ).toBe(true);
   });
+
+  it('rejects non-object dataset', () => {
+    // @ts-expect-error testing invalid type
+    expect(validateReferenceDataset(null).ok).toBe(false);
+    // @ts-expect-error testing invalid type
+    expect(validateReferenceDataset('str').ok).toBe(false);
+  });
+
+  it('rejects invalid meta structure and types', () => {
+    const base = {
+      meta: {
+        schemaVersion: 2,
+        primary: 'invalid-primary',
+        generator: null,
+        conventions: '',
+        imageDigest: '',
+        cityCount: '27',
+        dayCount: '1',
+        decisionDayCount: '1',
+        extendedDayCount: '0',
+        crossCheck: null,
+      },
+      cities: [],
+      days: [],
+    };
+    const res = validateReferenceDataset(base);
+    expect(res.ok).toBe(false);
+    expect(res.issues.length).toBeGreaterThan(5);
+  });
+
+  it('rejects undefined crossCheck without reason', () => {
+    const base = {
+      meta: {
+        schemaVersion: 1,
+        primary: 'skyfield',
+        generator: {},
+        conventions: 'test',
+        imageDigest: 'digest',
+        cityCount: 0,
+        dayCount: 0,
+        decisionDayCount: 0,
+        extendedDayCount: 0,
+      },
+      cities: [],
+      days: [],
+    };
+    expect(validateReferenceDataset(base).ok).toBe(false);
+  });
+
+  it('rejects invalid cities array and elements', () => {
+    const base = {
+      meta: {
+        schemaVersion: 1,
+        primary: 'skyfield',
+        generator: {},
+        conventions: 'test',
+        imageDigest: 'digest',
+        cityCount: 2,
+        dayCount: 0,
+        decisionDayCount: 0,
+        extendedDayCount: 0,
+        crossCheck: null,
+        crossCheckReason: 'test',
+      },
+      cities: [
+        null,
+        {
+          id: null,
+          name: 'City1',
+          lat: 'bad',
+          lon: NaN,
+          elevationM: '0',
+          role: 'invalid-role',
+        },
+        {
+          id: 'c2',
+          name: 'City2',
+          lat: 20,
+          lon: 70,
+          elevationM: 10,
+          role: 'core',
+        },
+        {
+          id: 'c2', // duplicate id
+          name: 'City2 Duplicate',
+          lat: 20,
+          lon: 70,
+          elevationM: 10,
+          role: 'core',
+        },
+      ],
+      days: [],
+    };
+    // @ts-expect-error testing invalid cities
+    const res = validateReferenceDataset(base);
+    expect(res.ok).toBe(false);
+
+    // Non-array cities
+    const nonArray = { ...base, cities: 'invalid' };
+    // @ts-expect-error testing invalid type
+    expect(validateReferenceDataset(nonArray).ok).toBe(false);
+  });
+
+  it('rejects invalid days elements and values', () => {
+    const dStr = '2026-11-15';
+    const dayStart = istDayStartMs(dStr);
+    const base = {
+      meta: {
+        schemaVersion: 1,
+        primary: 'skyfield',
+        generator: {},
+        conventions: 'test',
+        imageDigest: 'digest',
+        cityCount: 1,
+        dayCount: 5,
+        decisionDayCount: 5,
+        extendedDayCount: 0,
+        crossCheck: null,
+        crossCheckReason: 'test',
+      },
+      cities: [
+        {
+          id: 'rajkot',
+          name: 'Rajkot',
+          lat: 22.3,
+          lon: 70.8,
+          elevationM: 130,
+          role: 'core',
+        },
+      ],
+      days: [
+        null,
+        {
+          c: null,
+          d: 'bad-date',
+          s: 'decision',
+        },
+        {
+          c: 'rajkot',
+          d: '2026-02-30', // invalid civil values
+          s: 'decision',
+        },
+        {
+          c: 'rajkot',
+          d: dStr,
+          s: 'decision',
+          sunrise: 'not-a-number',
+          moonrise: [dayStart + 1000, dayStart + 500], // non-ascending
+          moonset: 'not-an-array',
+          moonPhase: null,
+        },
+        {
+          c: 'rajkot',
+          d: dStr,
+          s: 'decision',
+          moonrise: ['not-a-number'],
+          moonPhase: { fraction: -0.1, illumination: 1.5 },
+        },
+      ],
+    };
+    // @ts-expect-error testing invalid days
+    const res = validateReferenceDataset(base);
+    expect(res.ok).toBe(false);
+
+    // Non-array days
+    const nonArray = { ...base, days: 'invalid' };
+    // @ts-expect-error testing invalid type
+    expect(validateReferenceDataset(nonArray).ok).toBe(false);
+  });
+
+  it('rejects city order violations and meta count mismatches', () => {
+    const dStr = '2026-11-15';
+    const dayStart = istDayStartMs(dStr);
+    const ds = {
+      meta: {
+        schemaVersion: 1,
+        primary: 'skyfield',
+        generator: {},
+        conventions: 'test',
+        imageDigest: 'digest',
+        cityCount: 2,
+        dayCount: 3, // mismatch with actual 2
+        decisionDayCount: 5, // mismatch
+        extendedDayCount: 5, // mismatch
+        crossCheck: null,
+        crossCheckReason: 'test',
+      },
+      cities: [
+        {
+          id: 'cityA',
+          name: 'A',
+          lat: 20,
+          lon: 70,
+          elevationM: 0,
+          role: 'core',
+        },
+        {
+          id: 'cityB',
+          name: 'B',
+          lat: 21,
+          lon: 71,
+          elevationM: 0,
+          role: 'core',
+        },
+      ],
+      days: [
+        {
+          c: 'cityB',
+          d: dStr,
+          s: 'decision',
+          sunrise: dayStart + 3600000,
+          moonrise: [],
+          moonset: [],
+          moonPhase: { fraction: 0.1, illumination: 0.2 },
+        },
+        {
+          c: 'cityA', // out of city order (appeared after cityB)
+          d: dStr,
+          s: 'decision',
+          sunrise: dayStart + 3600000,
+          moonrise: [],
+          moonset: [],
+          moonPhase: { fraction: 0.1, illumination: 0.2 },
+        },
+      ],
+    };
+    const res = validateReferenceDataset(ds);
+    expect(res.ok).toBe(false);
+    expect(res.issues.some((i) => i.message.includes('not sorted by city order'))).toBe(true);
+    expect(res.issues.some((i) => i.message.includes('meta.dayCount'))).toBe(true);
+  });
+
+  it('rejects core city with incomplete 2026 days when dayCount >= 2000', () => {
+    const dStr = '2026-11-15';
+    const dayStart = istDayStartMs(dStr);
+    const days = [];
+    for (let i = 0; i < 2000; i++) {
+      days.push({
+        c: 'cityA',
+        d: dStr,
+        s: 'decision',
+        sunrise: dayStart + 3600000,
+        moonrise: [],
+        moonset: [],
+        moonPhase: { fraction: 0.1, illumination: 0.2 },
+      });
+    }
+    const ds = {
+      meta: {
+        schemaVersion: 1,
+        primary: 'skyfield',
+        generator: {},
+        conventions: 'test',
+        imageDigest: 'digest',
+        cityCount: 1,
+        dayCount: 2000,
+        decisionDayCount: 2000,
+        extendedDayCount: 0,
+        crossCheck: null,
+        crossCheckReason: 'test',
+      },
+      cities: [
+        {
+          id: 'cityA',
+          name: 'A',
+          lat: 20,
+          lon: 70,
+          elevationM: 0,
+          role: 'core',
+        },
+      ],
+      days,
+    };
+    const res = validateReferenceDataset(ds);
+    expect(res.ok).toBe(false);
+    expect(res.issues.some((i) => i.message.includes('has only 1 dates'))).toBe(true);
+  });
 });

@@ -11,6 +11,15 @@
     "Python-2.0"
   ],
   "contractsAllowedPackages": [],
+  "layers": {
+    "externalAllow": [
+      {
+        "package": "astronomy-engine",
+        "path": "packages/engine/src/astro/",
+        "reason": "astronomy provider boundary (ADR 0009)"
+      }
+    ]
+  },
   "excludeSpecFromLF": true,
   "requiredDocs": [
     "README.md",

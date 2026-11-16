@@ -107,9 +107,9 @@ Sunrise · Navkarshi · Sunset · Morning and evening golden hour · Daylight du
 - **Civil twilight:** sun at −6°. Nautical/astronomical twilight may appear in the Astronomy tab.
 - **Moon phase and illumination reference instant (Proposed):** live value at *now* on Home; **12:00 IST** for each forecast or picked date. Moon phase is defined as the lunation fraction in `[0, 1)` (with 0 at new moon and 0.5 at full moon); illumination is defined as a fraction in `[0, 1]`.
 - **Moon date attribution (Proposed):** a moon event is listed under the IST date on which it occurs. If a day has no moonrise or no moonset, show "No moonrise today" / "No moonset today". Never invent a time. If the paired event falls on the next IST day, show it with a `(+1)` marker.
-- **Accuracy (Decided):** engine is **Astronomy Engine** (`astronomy-engine` v2.1.19), selected by empirical benchmark against primary reference Skyfield with the NASA/JPL DE440s numerical integration ephemeris and mandatory PyEphem cross-check. Tested across 2,790 decision city-days in the committed reference dataset (`packages/engine/tests/data/astro-reference-v1.json`). Measured maximum errors are: solar events 1.61 s (within ±1 min tolerance), solar noon 0.30 s (within ±30 s tolerance), lunar events 7.23 s (within ±2 min tolerance), moon phase fraction and illumination 0.00. Document that printed local calendars may differ by a minute or two because of different sunrise conventions and city tables.
+- **Accuracy (Decided):** the engine is Astronomy Engine (astronomy-engine 2.1.19, MIT), chosen by benchmark (docs/ASTRONOMY.md, ADR 0008) against a primary reference of Skyfield with the JPL DE440s ephemeris, cross-checked with PyEphem, on 2,790 city-days (27 Indian cities, 2026 plus extra dates). Measured maximum errors: sun events 1.61 s, solar noon 0.30 s, moon events 7.23 s, against tolerances of 60 s (sun), 30 s (solar noon) and 120 s (moon). The committed reference dataset is packages/engine/tests/data/astro-reference-v1.json. Printed local calendars may differ by a minute or two because of different sunrise conventions and city tables.
 - **Elevation (Proposed):** elevation is stored and shown but does not shift sunrise or sunset in v1; times use the standard sea-level horizon.
-- **Supported date range (Proposed):** 2000–2100. Astronomy Engine maintains full sun accuracy within ±1 minute through 2100 across Indian latitudes; dates after 2030 are subject to minor ΔT (Earth rotation) uncertainty in physical ephemerides.
+- **Supported range and accuracy tiers (Proposed):** 2000-01-01 to 2100-12-31. Three independent models (Skyfield/DE440s, PyEphem, Astronomy Engine) agree within about 30 s through 2100, but all depend on a predicted Earth-rotation correction (delta T) that cannot be known in advance, so real error for dates after 2035 may be larger. Dates through 2035 are standard; dates from 2036 are labelled approximate in the app.
 - **Offline:** all calculation is local.
 
 ### 3.3 Display rounding (Decided unless noted)
@@ -297,7 +297,7 @@ Sunrise, Navkarshi, sunset times · date/day · greeting · working refresh butt
 
 ### 8.2 Data handoff (Decided)
 
-The widget cannot read WebView IndexedDB. The web app writes a **precomputed snapshot** of the next 60–90 days of events as JSON through a native-readable store (Capacitor Preferences / SharedPreferences, or a small custom plugin). The widget performs lookups only: no astronomy code on the hot path. Snapshot status is defined as `not_started`, `ready`, `expiring` (7 days or fewer remain, Proposed) and `expired`, after which widgets ask the user to open the app. A native fallback calculator (e.g. Astronomy Engine's Kotlin port, if chosen) is needed only after the snapshot expires, with TS↔Kotlin parity tests. The snapshot is regenerated on location change, app open and settings change.
+The widget cannot read WebView IndexedDB. The web app writes a **precomputed snapshot** of the next 60–90 days of events as JSON through a native-readable store (Capacitor Preferences / SharedPreferences, or a small custom plugin). The builder produces yesterday, today and the next 90 days (92 records) plus moon events for two further days. The widget performs lookups only: no astronomy code on the hot path. Snapshot status is defined as `not_started`, `ready`, `expiring` (7 days or fewer remain, Proposed) and `expired`, after which widgets ask the user to open the app. A native fallback calculator (e.g. Astronomy Engine's Kotlin port, if chosen) is needed only after the snapshot expires, with TS↔Kotlin parity tests. The snapshot is regenerated on location change, app open and settings change.
 
 ### 8.3 Refresh, staleness and reliability (Decided)
 
@@ -402,7 +402,7 @@ function resolveTheme(choice: ThemeChoice, systemIsDark: boolean): ThemeDefiniti
 | --- | --- |
 | App | React + TypeScript + Vite |
 | Styling | Tailwind + design tokens |
-| Astronomy | **Astronomy Engine** (`astronomy-engine` v2.1.19), chosen by empirical accuracy benchmark ([ASTRONOMY.md](file:///d:/Sem4%20vac/arunodaya-solar-events/docs/ASTRONOMY.md)) |
+| Astronomy | **Astronomy Engine** (astronomy-engine 2.1.19, MIT), chosen by benchmark (docs/ASTRONOMY.md, ADR 0008) |
 | Storage | IndexedDB abstraction, plus a native-readable store for the widget snapshot |
 | Android shell | Capacitor (Geolocation, Preferences, Filesystem, Share) |
 | Widgets | Kotlin + Jetpack Glance (RemoteViews wrappers where needed) |
@@ -442,7 +442,7 @@ interface SnapshotV1 {
 }
 ```
 
-Exact epoch instants are stored, never display strings. A day with no moonrise or moonset simply has no corresponding entry in `moonEvents`.
+Exact epoch instants are stored, never display strings. `solarNoonMs` holds the exact instant; the UI applies the nearest-minute rule (section 3.3). A day with no moonrise or moonset simply has no corresponding entry in `moonEvents`.
 
 ### 10.2 Suggested layout
 
@@ -465,7 +465,7 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 
 **Astronomy**
 
-- Golden dataset: 27 Indian cities × 2,814 city-days from Skyfield with NASA/JPL DE440s and PyEphem cross-check. The committed golden dataset is `packages/engine/tests/data/astro-reference-v1.json`. Candidate engines evaluated against tolerances (sun ±1 min, solar noon ±30s, moon ±2 min).
+- The golden dataset is packages/engine/tests/data/astro-reference-v1.json (Skyfield with JPL DE440s, cross-checked with PyEphem).
 - Seasonal extremes, year boundaries, IST vs. UTC date mismatches, hill-station elevations.
 - Navkarshi exactness, sunrise ceil, sunset floor, displayed gap always 48 min, daylight arithmetic matches displayed endpoints.
 - Missing moonrise/moonset handling; `(+1)` attribution.
@@ -533,7 +533,7 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 - **Licence (Decided):** MIT, with the LICENSE file created with the repository. Third-party data and fonts keep their own licences and are listed in a NOTICE file.
 - **Monorepo toolchain (Decided):** npm workspaces with a single committed package-lock.json.
 - **Application ID (Decided):** in.gautam.arunodaya (permanent once published).
-- **Astronomy engine (Decided):** Astronomy Engine (`astronomy-engine` v2.1.19) selected after empirical benchmark against Skyfield JPL DE440s reference data; satisfies all solar (max 1.6s) and lunar (max 7.2s) tolerances.
+- **Astronomy engine:** Astronomy Engine (astronomy-engine 2.1.19), chosen by benchmark against the committed reference dataset (docs/ASTRONOMY.md, ADR 0008).
 
 **Proposed (confirm)**
 
@@ -542,9 +542,8 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 - Countdown label from whole IST clock minutes.
 - Evening greeting length 3 h, evening starting at the earlier of 17:00 and sunset; location thresholds; 20-min staleness threshold; snapshot expiring threshold of 7 days (7 days or fewer remain).
 - Moon/twilight/golden-hour start-ceil, end-floor rule; solar noon nearest; moon reference at 12:00 IST.
-- Golden hour = sunrise to +6°; supported date range 2000–2100.
-- Elevation is stored for display but does not alter calculated times in v1 (standard sea-level horizon).
-- Supported date range 2000–2100 with full ±1 minute sun accuracy; dates beyond 2030 subject to ΔT uncertainty.
+- Golden hour = sunrise to +6°.
+- Elevation does not shift sunrise or sunset in v1; supported range 2000-2100 with dates after 2035 labelled approximate.
 - Out-of-India behavior; per-widget location; 12-month PDF export.
 - Public repository (GitHub Pages on a free plan needs one), npm workspaces monorepo, trunk-based branching with pull requests, ADRs for key decisions.
 - Every theme pack keeps the solar accent in the gold/amber family; light packs use a darker gold text token.

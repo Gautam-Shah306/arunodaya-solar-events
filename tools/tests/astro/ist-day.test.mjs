@@ -49,4 +49,14 @@ describe('ist-day', () => {
     const expectedLeapStart = Date.UTC(2028, 1, 28, 18, 30, 0, 0);
     expect(leapStart).toBe(expectedLeapStart);
   });
+
+  it('handles negative era for far-past civil years', () => {
+    expect(daysFromCivil(-400, 1, 1)).toBeTypeOf('number');
+    expect(daysFromCivil(2000, 2, 29)).toBeTypeOf('number');
+  });
+
+  it('throws on invalid civil date strings', () => {
+    expect(() => parseCivilDate('invalid')).toThrow(/Invalid civil date string/);
+    expect(() => parseCivilDate('2026-ab-cd')).toThrow(/Invalid civil date values/);
+  });
 });
