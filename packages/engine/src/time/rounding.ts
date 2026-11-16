@@ -22,14 +22,21 @@ export function displayRound(kind: RoundingKind, exactMs: number): number {
 
   const minuteFraction = exactMs / MS_PER_MINUTE;
 
+  let roundedMinutes: number;
   switch (kind) {
     case 'start':
-      return Math.ceil(minuteFraction) * MS_PER_MINUTE;
+      roundedMinutes = Math.ceil(minuteFraction);
+      break;
     case 'end':
-      return Math.floor(minuteFraction) * MS_PER_MINUTE;
+      roundedMinutes = Math.floor(minuteFraction);
+      break;
     case 'nearest':
-      return Math.floor(minuteFraction + 0.5) * MS_PER_MINUTE;
+      roundedMinutes = Math.floor(minuteFraction + 0.5);
+      break;
   }
+
+  const result = roundedMinutes * MS_PER_MINUTE;
+  return result === 0 ? 0 : result;
 }
 
 /**

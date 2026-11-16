@@ -1,0 +1,221 @@
+{
+  "note": "Coordinates and elevations are approximate and intended for reference validation and astronomical benchmarking only.",
+  "cities": [
+    {
+      "id": "rajkot",
+      "name": "Rajkot",
+      "lat": 22.3,
+      "lon": 70.8,
+      "elevationM": 130,
+      "role": "core"
+    },
+    {
+      "id": "dwarka",
+      "name": "Dwarka",
+      "lat": 22.24,
+      "lon": 68.97,
+      "elevationM": 5,
+      "role": "core"
+    },
+    {
+      "id": "new-delhi",
+      "name": "New Delhi",
+      "lat": 28.61,
+      "lon": 77.21,
+      "elevationM": 216,
+      "role": "core"
+    },
+    {
+      "id": "kolkata",
+      "name": "Kolkata",
+      "lat": 22.57,
+      "lon": 88.36,
+      "elevationM": 11,
+      "role": "core"
+    },
+    {
+      "id": "chennai",
+      "name": "Chennai",
+      "lat": 13.08,
+      "lon": 80.27,
+      "elevationM": 6,
+      "role": "core"
+    },
+    {
+      "id": "kibithu",
+      "name": "Kibithu",
+      "lat": 28.2,
+      "lon": 97.0,
+      "elevationM": 0,
+      "role": "core"
+    },
+    {
+      "id": "mumbai",
+      "name": "Mumbai",
+      "lat": 19.08,
+      "lon": 72.88,
+      "elevationM": 14,
+      "role": "sample"
+    },
+    {
+      "id": "bengaluru",
+      "name": "Bengaluru",
+      "lat": 12.97,
+      "lon": 77.59,
+      "elevationM": 920,
+      "role": "sample"
+    },
+    {
+      "id": "hyderabad",
+      "name": "Hyderabad",
+      "lat": 17.39,
+      "lon": 78.49,
+      "elevationM": 540,
+      "role": "sample"
+    },
+    {
+      "id": "thiruvananthapuram",
+      "name": "Thiruvananthapuram",
+      "lat": 8.52,
+      "lon": 76.94,
+      "elevationM": 10,
+      "role": "sample"
+    },
+    {
+      "id": "kanyakumari",
+      "name": "Kanyakumari",
+      "lat": 8.08,
+      "lon": 77.54,
+      "elevationM": 10,
+      "role": "sample"
+    },
+    {
+      "id": "ahmedabad",
+      "name": "Ahmedabad",
+      "lat": 23.02,
+      "lon": 72.57,
+      "elevationM": 53,
+      "role": "sample"
+    },
+    {
+      "id": "jaisalmer",
+      "name": "Jaisalmer",
+      "lat": 26.92,
+      "lon": 70.91,
+      "elevationM": 225,
+      "role": "sample"
+    },
+    {
+      "id": "srinagar",
+      "name": "Srinagar",
+      "lat": 34.08,
+      "lon": 74.8,
+      "elevationM": 1585,
+      "role": "sample"
+    },
+    {
+      "id": "leh",
+      "name": "Leh",
+      "lat": 34.16,
+      "lon": 77.58,
+      "elevationM": 3500,
+      "role": "sample"
+    },
+    {
+      "id": "shimla",
+      "name": "Shimla",
+      "lat": 31.1,
+      "lon": 77.17,
+      "elevationM": 2200,
+      "role": "sample"
+    },
+    {
+      "id": "amritsar",
+      "name": "Amritsar",
+      "lat": 31.63,
+      "lon": 74.87,
+      "elevationM": 234,
+      "role": "sample"
+    },
+    {
+      "id": "varanasi",
+      "name": "Varanasi",
+      "lat": 25.32,
+      "lon": 83.01,
+      "elevationM": 80,
+      "role": "sample"
+    },
+    {
+      "id": "guwahati",
+      "name": "Guwahati",
+      "lat": 26.14,
+      "lon": 91.74,
+      "elevationM": 55,
+      "role": "sample"
+    },
+    {
+      "id": "dibrugarh",
+      "name": "Dibrugarh",
+      "lat": 27.48,
+      "lon": 94.91,
+      "elevationM": 105,
+      "role": "sample"
+    },
+    {
+      "id": "itanagar",
+      "name": "Itanagar",
+      "lat": 27.1,
+      "lon": 93.62,
+      "elevationM": 320,
+      "role": "sample"
+    },
+    {
+      "id": "port-blair",
+      "name": "Port Blair",
+      "lat": 11.62,
+      "lon": 92.73,
+      "elevationM": 16,
+      "role": "sample"
+    },
+    {
+      "id": "kavaratti",
+      "name": "Kavaratti",
+      "lat": 10.57,
+      "lon": 72.64,
+      "elevationM": 2,
+      "role": "sample"
+    },
+    {
+      "id": "gangtok",
+      "name": "Gangtok",
+      "lat": 27.33,
+      "lon": 88.61,
+      "elevationM": 1650,
+      "role": "sample"
+    },
+    {
+      "id": "pune",
+      "name": "Pune",
+      "lat": 18.52,
+      "lon": 73.86,
+      "elevationM": 560,
+      "role": "sample"
+    },
+    {
+      "id": "bhopal",
+      "name": "Bhopal",
+      "lat": 23.26,
+      "lon": 77.41,
+      "elevationM": 500,
+      "role": "sample"
+    },
+    {
+      "id": "kohima",
+      "name": "Kohima",
+      "lat": 25.67,
+      "lon": 94.11,
+      "elevationM": 1450,
+      "role": "sample"
+    }
+  ]
+}

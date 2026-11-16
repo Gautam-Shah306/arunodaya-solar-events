@@ -70,4 +70,22 @@ describe('INV-BOM', () => {
       },
     );
   });
+
+  it('INV-BOM flags a byte order mark in a python file', async () => {
+    const pyBomBuffer = Buffer.from([
+      0xef, 0xbb, 0xbf, 0x70, 0x72, 0x69, 0x6e, 0x74, 0x28, 0x29, 0x0a,
+    ]);
+    await makeTree(
+      {
+        'tools/reference/generate_reference.py': pyBomBuffer,
+      },
+      (tmpRoot) => {
+        const findings = checkInvBom(tmpRoot, ['tools/reference/generate_reference.py']);
+        expect(findings).toHaveLength(1);
+        expect(findings[0]?.rule).toBe('INV-BOM');
+        expect(findings[0]?.path).toBe('tools/reference/generate_reference.py');
+        expect(findings[0]?.message).toContain('UTF-8 byte order mark');
+      },
+    );
+  });
 });

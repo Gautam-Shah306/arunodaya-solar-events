@@ -13,6 +13,7 @@ const LF_EXTENSIONS = new Set([
   '.md',
   '.yml',
   '.yaml',
+  '.py',
 ]);
 
 /**

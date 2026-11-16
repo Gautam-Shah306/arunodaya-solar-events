@@ -14,6 +14,7 @@ export const BOM_EXTENSIONS = new Set([
   '.yml',
   '.yaml',
   '.txt',
+  '.py',
 ]);
 
 /**

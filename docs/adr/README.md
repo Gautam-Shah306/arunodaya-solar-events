@@ -33,3 +33,4 @@ This directory documents key architectural decisions for Arunodaya.
 - [0005: Hand-written validators in contracts package](0005-hand-written-validators-in-contracts.md)
 - [0006: Instants and civil dates](0006-instants-and-civil-dates.md)
 - [0007: Greeting configuration and keys](0007-greeting-config-and-keys.md)
+- [0008: Reference data and astronomy engine selection](0008-reference-data-and-engine-selection.md)

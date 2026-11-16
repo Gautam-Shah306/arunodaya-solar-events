@@ -27,4 +27,19 @@ describe('INV-LF', () => {
       },
     );
   });
+
+  it('INV-LF flags CRLF in a python file', async () => {
+    await makeTree(
+      {
+        'tools/reference/generate_reference.py': 'import os\r\nprint("hello")\n',
+      },
+      (root) => {
+        const { findings } = runInvariants({ root, config });
+        const lfFindings = findings.filter((f) => f.rule === 'INV-LF');
+        expect(lfFindings.length).toBe(1);
+        expect(lfFindings[0]?.path).toBe('tools/reference/generate_reference.py');
+        expect(lfFindings[0]?.message).toContain('CRLF line ending detected');
+      },
+    );
+  });
 });

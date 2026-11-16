@@ -12,18 +12,20 @@
 
 All dependencies are exact-pinned devDependencies located at the repository root. At runtime, the application uses ₹0 infrastructure with zero third-party runtime dependencies.
 
-| Package               | Version   | Licence    | Purpose                                   |
-| --------------------- | --------- | ---------- | ----------------------------------------- |
-| `typescript`          | `6.0.3`   | Apache-2.0 | TypeScript compiler and language services |
-| `vitest`              | `5.1.0`   | MIT        | Unit and integration test runner          |
-| `@vitest/coverage-v8` | `5.1.0`   | MIT        | V8 code coverage provider                 |
-| `eslint`              | `10.15.0` | MIT        | Static analysis linter                    |
-| `@eslint/js`          | `10.0.1`  | MIT        | ESLint JavaScript recommendations         |
-| `typescript-eslint`   | `8.72.2`  | MIT        | TypeScript AST rules for ESLint           |
-| `prettier`            | `3.10.1`  | MIT        | Code formatting                           |
-| `vite`                | `8.3.8`   | MIT        | Application bundler and dev server        |
-| `fast-check`          | `4.10.2`  | MIT        | Property-based testing framework          |
-| `@types/node`         | `26.6.6`  | MIT        | Node.js standard library type definitions |
+| Package               | Version   | Licence      | Purpose                                                       |
+| --------------------- | --------- | ------------ | ------------------------------------------------------------- |
+| `typescript`          | `6.0.3`   | Apache-2.0   | TypeScript compiler and language services                     |
+| `vitest`              | `5.1.0`   | MIT          | Unit and integration test runner                              |
+| `@vitest/coverage-v8` | `5.1.0`   | MIT          | V8 code coverage provider                                     |
+| `eslint`              | `10.15.0` | MIT          | Static analysis linter                                        |
+| `@eslint/js`          | `10.0.1`  | MIT          | ESLint JavaScript recommendations                             |
+| `typescript-eslint`   | `8.72.2`  | MIT          | TypeScript AST rules for ESLint                               |
+| `prettier`            | `3.10.1`  | MIT          | Code formatting                                               |
+| `vite`                | `8.3.8`   | MIT          | Application bundler and dev server                            |
+| `fast-check`          | `4.10.2`  | MIT          | Property-based testing framework                              |
+| `@types/node`         | `26.6.6`  | MIT          | Node.js standard library type definitions                     |
+| `astronomy-engine`    | `2.1.19`  | MIT          | Astronomical calculation benchmark candidate (winning engine) |
+| `suncalc`             | `2.1.4`   | BSD-2-Clause | Astronomical calculation benchmark candidate                  |
 
 ### TypeScript Version Pin Rationale
 
@@ -63,6 +65,46 @@ docker run --rm -v ($pwd.Path + ':/work') -v arunodaya-node-modules:/work/node_m
 ```
 
 **Note on paths with spaces**: When the repository path contains spaces (e.g. `D:\Sem4 vac\...`), the PowerShell expression `($pwd.Path + ':/work')` safely evaluates into a single argument for the Docker `-v` parameter without shell argument fragmentation.
+
+## Python Reference Dataset Generator (Docker Digest Pinned)
+
+Astronomical reference data generation runs inside an isolated container with Skyfield and PyEphem:
+
+Python reference image: python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+
+These packages run exclusively inside the container and are never shipped in runtime builds:
+
+| Package    | Version      | Licence      | Purpose                                          |
+| :--------- | :----------- | :----------- | :----------------------------------------------- |
+| `python`   | `3.12.16`    | PSF-2.0      | Container runtime environment                    |
+| `skyfield` | `1.55`       | MIT          | Primary astronomical ephemeris computing engine  |
+| `jplephem` | `2.24`       | MIT          | JPL SPK ephemeris file reader                    |
+| `numpy`    | `2.5.5`      | BSD-3-Clause | Numerical math backend for Skyfield              |
+| `ephem`    | `4.2.1`      | MIT          | Secondary astronomical reference and cross-check |
+| `certifi`  | `2026.10.23` | MPL-2.0      | SSL root certificates for ephemeris retrieval    |
+| `sgp4`     | `2.27`       | MIT          | Satellite orbit tracking dependency of Skyfield  |
+
+### Ephemeris Kernel
+
+- **Kernel file**: `de440s.bsp` (NASA JPL Planetary and Lunar Ephemerides)
+- **File size**: `32,726,016` bytes (~32.7 MB)
+- **SHA-256**: `c1c7feeab882263fc493a9d5a5b2ddd71b54826cdf65d8d17a76126b260a49f2`
+- **Caching**: Stored in Docker named volume `arunodaya-skyfield-data` mounted at `/data`; never committed to Git.
+
+### Reference Dataset Output
+
+- **File Path**: `packages/engine/tests/data/astro-reference-v1.json`
+- **File Size**: `1,296,724` bytes (~1.24 MB formatted, `936.7 KB` unformatted)
+- **Total City-Days**: `2,814` (Decision set: `2,790`, Extended-range set: `24`)
+
+## Astronomical Scripts
+
+The reference generator and benchmark scripts are standalone developer tooling and are not executed as part of standard `npm run verify`:
+
+| Script               | Command                             | Purpose                                                    |
+| :------------------- | :---------------------------------- | :--------------------------------------------------------- |
+| `reference:generate` | `node tools/generate-reference.mjs` | Generate Skyfield/PyEphem reference dataset in Docker      |
+| `bench:astro`        | `node tools/bench-astro.mjs`        | Run empirical accuracy benchmark against reference dataset |
 
 ## Linux CI Verification
 

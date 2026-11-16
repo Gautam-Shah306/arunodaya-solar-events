@@ -88,7 +88,7 @@ If a GPS fix falls outside India, ignore it, keep the last India location, and s
 ### 2.5 Offline city and PIN search (Open, Proposed)
 
 - Bundled, compressed gazetteer of Indian cities and towns (e.g. GeoNames IN, CC-BY with attribution) plus **PIN-code search** from the India Post directory on data.gov.in (check coordinate coverage and license first).
-- Saved locations stored locally. Observer elevation optional per location (useful for hill stations such as Shimla or Leh).
+- Saved locations stored locally. Observer elevation is optional per location and is stored for display; it does not change calculated times in v1 (section 3.2).
 - Remote lookup is optional and never required for core features.
 
 ---
@@ -107,7 +107,9 @@ Sunrise · Navkarshi · Sunset · Morning and evening golden hour · Daylight du
 - **Civil twilight:** sun at −6°. Nautical/astronomical twilight may appear in the Astronomy tab.
 - **Moon phase and illumination reference instant (Proposed):** live value at *now* on Home; **12:00 IST** for each forecast or picked date. Moon phase is defined as the lunation fraction in `[0, 1)` (with 0 at new moon and 0.5 at full moon); illumination is defined as a fraction in `[0, 1]`.
 - **Moon date attribution (Proposed):** a moon event is listed under the IST date on which it occurs. If a day has no moonrise or no moonset, show "No moonrise today" / "No moonset today". Never invent a time. If the paired event falls on the next IST day, show it with a `(+1)` marker.
-- **Accuracy (Decided approach):** engine chosen by benchmark against NOAA/JPL Horizons reference data. Proposed tolerance to pass: sun events ±1 min, moon events ±2 min. Document that printed local calendars may differ by a minute or two because of different sunrise conventions and city tables.
+- **Accuracy (Decided):** engine is **Astronomy Engine** (`astronomy-engine` v2.1.19), selected by empirical benchmark against primary reference Skyfield with the NASA/JPL DE440s numerical integration ephemeris and mandatory PyEphem cross-check. Tested across 2,790 decision city-days in the committed reference dataset (`packages/engine/tests/data/astro-reference-v1.json`). Measured maximum errors are: solar events 1.61 s (within ±1 min tolerance), solar noon 0.30 s (within ±30 s tolerance), lunar events 7.23 s (within ±2 min tolerance), moon phase fraction and illumination 0.00. Document that printed local calendars may differ by a minute or two because of different sunrise conventions and city tables.
+- **Elevation (Proposed):** elevation is stored and shown but does not shift sunrise or sunset in v1; times use the standard sea-level horizon.
+- **Supported date range (Proposed):** 2000–2100. Astronomy Engine maintains full sun accuracy within ±1 minute through 2100 across Indian latitudes; dates after 2030 are subject to minor ΔT (Earth rotation) uncertainty in physical ephemerides.
 - **Offline:** all calculation is local.
 
 ### 3.3 Display rounding (Decided unless noted)
@@ -400,7 +402,7 @@ function resolveTheme(choice: ThemeChoice, systemIsDark: boolean): ThemeDefiniti
 | --- | --- |
 | App | React + TypeScript + Vite |
 | Styling | Tailwind + design tokens |
-| Astronomy | **Astronomy Engine** or **SunCalc**, chosen by accuracy benchmark (§12) |
+| Astronomy | **Astronomy Engine** (`astronomy-engine` v2.1.19), chosen by empirical accuracy benchmark ([ASTRONOMY.md](file:///d:/Sem4%20vac/arunodaya-solar-events/docs/ASTRONOMY.md)) |
 | Storage | IndexedDB abstraction, plus a native-readable store for the widget snapshot |
 | Android shell | Capacitor (Geolocation, Preferences, Filesystem, Share) |
 | Widgets | Kotlin + Jetpack Glance (RemoteViews wrappers where needed) |
@@ -463,7 +465,7 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 
 **Astronomy**
 
-- Golden dataset: about 20 Indian cities × 366 days from NOAA/JPL Horizons. Compare candidate engines against the proposed tolerances (sun ±1 min, moon ±2 min) and choose.
+- Golden dataset: 27 Indian cities × 2,814 city-days from Skyfield with NASA/JPL DE440s and PyEphem cross-check. The committed golden dataset is `packages/engine/tests/data/astro-reference-v1.json`. Candidate engines evaluated against tolerances (sun ±1 min, solar noon ±30s, moon ±2 min).
 - Seasonal extremes, year boundaries, IST vs. UTC date mismatches, hill-station elevations.
 - Navkarshi exactness, sunrise ceil, sunset floor, displayed gap always 48 min, daylight arithmetic matches displayed endpoints.
 - Missing moonrise/moonset handling; `(+1)` attribution.
@@ -531,6 +533,7 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 - **Licence (Decided):** MIT, with the LICENSE file created with the repository. Third-party data and fonts keep their own licences and are listed in a NOTICE file.
 - **Monorepo toolchain (Decided):** npm workspaces with a single committed package-lock.json.
 - **Application ID (Decided):** in.gautam.arunodaya (permanent once published).
+- **Astronomy engine (Decided):** Astronomy Engine (`astronomy-engine` v2.1.19) selected after empirical benchmark against Skyfield JPL DE440s reference data; satisfies all solar (max 1.6s) and lunar (max 7.2s) tolerances.
 
 **Proposed (confirm)**
 
@@ -540,6 +543,8 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 - Evening greeting length 3 h, evening starting at the earlier of 17:00 and sunset; location thresholds; 20-min staleness threshold; snapshot expiring threshold of 7 days (7 days or fewer remain).
 - Moon/twilight/golden-hour start-ceil, end-floor rule; solar noon nearest; moon reference at 12:00 IST.
 - Golden hour = sunrise to +6°; supported date range 2000–2100.
+- Elevation is stored for display but does not alter calculated times in v1 (standard sea-level horizon).
+- Supported date range 2000–2100 with full ±1 minute sun accuracy; dates beyond 2030 subject to ΔT uncertainty.
 - Out-of-India behavior; per-widget location; 12-month PDF export.
 - Public repository (GitHub Pages on a free plan needs one), npm workspaces monorepo, trunk-based branching with pull requests, ADRs for key decisions.
 - Every theme pack keeps the solar accent in the gold/amber family; light packs use a darker gold text token.
@@ -548,7 +553,6 @@ Exact epoch instants are stored, never display strings. A day with no moonrise o
 **Open**
 
 - Final serif and sans selection after glyph test; palette and token values for every theme.
-- Final engine after benchmark; accuracy tolerances.
 - Gazetteer and PIN datasets and licenses; PDF library.
 - Notification types and schedule; crash reporting approach.
 - Production copy for empty/error/stale states.
