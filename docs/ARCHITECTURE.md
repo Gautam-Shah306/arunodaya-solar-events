@@ -44,10 +44,20 @@
   - `src/android.ts`: Signed 32-bit ARGB integer conversion (`toAndroidColorInt`) and widget palette conversion for Android Glance/RemoteViews.
   - `src/preview-model.ts`: Pure preview model builder (`buildThemePreviewModel`) for test swatches, contrast tables, and static sample UI.
   - `src/themes/`: Individual theme definition files (4 built-in themes, 6 custom pack themes).
-- `apps/app` (`@arunodaya/app`): Web/PWA application shell, theme application helper, and themes gallery review page.
+- `apps/app` (`@arunodaya/app`): Web/PWA application shell, theme application helper, snapshot background pipeline, components, and review galleries.
+  - `src/app/`: Application shell, hash routing (`routes.ts`), navigation `TabBar`, and screens (`FoundationHome`, `ComingSoon`).
+  - `src/core/`: Application ports and adapters: `storage.ts` (`KeyValueStore` port and `localStorage` adapter), `prefs.ts`, `clock.ts`, `debug.ts`, and `theme-controller.ts`.
+  - `src/i18n/`: English localization (`en.ts`), date formatting, and accessible screen-reader labels.
+  - `src/snapshot/`: Web Worker snapshot calculation pipeline (`snapshot.worker.ts`, `request-handler.ts`, `client.ts`, `service.ts`).
+  - `src/ui/`: UI components and hooks: `Countdown.tsx`, `RollingDigits.tsx`, `rolling-digits-model.ts`, `useNow.ts`, and `useSnapshot.ts`.
   - `src/theme/apply-theme.ts`: Runtime CSP-compliant theme application helper via CSSOM (`element.style.setProperty`), setting `--ar-*` custom properties and `data-theme`.
+  - `src/assets/fonts/`: Bundled Gelasio WOFF2 serif font files (Regular 400, SemiBold 600) with OpenType tabular (`tnum`) and lining (`lnum`) figures.
+  - `public/early-theme.js`: IIFE inline bootstrap script executing before initial paint to prevent theme flash.
   - `themes.html`: Standalone review gallery page for visual inspection of all ten themes across viewports, with dynamic "Match system" preview and contrast status tables.
-  - `src/themes-gallery.ts`: Client script powering the review gallery.
+  - `components.html`: Standalone components review gallery for testing countdowns, rolling animations, step controls, and 48px digit alignment specimen.
+  - `src/themes-gallery.ts`: Client script powering the theme review gallery.
+  - `src/components-gallery.tsx`: React entry powering the component review gallery.
+  - `src/main.tsx`: Production React entry bootstrapping storage, preferences, theme controller, clock, snapshot service, and mounting into `#root`.
   - `src/themes.css`: Scoped gallery styling referencing only `--ar-*` tokens with system-colour fallbacks.
 - `tools`: Monorepo build, verification, typechecking, and invariants enforcement utilities.
 

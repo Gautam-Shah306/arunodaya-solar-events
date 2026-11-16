@@ -6,6 +6,11 @@ export interface Clock {
    * Returns the current instant in epoch milliseconds.
    */
   nowMs(): number;
+
+  /**
+   * Alias for nowMs() for convenient clock compatibility.
+   */
+  now?(): number;
 }
 
 /**
@@ -18,6 +23,7 @@ export function createFixedClock(ms: number): Clock {
   }
   return {
     nowMs: () => ms,
+    now: () => ms,
   };
 }
 
@@ -50,6 +56,7 @@ export function createManualClock(startMs: number): ManualClock {
 
   return {
     nowMs: () => currentMs,
+    now: () => currentMs,
     advance(ms: number) {
       if (!Number.isFinite(ms) || !Number.isInteger(ms)) {
         throw new RangeError(`Advance milliseconds must be a finite integer, got: ${String(ms)}`);

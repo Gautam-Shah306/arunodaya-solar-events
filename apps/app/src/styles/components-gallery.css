@@ -1,0 +1,124 @@
+.ar-gallery-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: var(--ar-font-sans, system-ui);
+  color: var(--ar-text-primary);
+}
+
+.ar-gallery-title {
+  font-family: var(--ar-font-serif, serif);
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.ar-gallery-section {
+  background-color: var(--ar-layer-1);
+  border: 1px solid var(--ar-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.ar-gallery-section h2 {
+  font-family: var(--ar-font-serif, serif);
+  font-size: 1.25rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--ar-text-primary);
+}
+
+.ar-theme-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.ar-theme-btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--ar-border);
+  background-color: var(--ar-layer-2);
+  color: var(--ar-text-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: var(--ar-font-sans, system-ui);
+}
+
+.ar-theme-btn[data-active='true'] {
+  border-color: var(--ar-accent);
+  background-color: var(--ar-accent);
+  color: var(--ar-canvas);
+  font-weight: 600;
+}
+
+.ar-gallery-countdown-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: baseline;
+  margin-bottom: 1.5rem;
+}
+
+.ar-gallery-countdown-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ar-gallery-countdown-label {
+  font-size: 0.85rem;
+  color: var(--ar-text-secondary);
+}
+
+.ar-gallery-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.ar-gallery-step-btn {
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid var(--ar-border);
+  background-color: var(--ar-layer-2);
+  color: var(--ar-text-primary);
+  cursor: pointer;
+  font-family: var(--ar-font-sans, system-ui);
+  font-size: 0.85rem;
+}
+
+.ar-gallery-specimen-wrap {
+  position: relative;
+  display: inline-block;
+  padding: 1.5rem 0;
+  margin: 1rem 0;
+}
+
+.ar-gallery-specimen-guide-top {
+  position: absolute;
+  top: 1.5rem;
+  left: 0;
+  right: 0;
+  height: 1px;
+  border-top: 1px dashed var(--ar-border);
+  opacity: 0.7;
+}
+
+.ar-gallery-specimen-guide-baseline {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  height: 1px;
+  border-top: 1px dashed var(--ar-accent);
+  opacity: 0.7;
+}
+
+.ar-gallery-specimen {
+  font-family: var(--ar-font-serif, serif);
+  font-size: 48px;
+  line-height: 1;
+  letter-spacing: 0;
+}

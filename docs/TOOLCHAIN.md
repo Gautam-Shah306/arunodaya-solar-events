@@ -12,28 +12,35 @@
 
 All dependencies are exact-pinned devDependencies located at the repository root. At runtime, the application uses ₹0 infrastructure with zero third-party runtime dependencies.
 
-| Package               | Version   | Licence      | Purpose                                                       |
-| --------------------- | --------- | ------------ | ------------------------------------------------------------- |
-| `typescript`          | `6.0.3`   | Apache-2.0   | TypeScript compiler and language services                     |
-| `vitest`              | `5.1.0`   | MIT          | Unit and integration test runner                              |
-| `@vitest/coverage-v8` | `5.1.0`   | MIT          | V8 code coverage provider                                     |
-| `eslint`              | `10.15.0` | MIT          | Static analysis linter                                        |
-| `@eslint/js`          | `10.0.1`  | MIT          | ESLint JavaScript recommendations                             |
-| `typescript-eslint`   | `8.72.2`  | MIT          | TypeScript AST rules for ESLint                               |
-| `prettier`            | `3.10.1`  | MIT          | Code formatting                                               |
-| `vite`                | `8.3.8`   | MIT          | Application bundler and dev server                            |
-| `fast-check`          | `4.10.2`  | MIT          | Property-based testing framework                              |
-| `@types/node`         | `26.6.6`  | MIT          | Node.js standard library type definitions                     |
-| `astronomy-engine`    | `2.1.19`  | MIT          | Astronomical calculation benchmark candidate (winning engine) |
-| `suncalc`             | `2.1.4`   | BSD-2-Clause | Astronomical calculation benchmark candidate                  |
+| Package                     | Version   | Licence      | Purpose                                                       |
+| --------------------------- | --------- | ------------ | ------------------------------------------------------------- |
+| `typescript`                | `6.0.3`   | Apache-2.0   | TypeScript compiler and language services                     |
+| `vitest`                    | `5.1.0`   | MIT          | Unit and integration test runner                              |
+| `@vitest/coverage-v8`       | `5.1.0`   | MIT          | V8 code coverage provider                                     |
+| `eslint`                    | `10.15.0` | MIT          | Static analysis linter                                        |
+| `@eslint/js`                | `10.0.1`  | MIT          | ESLint JavaScript recommendations                             |
+| `typescript-eslint`         | `8.72.2`  | MIT          | TypeScript AST rules for ESLint                               |
+| `eslint-plugin-react-hooks` | `7.1.1`   | MIT          | React Hooks lint rules for ESLint                             |
+| `prettier`                  | `3.10.1`  | MIT          | Code formatting                                               |
+| `vite`                      | `8.3.8`   | MIT          | Application bundler and dev server                            |
+| `@vitejs/plugin-react`      | `6.3.0`   | MIT          | Vite React plugin (Fast Refresh and JSX transform)            |
+| `fast-check`                | `4.10.2`  | MIT          | Property-based testing framework                              |
+| `@types/node`               | `26.6.6`  | MIT          | Node.js standard library type definitions                     |
+| `@types/react`              | `19.3.0`  | MIT          | React TypeScript definitions                                  |
+| `@types/react-dom`          | `19.3.0`  | MIT          | React DOM TypeScript definitions                              |
+| `happy-dom`                 | `21.0.4`  | MIT          | Headless DOM implementation for React component testing       |
+| `astronomy-engine`          | `2.1.19`  | MIT          | Astronomical calculation benchmark candidate (winning engine) |
+| `suncalc`                   | `2.1.4`   | BSD-2-Clause | Astronomical calculation benchmark candidate                  |
 
 ## Production Runtime Dependencies
 
-The application core minimizes runtime dependencies to guarantee long-term stability and auditability. The only third-party runtime package in `packages/engine` is:
+The application core minimizes runtime dependencies to guarantee long-term stability and auditability. The only third-party runtime packages are:
 
 | Package            | Version  | Licence | Scope & Justification                                                                                                                                                                                      |
 | :----------------- | :------- | :------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `astronomy-engine` | `2.1.19` | MIT     | Encapsulated under `packages/engine/src/astro/` via path-scoped allowance (`INV-LAYERS`). Evaluated in Prompt 3 benchmark; achieves 1.6s max sun accuracy and 7.2s max moon accuracy (ADR 0008, ADR 0009). |
+| `react`            | `19.3.1` | MIT     | UI view rendering and declarative hook lifecycle management in `apps/app` (ADR 0012).                                                                                                                      |
+| `react-dom`        | `19.3.1` | MIT     | Browser DOM renderer for React in `apps/app` (ADR 0012).                                                                                                                                                   |
 
 ### TypeScript Version Pin Rationale
 

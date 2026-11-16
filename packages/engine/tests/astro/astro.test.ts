@@ -6,21 +6,23 @@ import { describe, expect, it } from 'vitest';
 import {
   accuracyTier,
   ASTRONOMY_ENGINE,
-  buildOccurrenceSeries,
   buildSnapshot,
   buildSnapshotAround,
   computeAstroDay,
   computeDayRecord,
   computeMoonEvents,
+  planSnapshotWindow,
+  sortInstants,
+  toDayRecord,
+} from '../../src/astro/index.js';
+import {
+  buildOccurrenceSeries,
   createFixedClock,
   dayNight,
   getCountdownState,
   getSnapshotStatus,
   istDateToStartMs,
-  planSnapshotWindow,
   selectGreeting,
-  sortInstants,
-  toDayRecord,
 } from '../../src/index.js';
 
 const RAJKOT_OBSERVER = { lat: 22.3, lon: 70.8, elevationM: 130 };

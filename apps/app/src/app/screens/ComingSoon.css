@@ -1,0 +1,22 @@
+.ar-coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 2rem;
+  text-align: center;
+}
+
+.ar-coming-soon-title {
+  font-family: var(--ar-font-serif, serif);
+  font-size: 1.5rem;
+  color: var(--ar-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.ar-coming-soon-msg {
+  font-family: var(--ar-font-sans, system-ui);
+  font-size: 0.95rem;
+  color: var(--ar-text-secondary);
+}

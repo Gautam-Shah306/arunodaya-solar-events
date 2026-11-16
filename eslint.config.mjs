@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -10,6 +11,7 @@ export default tseslint.config(
       '**/.vite/**',
       '**/*.d.ts',
       '**/.scratch/**',
+      'apps/app/public/**',
     ],
   },
   js.configs.recommended,
@@ -45,9 +47,31 @@ export default tseslint.config(
     },
   },
   {
+    files: ['apps/app/**/*.tsx'],
+    plugins: {
+      'react-hooks': reactHooks,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+    },
+  },
+  {
     files: ['apps/**/*', 'packages/**/*'],
     rules: {
       'no-console': 'error',
+    },
+  },
+  {
+    files: ['**/tests/**', '**/*.test.*'],
+    rules: {
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-confusing-void-expression': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/unbound-method': 'off',
     },
   },
   {

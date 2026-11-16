@@ -184,13 +184,16 @@ The following tokens were tuned from their initial starting anchors to satisfy t
 7. **`pack-aubergine`**:
    - `tokens.countdownShade` and `widget.countdownShade`: tuned from `#624A75` to `#75588C` (contrast improved from 2.36 to 3.03, satisfying $\ge 3.0:1$).
 8. **`pack-midnight-teal`**:
-   - `canvas`: tuned from `#07181B` to `#052026`, with layers stepping `#0B2B33`, `#113640`, `#18424E` (satisfies $\Delta E = 10.73 \ge 10.0$ and layer1 $\Delta E = 14.06 \ge 8.0$ against `darker`).
+   - `canvas`: tuned from `#07181B` to `#052026`, and `layer1` from `#0C2327` to `#0B2B33`, with remaining layers `#113640`, `#18424E` (satisfies $\Delta E = 10.73 \ge 10.0$ and layer1 $\Delta E = 14.06 \ge 8.0$ against `darker`).
    - `tokens.countdownShade` and `widget.countdownShade`: tuned from `#3E6F75` to `#427C87` (contrast improved from 2.91 to 3.17, satisfying $\ge 3.0:1$).
 9. **`pack-porcelain`**:
-   - `tokens.accent`: anchored at `#82580F` (meets 4.5:1 on layer1).
+   - `tokens.accent`: tuned from `#8A5F12` to `#82580F` (meets 4.5:1 on layer1 `#FFFFFF`).
+   - `tokens.solar`: tuned from `#A06B12` to `#9C660F` (meets 4.5:1 on layer1 `#FFFFFF`).
    - `tokens.countdownShade`: `#7C93AB` (contrast 3.17 on layer1).
 10. **`pack-sandstone`**:
-    - `canvas`: tuned from `#F4E9D8` to `#F2E3C6`, with layers `#FAF1DE`, `#E8D4B4`, `#DFC39E` (achieves $\Delta E = 6.42 \ge 6.0$ against `light` `#F7F2E7`).
+    - `canvas`: tuned from `#F4E9D8` to `#F2E3C6`, `layer1` from `#FBF4E8` to `#FAF1DE`, with remaining layers `#E8D4B4`, `#DFC39E` (achieves $\Delta E = 6.42 \ge 6.0$ against `light` `#F7F2E7`).
+    - `tokens.accent`: tuned from `#8A5A0F` to `#85540B` (meets 4.5:1 on layer1).
+    - `tokens.solar`: tuned from `#A8691A` to `#9E6114` (meets 4.5:1 on layer1).
     - `widget.countdownShade`: tuned from `#805E4C` to `#916B55` (contrast on surface `#3A2418` improved from 2.51 to 3.07, satisfying $\ge 3.0:1$).
 
 ---

@@ -2,10 +2,15 @@ Arunodaya
 Copyright (c) 2026 Gautam Shah
 
 Runtime dependencies:
+- react (version 19.3.1, MIT): Component model for the web application UI shell and screens (ADR 0012).
+- react-dom (version 19.3.1, MIT): DOM renderer for React web application mounting (ADR 0012).
 - astronomy-engine (version 2.1.19, MIT): Production astronomy engine encapsulated inside packages/engine/src/astro/ for solar and lunar calculations across India (ADR 0008, ADR 0009).
+
+Bundled assets:
+- Gelasio (SIL Open Font License 1.1): Bundled WOFF2 serif font files (gelasio-latin-400-normal.woff2, gelasio-latin-600-normal.woff2), Copyright (c) 2017-2020, Sorkin Type Co (www.sorkintype.com), with Reserved Font Name "Gelasio".
 
 Development Tooling:
 - fast-check (version 4.10.2, MIT): Property-based testing framework used for property tests verifying display rounding, countdown bounds, and temporal invariants.
 - suncalc (version 2.1.4, BSD-2-Clause): Astronomical calculation library evaluated during engine selection benchmark.
 
-A comprehensive inventory of third-party assets, licences, and font attributions will be generated during final release hardening in Prompt 13.
+A comprehensive inventory of third-party assets, licences, and font attributions will be generated during final release hardening in Prompt 14.

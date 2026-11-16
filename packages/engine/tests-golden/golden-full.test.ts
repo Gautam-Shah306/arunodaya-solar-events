@@ -5,6 +5,7 @@ import {
   loadTolerancesConfig,
   type RefDay,
 } from '../tests/astro/golden-helpers.js';
+import { istDateToStartMs, MS_PER_DAY } from '../src/time/ist.js';
 
 describe('astronomical golden tests (full set)', () => {
   const ref = loadReferenceDataset();
@@ -55,6 +56,23 @@ describe('astronomical golden tests (full set)', () => {
   it('golden full: processed every decision city-day and compared at least 24000 events', () => {
     expect(decisionEval.cityDays).toBe(2790);
     expect(decisionEval.eventsCompared).toBeGreaterThanOrEqual(24000);
+  });
+
+  it('golden full: cityDays equals the 2790 decision city-days in the reference dataset', () => {
+    expect(decisionEval.cityDays).toBe(2790);
+  });
+
+  it('golden full: boundary cases count only unmatched events near an IST day boundary', () => {
+    for (const b of decisionEval.boundaryCases) {
+      const dayStart = istDateToStartMs(b.date);
+      if (dayStart.ok) {
+        const start = dayStart.value;
+        const end = start + MS_PER_DAY;
+        const nearBoundary = b.time - start < 600000 || end - b.time < 600000;
+        expect(nearBoundary).toBe(true);
+      }
+    }
+    expect(decisionEval.boundaryCases.length).toBe(0);
   });
 
   it('golden extended: the 24 extended-range city-days stay within the extended guard', () => {

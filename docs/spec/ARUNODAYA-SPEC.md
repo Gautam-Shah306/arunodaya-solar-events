@@ -160,9 +160,10 @@ Selection always uses exact computed instants, never fixed clock cutoffs.
 ### 4.4 Rolling digits (Decided)
 
 - Digit increases → new digit enters from below, rolls upward. Digit decreases → enters from above, rolls downward.
+- **Roll direction (Decided):** Direction follows the change of the whole countdown value: decrease rolls down with the new incoming digit entering from above; increase rolls up with the new incoming digit entering from below; equal does nothing. Only changing digit characters roll; separators and unit letters are static.
 - Fixed-width digit slots, clipped viewport, no baseline, width or card-size change.
 - Respect reduced-motion; static update when animation can't run. Widgets use a static fallback.
-- Screen readers receive one polite label per minute ("2 hours 48 minutes until sunset"), not per-digit changes.
+- **Screen reader announcements (Decided):** Visual layers are `aria-hidden="true"`. Screen readers receive one polite live label per minute for the soonest event via an `aria-live="polite"` region.
 
 ### 4.5 Reference logic (corrected)
 
@@ -323,7 +324,7 @@ Event → event details. Date → forecast. Location → selector. Refresh → r
 
 Editorial Premium: warm ivory, deep forest green, muted sage, restrained antique gold, serif display, clean sans UI, generous spacing, subtle borders, minimal elevation. Widgets use a forest-green surface with ivory text and sparing gold.
 
-### 9.2 Themes (structure Decided; palettes Open)
+### 9.2 Themes
 
 Arunodaya ships four built-in themes and a set of curated theme packs. Every theme shares the same layout, hierarchy and components; only the tokens change.
 
@@ -344,7 +345,7 @@ Arunodaya ships four built-in themes and a set of curated theme packs. Every the
 - **Other outputs (Proposed):** the monthly PDF uses a fixed light paper palette. The share card renders in the current theme or in Light, the user's choice. This replaces the earlier "light and dark variants" wording in §7.3.
 - **Palettes (Decided):** the ten themes are defined in packages/themes and documented in docs/THEMES.md; every theme passes the contrast gate (section 9.4).
 
-**Launch theme packs (lineup Decided; palettes Open)**
+**Launch theme packs (Decided)**
 
 | Pack | Base | Canvas | Text | Layers | Accent and character |
 | --- | --- | --- | --- | --- | --- |
@@ -359,11 +360,11 @@ All six keep the editorial hierarchy and a gold or amber solar accent. Midnight 
 
 ### 9.3 Typography (revised)
 
-- **Numbers and headings:** a **bundled open-license serif** with lining and tabular figures. Georgia is dropped: its default numerals are old-style, it isn't installed on Android, and it can't be freely bundled. **Candidates to glyph-test:** Gelasio, Source Serif 4, Newsreader, Literata. Selection criteria: working `lnum` + `tnum`, uniform digit height and baseline, a Georgia-like warmth, and OFL or similar license. Pick after rendering real digits at actual sizes on target devices.
-- **UI/body:** a clean sans. Verify the license before bundling Google Sans variants; Roboto or Inter are safe fallbacks (Open).
+- **Numbers and headings (Decided):** a **bundled open-license serif** with lining and tabular figures: **Gelasio** (SIL Open Font License 1.1), bundled under `apps/app/src/assets/fonts/` as WOFF2 with OpenType lining (`lnum`) and tabular (`tnum`) figures (ADR 0013). Georgia is dropped completely from all font stacks.
+- **UI/body (Decided):** native `system-ui` sans-serif stack (`system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`).
 - **Widgets:** custom fonts in RemoteViews/Glance are unreliable, so render digits to bitmaps with a `contentDescription` for TalkBack, or use the system font if the bundled font fails to render.
 - **Odometer rules:** fixed-width slots, clipped viewport, uniform baseline, no layout shift.
-- **Final tokens (Open):** exact palette hex values, type scale, spacing, radii and elevation. Prototype CSS is not production tokens.
+- **Final tokens (Decided):** semantic tokens in packages/themes and docs/THEMES.md.
 - **Accessibility:** verify gold-on-ivory and gold-on-green contrast against WCAG, test large system font scale in app and widgets, and support TalkBack and reduced motion.
 
 ### 9.4 Theme system design (Proposed unless noted)
@@ -372,9 +373,9 @@ Themes are data, not code: components read semantic tokens and never hard-code a
 
 - **Three token tiers:** a primitive palette (raw colours), semantic tokens (canvas, layer 1 to 3, text primary/secondary/tertiary, border, accent, solar, on-accent, focus, positive/warning/critical, scrim), and component tokens (countdown digit fill, progress shade, widget surface). Components use only semantic or component tokens.
 - **Resolution:** a `system` choice resolves to Light or Pure Dark from the system setting. An unknown id (for example a removed pack) falls back to the system rule.
-- **Applying:** the root element gets a `data-theme` attribute, CSS variables and `color-scheme`; Tailwind reads the variables. Capacitor sets the status and navigation bar style from `baseMode`. A tiny inline script reads a mirrored copy of the choice before first paint so the wrong theme never flashes.
+- **Applying:** the root element gets a `data-theme` attribute, CSS variables and `color-scheme`. `apps/app/public/early-theme.js` reads cached canvas and color scheme keys from localStorage before first paint so the wrong theme never flashes.
 - **Widgets:** widgets can't read CSS variables, so the resolved widget palette (about a dozen hex values) travels with the snapshot through the native-readable store (§8.2). Default is "follow app theme", with an optional separate widget theme. A theme change triggers a widget re-render.
-- **Contrast gate (Decided direction):** CI computes WCAG contrast for every theme and token pair: 4.5:1 for body text, 3:1 for large text and UI components. Champagne gold must pass on every canvas; gold text on ivory is the likely failure, so Light needs a darker gold text token. A theme that fails can't merge. The required pairs and ratios are listed in docs/THEMES.md (primary text 7:1 on the canvas, other text 4.5:1, tertiary text and UI components 3:1; Proposed). A distinctness test keeps every canvas visibly different, including Midnight Teal against Darker.
+- **Contrast gate (Decided):** CI computes WCAG contrast for every theme and token pair: 4.5:1 for body text, 3:1 for large text and UI components. Champagne gold must pass on every canvas; gold text on ivory is the likely failure, so Light needs a darker gold text token. A theme that fails can't merge. The required pairs and ratios are listed in docs/THEMES.md (7:1 for primary text on the canvas, 4.5:1 for other text, 3:1 for tertiary text and UI components; Proposed). A distinctness test uses CIE76 colour difference with a minimum of 6 to keep every canvas visibly different, including Midnight Teal against Darker.
 - **Visual regression:** CI screenshots Home, Forecast, Settings and the widget previews in every theme.
 - **Adding a pack** is one data file in the theme package plus passing both gates. No component changes.
 - **Not used:** Android dynamic colour (Material You), to keep the brand palette. The Android splash screen typically follows only the system light/dark setting, so verify how it looks in each theme.
@@ -401,9 +402,9 @@ function resolveTheme(choice: ThemeChoice, systemIsDark: boolean): ThemeDefiniti
 | Layer | Choice |
 | --- | --- |
 | App | React + TypeScript + Vite |
-| Styling | Tailwind + design tokens |
+| Styling | Plain CSS with --ar-* custom properties (ADR 0012) |
 | Astronomy | **Astronomy Engine** (astronomy-engine 2.1.19, MIT), chosen by benchmark (docs/ASTRONOMY.md, ADR 0008) |
-| Storage | IndexedDB abstraction, plus a native-readable store for the widget snapshot |
+| Storage | KeyValueStore port with localStorage adapter in v1; native-readable store for widget snapshot (ADR 0012) |
 | Android shell | Capacitor (Geolocation, Preferences, Filesystem, Share) |
 | Widgets | Kotlin + Jetpack Glance (RemoteViews wrappers where needed) |
 | Background | AlarmManager (event refreshes), WorkManager (fallback) |
@@ -528,13 +529,15 @@ Exact epoch instants are stored, never display strings. `solarNoonMs` holds the 
 - **Hosting and source control:** the web build deploys to GitHub Pages through GitHub Actions; Git and GitHub for source control.
 - **Repository:** `arunodaya-solar-events` on your GitHub account (not yet created).
 - **Themes:** Light, Dark (charcoal-green), Pure Dark, Darker, and curated custom theme packs. Match system maps system light to Light and system dark to Pure Dark only, with no user-chosen pair.
-- **Theme pack lineup:** Navy, Burgundy, Aubergine, Midnight Teal (dark) and Porcelain, Sandstone (light). Palettes still Open.
+- **Theme pack lineup:** Navy, Burgundy, Aubergine, Midnight Teal (dark) and Porcelain, Sandstone (light).
 - **System design:** layered architecture with a framework-free domain core, versioned contracts and automated quality gates (§17).
 - **Licence (Decided):** MIT, with the LICENSE file created with the repository. Third-party data and fonts keep their own licences and are listed in a NOTICE file.
 - **Monorepo toolchain (Decided):** npm workspaces with a single committed package-lock.json.
 - **Application ID (Decided):** in.gautam.arunodaya (permanent once published).
 - **Astronomy engine:** Astronomy Engine (astronomy-engine 2.1.19), chosen by benchmark against the committed reference dataset (docs/ASTRONOMY.md, ADR 0008).
 - **Theme palettes:** ten themes defined in packages/themes (docs/THEMES.md) and passing the contrast gate.
+- **App foundation:** React 19, TypeScript, Vite, plain CSS using the --ar-* custom properties, KeyValueStore port with a localStorage adapter in v1, and hash routing (ADR 0012).
+- **Typography:** Gelasio bundled WOFF2 serif with lining and tabular figures; system-ui for UI sans; Georgia dropped (ADR 0013).
 
 **Proposed (confirm)**
 
@@ -553,7 +556,6 @@ Exact epoch instants are stored, never display strings. `solarNoonMs` holds the 
 
 **Open**
 
-- Final serif and sans selection after glyph test.
 - Gazetteer and PIN datasets and licenses; PDF library.
 - Notification types and schedule; crash reporting approach.
 - Production copy for empty/error/stale states.
@@ -739,6 +741,6 @@ Also enable Dependabot and CodeQL scanning (free for public repositories).
 
 ## 20. Implementation plan
 
-The 12-prompt phased implementation plan and delivery tracker live in [docs/PLAN.md](../PLAN.md).
+The phased implementation plan and delivery tracker live in docs/PLAN.md.
 
 *End of specification v2.*

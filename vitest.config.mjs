@@ -1,58 +1,40 @@
 import { defineConfig } from 'vitest/config';
+import { TEST_PROJECTS } from './tools/lib/test-projects.mjs';
 
 export default defineConfig({
+  define: {
+    __AR_DEBUG__: true,
+  },
   test: {
-    projects: [
-      {
-        test: {
-          name: 'tools',
-          environment: 'node',
-          include: ['tools/tests/**/*.test.{mjs,js,ts}'],
-          testTimeout: 30000,
-        },
-      },
-      {
-        test: {
-          name: 'packages',
-          environment: 'node',
-          include: ['packages/*/tests/**/*.test.{mjs,js,ts}'],
-          testTimeout: 30000,
-        },
-      },
-      {
-        test: {
-          name: 'app',
-          environment: 'node',
-          include: ['apps/app/tests/**/*.test.{mjs,js,ts}'],
-          testTimeout: 30000,
-        },
-      },
-      {
-        test: {
-          name: 'build',
-          environment: 'node',
-          include: ['tools/tests-build/**/*.test.{mjs,js,ts}'],
-          testTimeout: 180000,
-        },
-      },
-      {
-        test: {
-          name: 'golden',
-          environment: 'node',
-          include: ['packages/engine/tests-golden/**/*.test.ts'],
-          testTimeout: 300000,
-        },
-      },
-    ],
+    projects: TEST_PROJECTS.map((proj) =>
+      proj.name === 'app'
+        ? {
+            define: {
+              __AR_DEBUG__: true,
+            },
+            test: proj,
+          }
+        : {
+            test: proj,
+          },
+    ),
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      include: ['tools/lib/**', 'packages/*/src/**'],
+      include: ['tools/lib/**', 'packages/*/src/**', 'apps/app/src/**'],
       exclude: [
         // CLI entry files are tested via end-to-end command-line executions rather than unit-level code coverage
         'tools/*.mjs',
-        // App shell presentation is verified via integration and build-output tests in Prompt 1; comprehensive UI tests arrive with React in Prompt 5
-        'apps/app/src/**',
+        // Candidates were benchmark evaluation adapters in Prompt 3, not runtime library code
+        'tools/lib/candidates/**',
+        // Main browser application entry mounts React root into DOM
+        'apps/app/src/main.tsx',
+        // Visual theme gallery page is tested via build and manual visual inspection
+        'apps/app/src/themes-gallery.ts',
+        // Visual component gallery review page is tested via build and manual visual inspection
+        'apps/app/src/components-gallery.tsx',
+        // Dedicated Web Worker entry delegates execution to request-handler module
+        'apps/app/src/snapshot/snapshot.worker.ts',
       ],
       thresholds: {
         statements: 90,

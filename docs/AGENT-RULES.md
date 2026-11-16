@@ -32,14 +32,14 @@ Every subsequent prompt must begin with Part 0 verification to ensure workspace 
 
 ## Report format
 
-Every prompt execution concludes with exactly one REPORT section containing:
+Every prompt execution concludes with exactly one REPORT section with nothing after it. A report with other section names is non-compliant. SPEC/DOC EDITS shows raw git diff output, never reconstructed text.
 
-1. **PART STATUS**: table with columns `Part`, `Status` (DONE/PARTIAL/SKIPPED/FAILED), and `Evidence` (one line of evidence).
-2. **COMMANDS RUN**: each command, exit code, and verbatim test, coverage and lint summary lines.
-3. **FILES**: created and modified, grouped by part.
-4. **SPEC/DOC EDITS**: section number, before, after.
-5. **DEVIATIONS**: deviations from prompt or contract, each with reason.
-6. **UNVERIFIED**: anything not executed and why.
-7. **FAILED ATTEMPTS**: exact command and exact error text.
-8. **USER ACTIONS**: manual steps only the user can do.
-9. **FOLLOW-UPS**: out-of-scope findings and recommendations.
+1. **1 PART STATUS**: Status table recording whether each part is DONE, PARTIAL, SKIPPED, or FAILED with concise command-backed evidence.
+2. **2 COMMANDS RUN**: Exhaustive log of executed commands with their exit codes, test counts per project, coverage summaries, golden counters, and asset gzip sizes.
+3. **3 FILES**: Complete inventory of all created and modified repository files grouped by execution part.
+4. **4 SPEC/DOC EDITS**: Raw, unedited output of git diff -U1 -- docs/spec/ARUNODAYA-SPEC.md and git diff --stat for other documentation files without reconstructed memory quotes.
+5. **5 DEVIATIONS**: Documented variances from the prompt instructions or architectural expectations with technical justifications.
+6. **6 UNVERIFIED**: Explicit list of any operations, browsers, or environments that could not be executed directly.
+7. **7 FAILED ATTEMPTS**: Exact commands and terminal error output for any operation that failed before resolution or recovery.
+8. **8 USER ACTIONS**: Actionable manual steps required strictly by the user, such as physical device verification or git commits.
+9. **9 FOLLOW-UPS**: Non-blocking observations, future architectural recommendations, and out-of-scope backlog items.

@@ -6,3 +6,4 @@
 *.pdf binary
 *.jks binary
 *.keystore binary
+*.woff2 binary

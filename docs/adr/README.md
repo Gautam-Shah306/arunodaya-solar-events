@@ -37,3 +37,6 @@ This directory documents key architectural decisions for Arunodaya.
 - [0009: Astronomy provider boundary and encapsulation](0009-astronomy-provider-boundary.md)
 - [0010: Snapshot builder, shared tolerances, and golden tests](0010-snapshot-builder-and-golden-tests.md)
 - [0011: Theme system architecture and contrast gate](0011-theme-system.md)
+- [0012: Application foundation architecture and state strategy](0012-app-foundation.md)
+- [0013: Typography strategy, serif selection, and bundled fonts](0013-fonts.md)
+- [0014: Rolling digits odometer and accessible countdown architecture](0014-rolling-digits-and-accessibility.md)

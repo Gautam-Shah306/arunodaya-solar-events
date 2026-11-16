@@ -221,7 +221,7 @@ export function evaluateGoldenDays(
     maxPhase = Math.max(maxPhase, phaseErr);
     maxIllum = Math.max(maxIllum, illumErr);
 
-    eventsCompared += 9; // 7 solar + 2 lunar phase/illumination
+    eventsCompared += 7; // 7 matched solar event pairs
 
     // Resolve day bounds
     const dayStartRes = istDateToStartMs(day.d);

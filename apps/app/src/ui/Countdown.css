@@ -1,0 +1,52 @@
+.ar-countdown {
+  position: relative;
+  display: inline-block;
+  font-family: var(--ar-font-serif, serif);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings:
+    'tnum' 1,
+    'lnum' 1;
+}
+
+.ar-tnum {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings:
+    'tnum' 1,
+    'lnum' 1;
+}
+
+.ar-countdown-layer {
+  display: block;
+}
+
+.ar-countdown-shade {
+  color: var(--ar-countdown-shade, var(--ar-text-tertiary));
+}
+
+.ar-countdown-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: var(--ar-countdown-fill, var(--ar-accent));
+  clip-path: inset(0 calc(100% - var(--ar-progress, 0) * 100%) 0 0);
+  pointer-events: none;
+}
+
+.ar-countdown--primary {
+  font-size: 2.25rem;
+  font-weight: 600;
+}
+
+.ar-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

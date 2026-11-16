@@ -1,0 +1,75 @@
+export const en = {
+  appName: 'Arunodaya',
+  tagline: 'A little closer to the sun.',
+  greetings: {
+    morning: 'Good morning',
+    afternoon: 'Good afternoon',
+    evening: 'Good evening',
+    night: 'Good night',
+  },
+  events: {
+    sunrise: 'Sunrise',
+    navkarshi: 'Navkarshi',
+    sunset: 'Sunset',
+    moonrise: 'Moonrise',
+    moonset: 'Moonset',
+  },
+  countdownLabels: {
+    sunrise: 'Sunrise',
+    navkarshi: 'Navkarshi',
+    sunset: 'Sunset',
+    moonrise: 'Moonrise',
+    moonset: 'Moonset',
+  },
+  weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+  weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  months: [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ],
+  duration: {
+    hour: 'hour',
+    hours: 'hours',
+    minute: 'minute',
+    minutes: 'minutes',
+    now: 'now',
+  },
+  screenReader: {
+    countdownTemplate: '{event} in {duration}',
+    countdownNowTemplate: '{event} now',
+  },
+  status: {
+    loading: 'Calculating the sky',
+    error: "Could not calculate today's times",
+    retry: 'Try again',
+    allTimesIst: 'All times IST',
+    simulatedTimeBanner: 'Simulated time: {time}',
+    approximateAccuracy: 'Approximate',
+  },
+  tabs: {
+    home: 'Home',
+    forecast: 'Forecast',
+    astronomy: 'Astronomy',
+    locations: 'Locations',
+    settings: 'Settings',
+  },
+  indicators: {
+    day: 'Day',
+    night: 'Night',
+  },
+  placeholders: {
+    comingSoon: 'Coming in a later update',
+  },
+} as const;
+
+export type EnglishStrings = typeof en;

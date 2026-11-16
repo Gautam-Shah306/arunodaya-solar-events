@@ -1,0 +1,54 @@
+:root {
+  --ar-font-serif: 'Gelasio', ui-serif, serif;
+  --ar-font-sans: system-ui, sans-serif;
+  --ar-content-max-width: 560px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--ar-font-sans);
+  background-color: var(--ar-canvas, Canvas);
+  color: var(--ar-text-primary, CanvasText);
+  color-scheme: light dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--ar-canvas, Canvas);
+  color: var(--ar-text-primary, CanvasText);
+  font-family: var(--ar-font-sans);
+  display: flex;
+  flex-direction: column;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ar-focus, Highlight);
+  outline-offset: 2px;
+}
+
+.ar-num {
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings:
+    'lnum' 1,
+    'tnum' 1;
+}
+
+.ar-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

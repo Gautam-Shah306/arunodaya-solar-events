@@ -15,6 +15,11 @@ describe('csp plugin', () => {
     expect(outputHtml).toContain(CSP_POLICY);
   });
 
+  it('csp policy allows workers from self only', () => {
+    expect(CSP_POLICY).toContain("worker-src 'self'");
+    expect(CSP_POLICY).not.toContain('worker-src *');
+  });
+
   it('csp plugin leaves dev html untouched', () => {
     const plugin = cspPlugin();
     // In Vite plugins, apply: 'build' indicates the plugin is inactive during dev (command: 'serve')

@@ -613,8 +613,11 @@ describe('themes package', () => {
 
     const cssFiles = walkCss(appSrc);
     const validVars = new Set(Object.keys(themeCssVariables(themeLight)));
-    // Also include allowed dynamic properties
+    // Also include allowed dynamic and structural properties
     validVars.add('--ar-progress');
+    validVars.add('--ar-font-serif');
+    validVars.add('--ar-font-sans');
+    validVars.add('--ar-content-max-width');
 
     const varRegex = /var\(\s*(--ar-[a-zA-Z0-9-]+)/g;
     for (const file of cssFiles) {

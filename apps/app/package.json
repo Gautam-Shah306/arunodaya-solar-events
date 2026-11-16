@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@arunodaya/engine": "0.1.0"
+    "@arunodaya/engine": "0.1.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   }
 }

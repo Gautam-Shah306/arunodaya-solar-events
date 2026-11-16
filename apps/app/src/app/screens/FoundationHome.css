@@ -1,0 +1,136 @@
+.ar-home {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1.5rem 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.ar-home-header {
+  margin-bottom: 2rem;
+}
+
+.ar-home-greeting {
+  font-family: var(--ar-font-serif, serif);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--ar-text-primary);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.2;
+}
+
+.ar-home-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--ar-font-sans, system-ui);
+  font-size: 0.9rem;
+  color: var(--ar-text-secondary);
+}
+
+.ar-home-date {
+  font-weight: 500;
+}
+
+.ar-home-dot {
+  color: var(--ar-text-tertiary);
+}
+
+.ar-home-indicator {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background-color: var(--ar-layer-2);
+  color: var(--ar-text-secondary);
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+.ar-home-countdowns {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ar-home-card {
+  background-color: var(--ar-layer-1);
+  border: 1px solid var(--ar-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ar-home-card--primary {
+  border-color: var(--ar-accent);
+  box-shadow: 0 4px 12px var(--ar-layer-2);
+}
+
+.ar-home-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.ar-home-card-label {
+  font-family: var(--ar-font-serif, serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ar-text-primary);
+}
+
+.ar-home-card-time {
+  font-family: var(--ar-font-serif, serif);
+  font-size: 0.9rem;
+  color: var(--ar-text-secondary);
+}
+
+.ar-home-location-bar {
+  margin-top: 2rem;
+  text-align: center;
+  font-family: var(--ar-font-sans, system-ui);
+  font-size: 0.8rem;
+  color: var(--ar-text-tertiary);
+}
+
+.ar-simulated-banner {
+  background-color: var(--ar-solar, var(--ar-accent));
+  color: var(--ar-canvas);
+  padding: 0.5rem 1rem;
+  font-family: var(--ar-font-sans, system-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.ar-home-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--ar-text-secondary);
+  font-family: var(--ar-font-sans, system-ui);
+}
+
+.ar-home-error {
+  color: var(--ar-solar, var(--ar-accent));
+}
+
+.ar-retry-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--ar-layer-2);
+  border: 1px solid var(--ar-border);
+  border-radius: 6px;
+  color: var(--ar-text-primary);
+  cursor: pointer;
+  font-family: var(--ar-font-sans, system-ui);
+}

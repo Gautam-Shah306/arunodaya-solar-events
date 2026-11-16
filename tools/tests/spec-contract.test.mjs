@@ -138,4 +138,37 @@ describe('Spec Contract Verification', () => {
     expect(design).toContain('packages/themes');
     expect(design).toContain('docs/THEMES.md');
   });
+
+  it('spec contains no hex colour values', () => {
+    expect(spec).not.toMatch(/#[0-9a-fA-F]{6}\b/);
+  });
+
+  it('spec theme sections reference the themes package and the contrast document', () => {
+    const design = getSectionBody(sections, '9. Design system');
+    expect(design).toContain('packages/themes');
+    expect(design).toContain('docs/THEMES.md');
+  });
+
+  it('spec states no implementation prompt count', () => {
+    const section20 = getSectionBody(sections, '20. Implementation plan');
+    expect(section20).not.toMatch(/\b\d+-prompt\b/i);
+    expect(section20).toContain(
+      'The phased implementation plan and delivery tracker live in docs/PLAN.md.',
+    );
+  });
+
+  it('spec contains no invented section titles', () => {
+    const forbidden = [
+      'CIEDE2000',
+      'Colour palette',
+      'Theme selection',
+      'Architecture and technical stack',
+      'four workspace directories',
+      'To be evaluated',
+      'Astronomy card',
+    ];
+    for (const phrase of forbidden) {
+      expect(spec).not.toContain(phrase);
+    }
+  });
 });

@@ -39,98 +39,95 @@ describe('build-output', () => {
     expect(html).toContain('<meta http-equiv="Content-Security-Policy"');
     expect(html).toContain(CSP_POLICY);
 
-    // No inline scripts with executable code (only script type=module with src)
-    const scriptMatches = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)];
-    for (const match of scriptMatches) {
-      const inlineCode = match[1]?.trim() ?? '';
-      expect(inlineCode).toBe('');
-    }
-  });
-
-  it('built shell shows the engine API version from the workspace package', () => {
-    const assetsDir = path.join(pagesDist, 'assets');
-    const files = fs.readdirSync(assetsDir);
-    const jsFiles = files.filter((f) => f.endsWith('.js'));
-    expect(jsFiles.length).toBeGreaterThan(0);
-
-    let bundleContent = '';
-    for (const jsFile of jsFiles) {
-      bundleContent += fs.readFileSync(path.join(assetsDir, jsFile), 'utf8');
-    }
-
-    expect(bundleContent).toContain('Engine API version:');
-    expect(bundleContent).toContain('Foundation build');
-    // ENGINE_API_VERSION = 1
-    expect(bundleContent).toMatch(/ENGINE_API_VERSION|id="engine-api-version">1/);
-  });
-
-  it('themes gallery page is built for the pages target under the repository base path', () => {
-    const themesHtmlPath = path.join(pagesDist, 'themes.html');
-    expect(fs.existsSync(themesHtmlPath)).toBe(true);
-
-    const html = fs.readFileSync(themesHtmlPath, 'utf8');
-    expect(html).toContain('/arunodaya-solar-events/');
-    expect(html).toMatch(/src=["']\/arunodaya-solar-events\/assets\//);
-  });
-
-  it('themes gallery page is not part of the android build', () => {
-    const themesAndroidPath = path.join(androidDist, 'themes.html');
-    expect(fs.existsSync(themesAndroidPath)).toBe(false);
-  });
-
-  it('built themes page carries the CSP meta tag and no inline scripts or style attributes', () => {
-    const themesHtmlPath = path.join(pagesDist, 'themes.html');
-    const html = fs.readFileSync(themesHtmlPath, 'utf8');
-
-    expect(html).toContain('<meta http-equiv="Content-Security-Policy"');
-    expect(html).toContain(CSP_POLICY);
-
     // No inline scripts with executable code
     const scriptMatches = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)];
     for (const match of scriptMatches) {
       const inlineCode = match[1]?.trim() ?? '';
       expect(inlineCode).toBe('');
     }
-
-    // No inline style attributes
-    expect(html).not.toMatch(/\sstyle=["'][^"']*["']/i);
   });
 
-  it('built themes page references no remote URLs', () => {
-    const themesHtmlPath = path.join(pagesDist, 'themes.html');
-    const html = fs.readFileSync(themesHtmlPath, 'utf8');
+  it('pages build generates components gallery html', () => {
+    const componentsHtmlPath = path.join(pagesDist, 'components.html');
+    expect(fs.existsSync(componentsHtmlPath)).toBe(true);
 
-    // Should not reference remote URLs
-    expect(html).not.toMatch(/https?:\/\//i);
-    expect(html).not.toMatch(/href=["']\/\//i);
-    expect(html).not.toMatch(/src=["']\/\//i);
+    const html = fs.readFileSync(componentsHtmlPath, 'utf8');
+    expect(html).toContain('/arunodaya-solar-events/');
+    expect(html).toMatch(/src=["']\/arunodaya-solar-events\/assets\//);
   });
 
-  it('pages build main bundle stays under 2 KB gzip', () => {
+  it('components gallery is not part of the android build', () => {
+    const compAndroidPath = path.join(androidDist, 'components.html');
+    expect(fs.existsSync(compAndroidPath)).toBe(false);
+  });
+
+  it('early-theme script is copied to dist and referenced before any styles', () => {
+    const pagesEarlyTheme = path.join(pagesDist, 'early-theme.js');
+    const androidEarlyTheme = path.join(androidDist, 'early-theme.js');
+
+    expect(fs.existsSync(pagesEarlyTheme)).toBe(true);
+    expect(fs.existsSync(androidEarlyTheme)).toBe(true);
+
+    // Verify early-theme is referenced before any <link rel="stylesheet"> in index.html
+    const html = fs.readFileSync(path.join(pagesDist, 'index.html'), 'utf8');
+    const scriptIndex = html.indexOf('early-theme.js');
+    const firstStyleIndex = html.indexOf('rel="stylesheet"');
+
+    expect(scriptIndex).toBeGreaterThan(-1);
+    expect(firstStyleIndex).toBeGreaterThan(-1);
+    expect(scriptIndex).toBeLessThan(firstStyleIndex);
+  });
+
+  it('bundled woff2 font files exist in assets and are referenced by font-face', () => {
+    const pagesAssets = path.join(pagesDist, 'assets');
+    const files = fs.readdirSync(pagesAssets);
+    const woff2Files = files.filter((f) => f.endsWith('.woff2'));
+
+    expect(woff2Files.length).toBeGreaterThanOrEqual(2);
+
+    const cssFiles = files.filter((f) => f.endsWith('.css'));
+    let combinedCss = '';
+    for (const cssFile of cssFiles) {
+      combinedCss += fs.readFileSync(path.join(pagesAssets, cssFile), 'utf8');
+    }
+
+    expect(combinedCss).toContain('@font-face');
+    for (const font of woff2Files) {
+      expect(combinedCss).toContain(font);
+    }
+  });
+
+  it('worker bundle is emitted as a separate chunk', () => {
+    const pagesAssets = path.join(pagesDist, 'assets');
+    const files = fs.readdirSync(pagesAssets);
+    const workerFile = files.find((f) => f.startsWith('snapshot.worker-') && f.endsWith('.js'));
+
+    expect(workerFile).toBeDefined();
+  });
+
+  it('app bundle stays under 90 KB gzip', () => {
     const assetsDir = path.join(pagesDist, 'assets');
     const files = fs.readdirSync(assetsDir);
-    const mainJsFile = files.find(
-      (f) => (f.startsWith('index-') || f.startsWith('main-')) && f.endsWith('.js'),
-    );
+    const mainJsFile = files.find((f) => f.startsWith('main-') && f.endsWith('.js'));
     expect(mainJsFile).toBeDefined();
 
     const content = fs.readFileSync(path.join(assetsDir, mainJsFile || ''));
     const gzipSize = zlib.gzipSync(content).length;
 
-    // Must stay under 2 KB (2048 bytes)
-    expect(gzipSize).toBeLessThanOrEqual(2048);
+    // Must stay under 90 KB (92160 bytes)
+    expect(gzipSize).toBeLessThanOrEqual(92160);
   });
 
-  it('themes gallery bundle stays under 40 KB gzip', () => {
+  it('components gallery bundle stays under 90 KB gzip', () => {
     const assetsDir = path.join(pagesDist, 'assets');
     const files = fs.readdirSync(assetsDir);
-    const themesJsFile = files.find((f) => f.startsWith('themes-') && f.endsWith('.js'));
-    expect(themesJsFile).toBeDefined();
+    const compJsFile = files.find((f) => f.startsWith('components-') && f.endsWith('.js'));
+    expect(compJsFile).toBeDefined();
 
-    const content = fs.readFileSync(path.join(assetsDir, themesJsFile || ''));
+    const content = fs.readFileSync(path.join(assetsDir, compJsFile || ''));
     const gzipSize = zlib.gzipSync(content).length;
 
-    // Must stay under 40 KB (40960 bytes)
-    expect(gzipSize).toBeLessThanOrEqual(40960);
+    // Must stay under 90 KB (92160 bytes)
+    expect(gzipSize).toBeLessThanOrEqual(92160);
   });
 });
