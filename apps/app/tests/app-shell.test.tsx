@@ -140,6 +140,18 @@ describe('App Shell and Navigation', () => {
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     });
     expect(container!.textContent).toContain('Locations');
+
+    await act(async () => {
+      window.location.hash = '#settings';
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(container!.textContent).toContain('Settings');
+
+    await act(async () => {
+      window.location.hash = '#unknown-route';
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(container!.querySelector('.ar-home')).not.toBeNull();
   });
 
   it('TabBar invokes onNavigate when a tab button is clicked', async () => {

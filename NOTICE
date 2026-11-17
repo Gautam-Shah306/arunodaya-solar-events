@@ -7,9 +7,10 @@ Runtime dependencies:
 - astronomy-engine (version 2.1.19, MIT): Production astronomy engine encapsulated inside packages/engine/src/astro/ for solar and lunar calculations across India (ADR 0008, ADR 0009).
 
 Bundled assets:
-- Gelasio (SIL Open Font License 1.1): Bundled WOFF2 serif font files (gelasio-latin-400-normal.woff2, gelasio-latin-600-normal.woff2), Copyright (c) 2017-2020, Sorkin Type Co (www.sorkintype.com), with Reserved Font Name "Gelasio".
+- Playfair Display (SIL Open Font License 1.1): Bundled WOFF2 serif font files (playfair-display-latin-400-normal.woff2, playfair-display-latin-700-normal.woff2), Copyright 2011 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name "Playfair Display".
 
 Development Tooling:
+- playwright-core (version 1.65.1, Apache-2.0): Headless browser automation library used exclusively in development and CI for real-browser end-to-end testing (ADR 0016).
 - fast-check (version 4.10.2, MIT): Property-based testing framework used for property tests verifying display rounding, countdown bounds, and temporal invariants.
 - suncalc (version 2.1.4, BSD-2-Clause): Astronomical calculation library evaluated during engine selection benchmark.
 

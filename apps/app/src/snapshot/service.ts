@@ -6,8 +6,7 @@ import {
   type SnapshotLocation,
   type SnapshotV1,
 } from '@arunodaya/contracts';
-import { getSnapshotStatus, type Clock } from '@arunodaya/engine';
-import { planSnapshotWindow } from '@arunodaya/engine/astro';
+import { getSnapshotStatus, planSnapshotWindow, type Clock } from '@arunodaya/engine';
 import type { KeyValueStore } from '../core/storage.js';
 import type { SnapshotClient } from './client.js';
 

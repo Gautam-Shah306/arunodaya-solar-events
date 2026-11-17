@@ -3,9 +3,7 @@
   align-items: baseline;
   line-height: 1;
   font-variant-numeric: tabular-nums lining-nums;
-  font-feature-settings:
-    'tnum' 1,
-    'lnum' 1;
+  font-feature-settings: 'lnum' 1;
 }
 
 .ar-roll-slot {
@@ -17,7 +15,7 @@
 }
 
 .ar-roll-slot[data-digit='true'] {
-  width: 1ch;
+  width: var(--ar-digit-width, 0.6ch);
   text-align: center;
 }
 
@@ -30,40 +28,91 @@
   line-height: 1.15em;
 }
 
-.ar-num-track {
-  display: block;
+.ar-roll-exit,
+.ar-roll-enter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  animation-duration: 250ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  animation-fill-mode: forwards;
 }
 
-.ar-roll-slot[data-dir='down'] .ar-num-track {
-  animation: ar-roll-down 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Decrement: Roll Down */
+.ar-roll-exit-down {
+  animation-name: arRollExitDown;
 }
 
-.ar-roll-slot[data-dir='up'] .ar-num-track {
-  animation: ar-roll-up 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.ar-roll-enter-down {
+  animation-name: arRollEnterDown;
 }
 
-@keyframes ar-roll-down {
+@keyframes arRollExitDown {
   0% {
-    transform: translateY(-50%);
+    transform: translateY(0%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes arRollEnterDown {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
   }
   100% {
     transform: translateY(0%);
+    opacity: 1;
   }
 }
 
-@keyframes ar-roll-up {
+/* Increment: Roll Up */
+.ar-roll-exit-up {
+  animation-name: arRollExitUp;
+}
+
+.ar-roll-enter-up {
+  animation-name: arRollEnterUp;
+}
+
+@keyframes arRollExitUp {
   0% {
     transform: translateY(0%);
+    opacity: 1;
   }
   100% {
-    transform: translateY(-50%);
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes arRollEnterUp {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ar-roll-slot[data-dir='down'] .ar-num-track,
-  .ar-roll-slot[data-dir='up'] .ar-num-track {
+  .ar-roll-exit,
+  .ar-roll-enter {
     animation: none !important;
+    transition: none !important;
+  }
+  .ar-roll-exit {
+    display: none !important;
+  }
+  .ar-roll-enter {
+    position: static !important;
     transform: none !important;
+    opacity: 1 !important;
   }
 }

@@ -81,64 +81,96 @@ export const ComponentsGallery: React.FC = () => {
         </div>
 
         {/* Interactive rolling digit testing */}
-        <h3>Interactive Rolling Test</h3>
-        <p>Current: {countdownParts(interactiveMinutes).text}</p>
-        <Countdown
-          remainingMinutes={interactiveMinutes}
-          progress={0.5}
-          srLabel="Interactive event test"
-          isPrimary={true}
-        />
-        <div className="ar-gallery-controls">
-          <button
-            type="button"
-            className="ar-gallery-step-btn"
-            onClick={() => {
-              step(-1);
-            }}
-          >
-            -1m
-          </button>
-          <button
-            type="button"
-            className="ar-gallery-step-btn"
-            onClick={() => {
-              step(1);
-            }}
-          >
-            +1m
-          </button>
-          <button
-            type="button"
-            className="ar-gallery-step-btn"
-            onClick={() => {
-              step(-60);
-            }}
-          >
-            -1h
-          </button>
-          <button
-            type="button"
-            className="ar-gallery-step-btn"
-            onClick={() => {
-              step(60);
-            }}
-          >
-            +1h
-          </button>
-        </div>
+        <section id="rolling-lab" className="ar-gallery-sub-section" aria-label="Rolling Lab">
+          <h3>Interactive Rolling Lab</h3>
+          <p>Current: {countdownParts(interactiveMinutes).text}</p>
+          <Countdown
+            remainingMinutes={interactiveMinutes}
+            progress={0.5}
+            srLabel="Interactive event test"
+            isPrimary={true}
+          />
+          <div className="ar-gallery-controls">
+            <button
+              type="button"
+              id="step-down-1m"
+              className="ar-gallery-step-btn"
+              onClick={() => {
+                step(-1);
+              }}
+            >
+              -1m
+            </button>
+            <button
+              type="button"
+              id="step-up-1m"
+              className="ar-gallery-step-btn"
+              onClick={() => {
+                step(1);
+              }}
+            >
+              +1m
+            </button>
+            <button
+              type="button"
+              id="set-rollover-3h"
+              className="ar-gallery-step-btn"
+              onClick={() => {
+                setInteractiveMinutes(180); // 03h 00m
+              }}
+            >
+              Set 03h 00m
+            </button>
+            <button
+              type="button"
+              id="set-rollover-2h59"
+              className="ar-gallery-step-btn"
+              onClick={() => {
+                setInteractiveMinutes(179); // 02h 59m
+              }}
+            >
+              Set 02h 59m
+            </button>
+            <button
+              type="button"
+              id="set-rollover-10h"
+              className="ar-gallery-step-btn"
+              onClick={() => {
+                setInteractiveMinutes(600); // 10h 00m
+              }}
+            >
+              Set 10h 00m
+            </button>
+            <button
+              type="button"
+              id="set-rollover-9h59"
+              className="ar-gallery-step-btn"
+              onClick={() => {
+                setInteractiveMinutes(599); // 09h 59m
+              }}
+            >
+              Set 09h 59m
+            </button>
+          </div>
+        </section>
       </section>
 
       {/* Digit specimen row */}
       <section className="ar-gallery-section" aria-label="Figure Alignment Specimen">
-        <h2>Digit Specimen (48px Gelasio Tabular Lining Figures)</h2>
+        <h2>Digit Specimens (Playfair Display Lining Figures)</h2>
         <p>
-          Top dashed line indicates cap-height; lower accent dashed line indicates the baseline.
+          48px Display: Top dashed line indicates cap-height; lower accent dashed line indicates
+          baseline.
         </p>
         <div className="ar-gallery-specimen-wrap">
           <div className="ar-gallery-specimen-guide-top" />
           <div className="ar-gallery-specimen-guide-baseline" />
-          <div className="ar-gallery-specimen ar-tnum">0123456789</div>
+          <div className="ar-gallery-specimen ar-num ar-specimen-48">0123456789</div>
+        </div>
+
+        <p>20px Auxiliary:</p>
+        <div className="ar-gallery-specimen-wrap">
+          <div className="ar-gallery-specimen ar-num ar-specimen-20">0123456789</div>
         </div>
       </section>
     </div>

@@ -166,4 +166,58 @@ describe('FoundationHome Screen', () => {
     expect(banner).not.toBeNull();
     expect(banner?.textContent).toContain('Simulated time: 07:15 IST');
   });
+
+  it('foundation home prioritizes sunset in afternoon and sunrise at night', async () => {
+    // Afternoon 12:00 IST (between navkarshi 07:48 and sunset 18:00)
+    const afternoonMs = 1794810600000;
+    const clockAfternoon = { now: () => afternoonMs, nowMs: () => afternoonMs };
+    const service = createMockSnapshotService();
+
+    root = createRoot(container);
+    await act(async () => {
+      root!.render(<FoundationHome clock={clockAfternoon} snapshotService={service} />);
+    });
+
+    const primaryAfternoon = container.querySelector('.ar-home-card--primary .ar-home-card-label');
+    expect(primaryAfternoon?.textContent).toBe('Sunset');
+
+    // Night 22:00 IST (after sunset 18:00)
+    const nightMs = 1794846600000;
+    const clockNight = { now: () => nightMs, nowMs: () => nightMs };
+
+    await act(async () => {
+      root!.render(<FoundationHome clock={clockNight} snapshotService={service} />);
+    });
+
+    const primaryNight = container.querySelector('.ar-home-card--primary .ar-home-card-label');
+    expect(primaryNight?.textContent).toBe('Sunrise');
+  });
+
+  it('foundation home renders error view on snapshot failure and supports retry', async () => {
+    let callCount = 0;
+    const failingService = {
+      load: vi.fn().mockImplementation(async () => {
+        callCount++;
+        return { ok: false, error: { code: 'NETWORK_ERROR', message: 'Failed to fetch' } };
+      }),
+    } as unknown as SnapshotService;
+
+    const clock = { now: () => 1794789000000, nowMs: () => 1794789000000 };
+    root = createRoot(container);
+    await act(async () => {
+      root!.render(<FoundationHome clock={clock} snapshotService={failingService} />);
+    });
+
+    const errorView = container.querySelector('.ar-home-error');
+    expect(errorView).not.toBeNull();
+
+    const retryBtn = container.querySelector<HTMLButtonElement>('.ar-retry-btn');
+    expect(retryBtn).not.toBeNull();
+
+    await act(async () => {
+      retryBtn?.click();
+    });
+
+    expect(callCount).toBeGreaterThanOrEqual(2);
+  });
 });

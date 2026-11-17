@@ -38,5 +38,7 @@ This directory documents key architectural decisions for Arunodaya.
 - [0010: Snapshot builder, shared tolerances, and golden tests](0010-snapshot-builder-and-golden-tests.md)
 - [0011: Theme system architecture and contrast gate](0011-theme-system.md)
 - [0012: Application foundation architecture and state strategy](0012-app-foundation.md)
-- [0013: Typography strategy, serif selection, and bundled fonts](0013-fonts.md)
+- [0013: Typography strategy, serif selection, and bundled fonts (Superseded by 0015)](0013-fonts.md)
 - [0014: Rolling digits odometer and accessible countdown architecture](0014-rolling-digits-and-accessibility.md)
+- [0015: Playfair Display serif typography and lining figures](0015-playfair-display.md)
+- [0016: Real-browser end-to-end testing with Playwright Core](0016-real-browser-tests.md)

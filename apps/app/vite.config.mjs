@@ -21,6 +21,18 @@ export default defineConfig({
     assetsInlineLimit: 0,
     rollupOptions: {
       input: resolveHtmlInputs(target, __dirname),
+      output: {
+        manualChunks(id) {
+          const normalized = id.replace(/\\/g, '/');
+          if (
+            normalized.includes('/node_modules/react/') ||
+            normalized.includes('/node_modules/react-dom/') ||
+            normalized.includes('/node_modules/scheduler/')
+          ) {
+            return 'vendor-react';
+          }
+        },
+      },
     },
   },
 });

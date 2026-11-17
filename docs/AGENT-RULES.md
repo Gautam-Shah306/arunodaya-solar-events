@@ -29,6 +29,8 @@ Every subsequent prompt must begin with Part 0 verification to ensure workspace 
 6. Linux verification: after Prompt 1c, when the prompt touches tests, tooling or workflows, also run `npm run verify:linux` and report it.
 7. Index verification: before reporting, run `npm run verify:linux -- --index` only after the user has staged (skip with a note when the index is empty).
 8. Theme contrast gate: the theme contrast gate runs inside `npm run test:coverage`.
+9. Workflow linting: run `npm run lint:workflows` to validate GitHub Actions workflow configurations using digest-pinned `actionlint`.
+10. Real-browser e2e verification: when a prompt changes animation, fonts or layout, run `npm run test:e2e` and report it, or mark UNVERIFIED.
 
 ## Report format
 

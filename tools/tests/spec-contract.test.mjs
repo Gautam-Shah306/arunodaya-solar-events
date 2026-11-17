@@ -139,8 +139,46 @@ describe('Spec Contract Verification', () => {
     expect(design).toContain('docs/THEMES.md');
   });
 
-  it('spec contains no hex colour values', () => {
-    expect(spec).not.toMatch(/#[0-9a-fA-F]{6}\b/);
+  it('spec contains no hex colour values other than pure dark anchor tokens', () => {
+    const stripped = spec.replace(/#(?:000000|2A2A2A)\b/gi, '');
+    expect(stripped).not.toMatch(/#[0-9a-fA-F]{6}\b/);
+  });
+
+  it('spec: 9.2 lists the eight themes and pure-dark pure black canvas', () => {
+    const section9 = getSectionBody(sections, '9. Design system');
+    expect(section9).toContain('### 9.2 Themes');
+    const themes = [
+      'light',
+      'dark',
+      'pure-dark',
+      'darker',
+      'navy',
+      'burgundy',
+      'porcelain',
+      'sandstone',
+    ];
+    for (const t of themes) {
+      expect(section9.toLowerCase()).toContain(t);
+    }
+    expect(section9).toContain('#000000');
+    expect(section9).toContain('#2A2A2A');
+    expect(section9).not.toContain('Aubergine');
+    expect(section9).not.toContain('Midnight Teal');
+  });
+
+  it('spec: 9.4 documents the 46 contrast checks including border-canvas', () => {
+    const section9 = getSectionBody(sections, '9. Design system');
+    expect(section9).toContain('46 contrast checks');
+    expect(section9).toContain('border-canvas');
+  });
+
+  it('spec: 10.3 references Playfair Display and not Gelasio', () => {
+    const section10 = getSectionBody(sections, '10. Engineering stack');
+    expect(section10).toContain('### 10.3 Fonts');
+    expect(section10).toContain('Playfair Display');
+    expect(section10).toContain('lnum');
+    // Ensure Gelasio is only referenced as removed/superseded
+    expect(section10).not.toMatch(/\busing Gelasio\b/i);
   });
 
   it('spec theme sections reference the themes package and the contrast document', () => {

@@ -908,16 +908,20 @@ describe('Engine time core', () => {
   it('fixed clock returns the configured instant', () => {
     const clock = createFixedClock(1763184000000);
     expect(clock.nowMs()).toBe(1763184000000);
+    expect(clock.now?.()).toBe(1763184000000);
     expect(() => createFixedClock(NaN)).toThrow(RangeError);
   });
 
   it('manual clock advances by the requested milliseconds', () => {
     const clock = createManualClock(1000);
     expect(clock.nowMs()).toBe(1000);
+    expect(clock.now?.()).toBe(1000);
     clock.advance(500);
     expect(clock.nowMs()).toBe(1500);
+    expect(clock.now?.()).toBe(1500);
     clock.set(5000);
     expect(clock.nowMs()).toBe(5000);
+    expect(clock.now?.()).toBe(5000);
     expect(() => createManualClock(NaN)).toThrow(RangeError);
     expect(() => {
       clock.advance(NaN);

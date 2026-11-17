@@ -48,6 +48,9 @@ npm run verify:linux
 | `build:android`      | `node tools/build-app.mjs --target=android`                              | Build web application for Android WebView container    |
 | `preview:pages`      | `node tools/preview-app.mjs`                                             | Preview built GitHub Pages target locally on port 4173 |
 | `test:build`         | `vitest run --project=build`                                             | Verify built output integrity and CSP headers          |
+| `test:e2e`           | `node tools/test-e2e.mjs`                                                | Run real-browser Playwright E2E tests in Chromium      |
+| `analyze:bundle`     | `node tools/bundle-report.mjs`                                           | Generate bundle report and chunk analysis              |
+| `lint:workflows`     | `node tools/lint-workflows.mjs`                                          | Lint GitHub Actions workflows with actionlint          |
 | `reference:generate` | `node tools/generate-reference.mjs`                                      | Generate Skyfield/PyEphem reference dataset in Docker  |
 | `bench:astro`        | `node tools/bench-astro.mjs`                                             | Run empirical astronomy accuracy benchmark             |
 | `verify`             | `node tools/verify.mjs`                                                  | Execute the complete quality pipeline in sequence      |
@@ -109,11 +112,15 @@ The core astronomical calculations are provided by `astronomy-engine` (MIT, vers
 
 ## Themes and Contrast Validation
 
-Arunodaya ships ten curated themes (four built-in and six custom theme packs) designed around high-contrast editorial and dark aesthetics. Every theme is defined as typed data in `packages/themes` and enforced by an automated 45-point contrast gate in CI (`npm run test`):
+Arunodaya ships eight curated themes (four built-in: Light, Dark, Pure Dark, Darker; four theme packs: Navy, Burgundy, Porcelain, Sandstone) designed around high-contrast editorial and dark aesthetics. Pure Dark layers equal pure black with a border for separation; light themes use light widget surfaces. Every theme is defined as typed data in `packages/themes` and enforced by an automated 46-point contrast gate in CI (`npm run test`):
 
 - **Documentation & Token Reference**: [docs/THEMES.md](docs/THEMES.md)
 - **Architecture & Contrast Decision**: [docs/adr/0011-theme-system.md](docs/adr/0011-theme-system.md)
 - **Live Theme Gallery**: [https://gautam-shah306.github.io/arunodaya-solar-events/themes.html](https://gautam-shah306.github.io/arunodaya-solar-events/themes.html)
+
+## Typography and Real-Browser Testing
+
+Headings and countdown displays use bundled **Playfair Display** (OFL-1.1, weights 400 and 700) WOFF2 serif with lining figures (`lnum`) and calibrated slot styling (`--ar-digit-width: 1.06ch`). End-to-end rendering and rolling digit transitions are verified in real headless Chromium via Playwright (`npm run test:e2e`).
 
 ## GitHub Pages Deployment
 

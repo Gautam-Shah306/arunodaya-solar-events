@@ -118,7 +118,14 @@
 
 .ar-gallery-specimen {
   font-family: var(--ar-font-serif, serif);
-  font-size: 48px;
   line-height: 1;
   letter-spacing: 0;
+}
+
+.ar-specimen-48 {
+  font-size: 48px;
+}
+
+.ar-specimen-20 {
+  font-size: 20px;
 }

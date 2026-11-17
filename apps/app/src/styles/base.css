@@ -1,7 +1,8 @@
 :root {
-  --ar-font-serif: 'Gelasio', ui-serif, serif;
+  --ar-font-serif: 'Playfair Display', Georgia, serif;
   --ar-font-sans: system-ui, sans-serif;
   --ar-content-max-width: 560px;
+  --ar-digit-width: 1.06ch;
 }
 
 *,

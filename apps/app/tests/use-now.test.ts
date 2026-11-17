@@ -92,5 +92,31 @@ describe('useNow hook', () => {
     });
 
     expect(ticks).toEqual([1763274610000, 1763274900000]);
+
+    // Test window focus event
+    currentTime = 1763274960000;
+    act(() => {
+      window.dispatchEvent(new Event('focus'));
+    });
+    expect(ticks).toEqual([1763274610000, 1763274900000, 1763274960000]);
+  });
+
+  it('useNow supports clocks with now() only', () => {
+    const clock = {
+      now: () => 1763274610000,
+    } as Clock;
+    const ticks: number[] = [];
+    const root = createRoot(container);
+    act(() => {
+      root.render(
+        React.createElement(TestComponent, {
+          clock,
+          onTick: (t: number) => {
+            ticks.push(t);
+          },
+        }),
+      );
+    });
+    expect(ticks).toEqual([1763274610000]);
   });
 });

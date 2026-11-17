@@ -32,4 +32,10 @@ export const TEST_PROJECTS = [
     include: ['packages/engine/tests-golden/**/*.test.ts'],
     testTimeout: 300000,
   },
+  {
+    name: 'e2e',
+    environment: 'node',
+    include: ['tools/tests-e2e/**/*.test.{mjs,js}'],
+    testTimeout: 60000,
+  },
 ];

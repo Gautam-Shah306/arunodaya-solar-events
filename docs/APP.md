@@ -65,8 +65,8 @@ To eliminate flash-of-unstyled-content (FOUC) and theme flicker before React ini
 
 ## Typography & Fonts
 
-- **Numerals**: Bundled Gelasio Regular (400) and SemiBold (600) WOFF2 font files under `src/assets/fonts/`. Configured with OpenType features `tnum` (tabular figures) and `lnum` (lining figures) so character advancing widths are constant and numbers share a baseline.
-- **UI Chrome**: Standard `system-ui` sans-serif stack.
+- **Numerals & Headings**: Bundled Playfair Display Regular (400) and SemiBold (600) WOFF2 font files under `src/assets/fonts/` (SIL OFL 1.1, ADR 0015). Enforces OpenType lining figures (`lnum`) so numerals share uniform cap height and rest on the baseline. Tabular advance widths are calibrated via `--ar-digit-width` in fixed-width clipped slots. Used for headings, the greeting, event timestamps, and countdown numerals (>= 20px).
+- **UI Chrome**: Standard `system-ui` sans-serif stack for small labels, badges, and tab navigation.
 - **Inviolable Rule**: Georgia is strictly forbidden anywhere in font stacks due to old-style proportional numerals.
 
 ## Offline Snapshot Pipeline
@@ -77,4 +77,36 @@ Multi-day astronomical calculation is orchestrated off the main thread:
 2. `SnapshotService` inspects `localStorage` for a cached snapshot matching location coordinates.
 3. If cache is missing, expired, or for a different location, it requests a new 92-day snapshot via `SnapshotClient`.
 4. `SnapshotClient` sends a message to `snapshot.worker.ts`.
-5. If Web Workers are unavailable or stuck (> 30s), `SnapshotClient` falls back seamlessly to synchronous main-thread calculation.
+5. If Web Workers are unavailable or stuck (> 30s), `SnapshotClient` falls back seamlessly to lazy main-thread calculation via dynamic import.
+
+## Real-Browser Tests
+
+Real-browser automated tests execute in Chromium driven by `playwright-core` (ADR 0016):
+
+- **Installation**: `npm run e2e:install` installs the verified Chromium browser binary to the local user cache.
+- **Execution**: `npm run test:e2e` builds the production Pages target, serves it via Vite's preview server with full CSP headers, and executes the suite in `tools/tests-e2e/`.
+- **Coverage**:
+  - CSS keyframe animations and direction restarts verified via `element.getAnimations()`.
+  - Tabular digit advance widths and slot geometry stability.
+  - Font loading status via `document.fonts`.
+  - Content Security Policy conformance during worker initialization.
+  - Component gallery and theme switching without console or CSP errors.
+- **Screenshots**: Test screenshots and visual inspection captures are written to `.scratch/e2e/` (never committed).
+
+## Bundle Budgets
+
+First-load JavaScript (entry chunk + modulepreloads/static imports summed as gzip) is tracked and enforced against recorded budgets:
+
+- **Pages Target**: Budget is **165 kB gzip** (measured: ~143.3 kB gzip; budget is `ceil(measured * 1.15)`).
+- **Android Target**: Budget is **165 kB gzip** (measured: ~142.7 kB gzip; budget is `ceil(measured * 1.15)`).
+- **Analysis CLI**: `npm run analyze:bundle -- --target=<pages|android>` prints per-chunk raw and gzip sizes, along with the top 12 modules grouped by npm package or repository source path.
+- **Astronomy Isolation**: Astronomy calculation code (`astronomy-engine` and `packages/engine/src/astro`) is isolated strictly to the worker chunk and the lazy fallback chunk (`request-handler-*.js`).
+
+## Debug Parameters
+
+When built with `__AR_DEBUG__` enabled (development mode and GitHub Pages targets only; disabled on Android production builds):
+
+- `?now=YYYY-MM-DDTHH:mm`: Overrides current system time with a deterministic frozen instant.
+- `?theme=<id>`: Overrides user stored theme preference with a specific theme ID or `system`.
+- `?clock=12h|24h`: Forces display time format preference.
+- A visual amber debug pill appears in the top-right corner of the application shell whenever debug parameters are active.

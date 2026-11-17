@@ -46,3 +46,17 @@ Key requirements:
 - Countdowns convey passage of time intuitively through physical odometer metaphors.
 - Screen readers receive clean, intelligible, and non-intrusive updates.
 - Zero layout shifting or horizontal wobble across all ten themes.
+
+## Amendment (6b)
+
+In Prompt 6b, the rolling digit mechanics and component implementation were reworked following real-browser review:
+
+1. **Direction and Scope Rules**:
+   - The roll direction follows the change of the whole countdown value: a decrease rolls down (the old digit leaves downward, the new digit enters from above); an increase rolls up (the old digit leaves upward, the new digit enters from below); equal values do not animate.
+   - Every digit whose character changes rolls in the computed direction, including wraps (9 to 0 on increment rolls up; 0 to 9 on decrement rolls down).
+   - Unchanged digits, separators, and unit letters remain completely static.
+   - When the slot count changes, slots align from the right; slots without previous characters only enter, while slots without next characters only exit.
+2. **Keyed Glyph Elements for Animation Restart**:
+   - Each changed slot mounts newly keyed DOM elements (`.ar-roll-enter` and `.ar-roll-exit` with a monotonically incrementing sequence counter) so that every change restarts CSS animations reliably in all browser engines.
+   - Exiting glyphs are unmounted upon `onAnimationEnd` or by a 400ms safety timeout.
+   - Synchronized dual-layer rendering in `Countdown.tsx` ensures the shade layer and clipped fill layer share identical sequence keys and animation timing.

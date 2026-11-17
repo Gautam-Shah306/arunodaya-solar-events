@@ -11,7 +11,7 @@ describe('Engine Entry Points', () => {
     expect(rootExports).not.toContain('computeMoonEvents');
     expect(rootExports).not.toContain('ASTRONOMY_ENGINE');
     expect(rootExports).not.toContain('accuracyTier');
-    expect(rootExports).not.toContain('planSnapshotWindow');
+    expect(rootExports).toContain('planSnapshotWindow');
   });
 
   it('engine astro entry exports the provider and snapshot builder', () => {

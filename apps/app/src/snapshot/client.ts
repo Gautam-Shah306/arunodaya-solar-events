@@ -1,5 +1,4 @@
 import { err, ok, type Result, type SnapshotV1 } from '@arunodaya/contracts';
-import { handleMessage } from './request-handler.js';
 import type { BuildRequest, BuildResponse } from './worker-protocol.js';
 
 export interface WorkerLike {
@@ -17,7 +16,8 @@ export interface SnapshotClientError {
 
 export interface SnapshotClientOptions {
   readonly createWorker?: () => WorkerLike | null;
-  readonly fallback?: ((req: BuildRequest) => BuildResponse | null) | null;
+  readonly fallback?:
+    ((req: BuildRequest) => Promise<BuildResponse | null> | BuildResponse | null) | null;
   readonly timeoutMs?: number;
 }
 
@@ -36,10 +36,10 @@ export interface SnapshotClient {
 
 /**
  * Creates a SnapshotClient managing background Web Worker execution with
- * synchronous main-thread fallback, request ID routing, and timeout guards.
+ * asynchronous main-thread fallback, request ID routing, and timeout guards.
  */
 export function createSnapshotClient(options: SnapshotClientOptions = {}): SnapshotClient {
-  const { createWorker, fallback = handleMessage, timeoutMs = 30_000 } = options;
+  const { createWorker, fallback, timeoutMs = 30_000 } = options;
 
   let nextId = 1;
   let isDisposed = false;
@@ -58,6 +58,21 @@ export function createSnapshotClient(options: SnapshotClientOptions = {}): Snaps
 
   let worker: WorkerLike | null = null;
   let workerFailed = false;
+
+  async function executeFallback(req: BuildRequest): Promise<BuildResponse | null> {
+    if (fallback === null) {
+      return null;
+    }
+    if (typeof fallback === 'function') {
+      return await fallback(req);
+    }
+    try {
+      const { handleMessage } = await import('./request-handler.js');
+      return handleMessage(req);
+    } catch {
+      return null;
+    }
+  }
 
   function initWorker(): WorkerLike | null {
     if (workerFailed || isDisposed) return null;
@@ -131,7 +146,7 @@ export function createSnapshotClient(options: SnapshotClientOptions = {}): Snaps
       const activeWorker = initWorker();
       if (!activeWorker) {
         diagnostics.fallbackCount += 1;
-        const fallbackResp = fallback ? fallback(fullRequest) : null;
+        const fallbackResp = await executeFallback(fullRequest);
         if (!fallbackResp || !fallbackResp.ok) {
           return err({
             code: fallbackResp ? fallbackResp.error.code : 'FALLBACK_FAILED',
@@ -145,32 +160,32 @@ export function createSnapshotClient(options: SnapshotClientOptions = {}): Snaps
 
       return new Promise<Result<SnapshotV1, SnapshotClientError>>((resolve) => {
         const timer = setTimeout(() => {
-          if (pending.has(id)) {
-            pending.delete(id);
-            if (worker) {
-              worker.terminate();
-              worker = null;
-            }
-            diagnostics.fallbackCount += 1;
-            if (fallback) {
-              const fb = fallback(fullRequest);
+          void (async () => {
+            if (pending.has(id)) {
+              pending.delete(id);
+              if (worker) {
+                worker.terminate();
+                worker = null;
+              }
+              diagnostics.fallbackCount += 1;
+              const fb = await executeFallback(fullRequest);
               if (fb && fb.ok) {
                 resolve(ok(fb.snapshot));
                 return;
               }
+              resolve(
+                err({
+                  code: 'TIMEOUT',
+                  message:
+                    'Snapshot request ' +
+                    String(id) +
+                    ' timed out after ' +
+                    String(timeoutMs) +
+                    ' ms',
+                }),
+              );
             }
-            resolve(
-              err({
-                code: 'TIMEOUT',
-                message:
-                  'Snapshot request ' +
-                  String(id) +
-                  ' timed out after ' +
-                  String(timeoutMs) +
-                  ' ms',
-              }),
-            );
-          }
+          })();
         }, timeoutMs);
 
         pending.set(id, { resolve, timer });

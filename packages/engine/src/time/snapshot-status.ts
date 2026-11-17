@@ -1,8 +1,23 @@
 import type { SnapshotV1 } from '@arunodaya/contracts';
 import { SNAPSHOT_POLICY } from '../config.js';
-import { istDateToStartMs, MS_PER_DAY } from './ist.js';
+import { addIstDays, istDateToStartMs, istParts, MS_PER_DAY } from './ist.js';
 
 export type SnapshotStatus = 'not_started' | 'ready' | 'expiring' | 'expired';
+
+/**
+ * Plans the IST date range and day count for snapshot calculation.
+ * @param nowMs Current epoch milliseconds
+ * @returns Object with startIstDate and dayCount
+ */
+export function planSnapshotWindow(nowMs: number): {
+  startIstDate: string;
+  dayCount: number;
+} {
+  const parts = istParts(nowMs);
+  const startIstDate = addIstDays(parts.istDate, -SNAPSHOT_POLICY.daysBehind);
+  const dayCount = SNAPSHOT_POLICY.daysBehind + 1 + SNAPSHOT_POLICY.daysAhead;
+  return { startIstDate, dayCount };
+}
 
 /**
  * Computes snapshot lifecycle status for the current instant.

@@ -6,25 +6,12 @@ export interface CountdownParts {
   readonly text: string;
 }
 
-export interface DigitSlot {
-  readonly char: string;
+export interface SlotPlan {
+  readonly id: string;
   readonly previousChar: string | null;
-  readonly isDigit: boolean;
-  readonly animate: boolean;
-  readonly direction: RollDirection;
-}
-
-/**
- * Determines rolling direction from value change.
- * Decrease rolls down (new digit enters from above).
- * Increase rolls up.
- * Equal or initial state does not roll.
- */
-export function rollDirection(previousMinutes: number | null, nextMinutes: number): RollDirection {
-  if (previousMinutes === null || previousMinutes === nextMinutes) {
-    return null;
-  }
-  return nextMinutes < previousMinutes ? 'down' : 'up';
+  readonly nextChar: string;
+  readonly changed: boolean;
+  readonly direction: 'up' | 'down';
 }
 
 /**
@@ -47,30 +34,39 @@ export function countdownParts(remainingMinutes: number): CountdownParts {
 }
 
 /**
- * Plans slot layout and animation flags for character transitions.
- * Only changing digit characters roll; separators and unit letters remain static.
+ * Determines rolling direction from remaining time change.
+ * Decrement rolls down; increment rolls up.
+ */
+export function rollDirection(previousMinutes: number | null, nextMinutes: number): RollDirection {
+  if (previousMinutes === null || previousMinutes === nextMinutes) {
+    return null;
+  }
+  return nextMinutes < previousMinutes ? 'down' : 'up';
+}
+
+/**
+ * Plans slot layout and animation properties for character transitions.
+ * Uniform whole-countdown direction is applied to all changing slots.
  */
 export function planSlots(
   previousText: string | null,
   nextText: string,
-  direction: RollDirection,
-): readonly DigitSlot[] {
-  const slots: DigitSlot[] = [];
-  const prev = previousText ?? '';
+  direction: 'up' | 'down' = 'down',
+): SlotPlan[] {
+  const slots: SlotPlan[] = [];
+  const isFirstRender = previousText === null;
 
   for (let i = 0; i < nextText.length; i++) {
     const nextChar = nextText[i] ?? '';
-    const prevChar = prev[i] ?? null;
-    const isDigit = /^[0-9]$/.test(nextChar);
-    const hasChanged = prevChar !== null && prevChar !== nextChar;
-    const animate = Boolean(direction && isDigit && hasChanged);
+    const prevChar = isFirstRender ? null : (previousText[i] ?? null);
+    const changed = !isFirstRender && prevChar !== null && prevChar !== nextChar;
 
     slots.push({
-      char: nextChar,
-      previousChar: animate ? prevChar : null,
-      isDigit,
-      animate,
-      direction: animate ? direction : null,
+      id: `slot-${String(i)}`,
+      previousChar: changed ? prevChar : null,
+      nextChar,
+      changed,
+      direction,
     });
   }
 

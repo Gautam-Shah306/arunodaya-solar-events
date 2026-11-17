@@ -80,4 +80,13 @@ export default tseslint.config(
       'no-console': 'off',
     },
   },
+  {
+    files: ['tools/tests-e2e/**'],
+    languageOptions: {
+      globals: {
+        window: 'readonly',
+        document: 'readonly',
+      },
+    },
+  },
 );

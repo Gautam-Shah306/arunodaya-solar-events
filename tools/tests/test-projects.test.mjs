@@ -56,4 +56,30 @@ describe('Test Projects Coverage', () => {
       ).toBe(1);
     }
   });
+
+  it('coverage gates are defined for every source area', async () => {
+    const { COVERAGE_GATES } = await import('../lib/coverage-gates.mjs');
+    const requiredAreas = [
+      'tools/lib/**',
+      'packages/contracts/src/**',
+      'packages/engine/src/**',
+      'packages/themes/src/**',
+      'apps/app/src/**',
+    ];
+
+    const definedGlobs = COVERAGE_GATES.map((g) => g.glob);
+    for (const area of requiredAreas) {
+      expect(definedGlobs).toContain(area);
+      const gate = COVERAGE_GATES.find((g) => g.glob === area);
+      expect(gate).toBeDefined();
+      expect(gate?.statements).toBeGreaterThanOrEqual(80);
+      expect(gate?.branches).toBeGreaterThanOrEqual(80);
+      expect(gate?.functions).toBeGreaterThanOrEqual(80);
+      expect(gate?.lines).toBeGreaterThanOrEqual(80);
+    }
+
+    const vitestConfigContent = fs.readFileSync(path.resolve('vitest.config.mjs'), 'utf8');
+    expect(vitestConfigContent).toContain('coverage-gates.mjs');
+    expect(vitestConfigContent).toMatch(/buildVitestThresholds|COVERAGE_GATES/);
+  });
 });

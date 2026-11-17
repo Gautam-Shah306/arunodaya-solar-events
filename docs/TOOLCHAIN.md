@@ -29,6 +29,7 @@ All dependencies are exact-pinned devDependencies located at the repository root
 | `@types/react`              | `19.3.0`  | MIT          | React TypeScript definitions                                  |
 | `@types/react-dom`          | `19.3.0`  | MIT          | React DOM TypeScript definitions                              |
 | `happy-dom`                 | `21.0.4`  | MIT          | Headless DOM implementation for React component testing       |
+| `playwright-core`           | `1.65.1`  | Apache-2.0   | Headless browser automation library for real-browser testing  |
 | `astronomy-engine`          | `2.1.19`  | MIT          | Astronomical calculation benchmark candidate (winning engine) |
 | `suncalc`                   | `2.1.4`   | BSD-2-Clause | Astronomical calculation benchmark candidate                  |
 

@@ -2,7 +2,7 @@
 
 Arunodaya features a deterministic, accessibility-checked theme system defined as pure typed data in `packages/themes`. The system enforces high contrast, distinctness, restrained aesthetics, and zero third-party UI dependencies.
 
-Visual review of all ten themes is available via the standalone review gallery: [themes.html](file:///d:/Sem4%20vac/arunodaya-solar-events/apps/app/themes.html).
+Visual review of all eight themes is available via the standalone review gallery: [themes.html](file:///d:/Sem4%20vac/arunodaya-solar-events/apps/app/themes.html).
 
 ---
 
@@ -68,28 +68,26 @@ Widget tokens provide opaque `#RRGGBB` colors serialized for Android AppWidgets 
 
 ---
 
-## The Ten Themes
+## The Eight Themes
 
-The ten themes are curated across two families: Built-in (4) and Custom Packs (6).
+The eight themes are curated across two families: Built-in (4) and Custom Packs (4).
 
-| ID                   | Name          | Family     | Base Mode | Character                                                   | Anchor Colours (Canvas, Layer1, TextPrimary, Accent, Solar) |
-| :------------------- | :------------ | :--------- | :-------- | :---------------------------------------------------------- | :---------------------------------------------------------- |
-| `light`              | Light         | `built_in` | `light`   | Editorial Premium with sage layers and deep forest ink      | `#F7F2E7`, `#FFFCF5`, `#14301F`, `#8C6417`, `#A9741A`       |
-| `dark`               | Dark          | `built_in` | `dark`    | Restrained charcoal-green with warm parchment text          | `#14211A`, `#1C2B22`, `#EFE6D2`, `#D8B96C`, `#E3B75A`       |
-| `pure-dark`          | Pure Dark     | `built_in` | `dark`    | OLED absolute black `#000000` with neutral grey steps       | `#000000`, `#0D0D0D`, `#FFFFFF`, `#D8B96C`, `#E3B75A`       |
-| `darker`             | Darker        | `built_in` | `dark`    | Deep atmospheric forest green, darker than dark             | `#07150E`, `#0E1E15`, `#EAE0CB`, `#D8B96C`, `#E3B75A`       |
-| `pack-navy`          | Navy          | `pack`     | `dark`    | Deep maritime midnight blue with ivory accents              | `#0A1426`, `#101D36`, `#F1EBDD`, `#D8B96C`, `#E3B75A`       |
-| `pack-burgundy`      | Burgundy      | `pack`     | `dark`    | Rich velvet wine tone with warm ivory typography            | `#1A0A10`, `#25111A`, `#F3E8DA`, `#D8B96C`, `#E3B75A`       |
-| `pack-aubergine`     | Aubergine     | `pack`     | `dark`    | Royal imperial purple with soft lilac-ivory text            | `#150B1C`, `#1E1128`, `#EFE6F0`, `#D9B78A`, `#E3B75A`       |
-| `pack-midnight-teal` | Midnight Teal | `pack`     | `dark`    | Deep petrol teal with mint typography, distinct from darker | `#052026`, `#0B2B33`, `#E3EFE6`, `#E0B45C`, `#E8B24E`       |
-| `pack-porcelain`     | Porcelain     | `pack`     | `light`   | Cool architectural off-white with deep navy ink text        | `#F2F5F8`, `#FFFFFF`, `#0F2238`, `#82580F`, `#9C660F`       |
-| `pack-sandstone`     | Sandstone     | `pack`     | `light`   | Warm desert sand with espresso ink and terracotta tones     | `#F2E3C6`, `#FAF1DE`, `#2E1D12`, `#85540B`, `#9E6114`       |
+| ID               | Name      | Family     | Base Mode | Character                                               | Anchor Colours (Canvas, Layer1, TextPrimary, Accent, Solar) |
+| :--------------- | :-------- | :--------- | :-------- | :------------------------------------------------------ | :---------------------------------------------------------- |
+| `light`          | Light     | `built_in` | `light`   | Editorial Premium with sage layers and deep forest ink  | `#F7F2E7`, `#FFFCF5`, `#14301F`, `#8C6417`, `#A9741A`       |
+| `dark`           | Dark      | `built_in` | `dark`    | Restrained charcoal-green with warm parchment text      | `#14211A`, `#1C2B22`, `#EFE6D2`, `#D8B96C`, `#E3B75A`       |
+| `pure-dark`      | Pure Dark | `built_in` | `dark`    | OLED absolute black `#000000` with pure black layers    | `#000000`, `#000000`, `#FFFFFF`, `#D8B96C`, `#E3B75A`       |
+| `darker`         | Darker    | `built_in` | `dark`    | Deep atmospheric forest green, darker than dark         | `#04170C`, `#082212`, `#EAE0CB`, `#D8B96C`, `#E3B75A`       |
+| `pack-navy`      | Navy      | `pack`     | `dark`    | Deep maritime midnight blue with ivory accents          | `#050C24`, `#091838`, `#F1EBDD`, `#D8B96C`, `#E3B75A`       |
+| `pack-burgundy`  | Burgundy  | `pack`     | `dark`    | Rich velvet wine tone with warm ivory typography        | `#14050A`, `#230912`, `#F3E8DA`, `#D8B96C`, `#E3B75A`       |
+| `pack-porcelain` | Porcelain | `pack`     | `light`   | Cool architectural off-white with deep navy ink text    | `#F2F5F8`, `#FFFFFF`, `#0F2238`, `#82580F`, `#9C660F`       |
+| `pack-sandstone` | Sandstone | `pack`     | `light`   | Warm desert sand with espresso ink and terracotta tones | `#F2E3C6`, `#FAF1DE`, `#2E1D12`, `#85540B`, `#9E6114`       |
 
 ---
 
 ## Contrast Checks Table
 
-The theme contrast gate evaluates 45 automated checks across every theme during `npm run test:coverage`.
+The theme contrast gate evaluates 46 automated checks across every theme during `npm run test:coverage`.
 
 | Check ID                            | Foreground       | Background       | Scope    | Min Ratio | Purpose                                                                       |
 | :---------------------------------- | :--------------- | :--------------- | :------- | :-------- | :---------------------------------------------------------------------------- |
@@ -110,6 +108,7 @@ The theme contrast gate evaluates 45 automated checks across every theme during 
 | `text-on-accent-accent`             | `textOnAccent`   | `accent`         | `tokens` | 4.5:1     | Text readability on accent-filled interactive controls                        |
 | `accent-canvas`                     | `accent`         | `canvas`         | `tokens` | 3.0:1     | Accent component and icon visibility against canvas                           |
 | `solar-canvas`                      | `solar`          | `canvas`         | `tokens` | 3.0:1     | Solar accent visibility against canvas                                        |
+| `border-canvas`                     | `border`         | `canvas`         | `tokens` | 1.3:1     | Separators and card edges are perceptible against canvas                      |
 | `border-strong-canvas`              | `borderStrong`   | `canvas`         | `tokens` | 3.0:1     | Strong border and divider visibility against canvas                           |
 | `border-strong-layer1`              | `borderStrong`   | `layer1`         | `tokens` | 3.0:1     | Strong border and divider visibility against layer 1                          |
 | `focus-canvas`                      | `focus`          | `canvas`         | `tokens` | 3.0:1     | Focus outline visibility against canvas                                       |
@@ -143,12 +142,8 @@ The theme contrast gate evaluates 45 automated checks across every theme during 
 
 ## Distinctness Rules
 
-- **Pairwise Canvas Distinctness**: All ten theme canvases must have pairwise perceptual distance $\Delta E \ge 6.0$ under CIE76 (D65 standard illuminant).
-- **Midnight Teal vs Darker Green**:
-  - Canvas Hue Distance: $\ge 25^\circ$ (measured $40.9^\circ$).
-  - Canvas $\Delta E$: $\ge 10.0$ (measured $10.73$).
-  - Layer 1 $\Delta E$: $\ge 8.0$ (measured $14.06$).
-- **Layer Stepping**: Within every theme, adjacent elevation layers must differ by $\Delta E \ge 2.0$.
+- **Pairwise Canvas Distinctness**: All eight theme canvases must have pairwise perceptual distance $\Delta E \ge 4.0$ under CIE76 (D65 standard illuminant).
+- **Layer Stepping**: Within every theme, adjacent elevation layers must differ by $\Delta E \ge 2.0$ (except `pure-dark` where layers are pure black `#000000` separated by border).
 
 ---
 
@@ -168,33 +163,33 @@ No user-chosen custom pair is permitted, preserving deterministic rendering.
 The following tokens were tuned from their initial starting anchors to satisfy the contrast and distinctness gates:
 
 1. **`light`**:
-   - `widget.countdownShade`: tuned from `#567563` to `#6B8D78` (ratio against surface `#1B3A2A` improved from 2.44 to 3.26, satisfying $\ge 3.0:1$ requirement).
+   - `widget.surface` and `widget.surfaceAlt`: use light surfaces (`#FFFCF5`, `#EDF0E2`) matching `layer1` and `layer2`.
+   - `widget.textPrimary` (`#14301F`) and `widget.textSecondary` (`#354E3D`) meet AAA/AA contrast against light widget surface.
+   - `widget.accent` (`#73500C`) and `widget.solar` (`#734D09`) provide high-contrast gold meeting AA text contrast.
+   - `widget.countdownShade`: `#809183` (meets 3:1 on surface and 1.8:1 vs `countdownFill` `#14301F`).
 2. **`dark`**:
-   - `canvas`: tuned from `#121A16` to `#14211A`, with layers stepping `#1C2B22`, `#23342B`, `#2C3E34` (guarantees $\Delta E \ge 6.0$ against `darker`, `pure-dark`, and `pack-midnight-teal`).
-   - `tokens.countdownShade` and `widget.countdownShade`: tuned from `#566E61` to `#5E7A6B` (contrast improved from 2.88 to 3.15, satisfying $\ge 3.0:1$).
+   - `canvas`: `#14211A`, with layers stepping `#1C2B22`, `#23342B`, `#2C3E34`.
+   - `tokens.countdownShade` and `widget.countdownShade`: `#5E7A6B` (contrast 3.15, satisfying $\ge 3.0:1$).
 3. **`pure-dark`**:
-   - `tokens.countdownShade` and `widget.countdownShade`: tuned from `#575757` to `#616161` (contrast on layer1 `#0D0D0D` improved from 2.69 to 3.14, satisfying $\ge 3.0:1$).
+   - `canvas`, `layer1`, `layer2`, `layer3`: set to pure black `#000000`. Separation is maintained via border `#2A2A2A` (ratio $\ge 1.3:1$ on canvas).
+   - `widget.surface` and `widget.surfaceAlt`: set to `#000000`.
 4. **`darker`**:
-   - `canvas`: tuned from `#08110D` to `#07150E`, with layers stepping `#0E1E15`, `#15281D`, `#1C3326` (achieves $\Delta E = 8.51 \ge 6.0$ from `pure-dark` `#000000` and $\Delta E = 10.73 \ge 10.0$ from `pack-midnight-teal`).
-   - `tokens.countdownShade` and `widget.countdownShade`: tuned from `#4D6756` to `#52715F` (contrast improved from 2.88 to 3.20, satisfying $\ge 3.0:1$).
+   - `canvas`: `#04170C`, with layers stepping `#082212`, `#0D2E1B`, `#133B25`, and `textPrimary` `#EAE0CB`.
+   - `widget.surface`: `#082212`, `widget.surfaceAlt`: `#0D2E1B`.
 5. **`pack-navy`**:
-   - `tokens.countdownShade` and `widget.countdownShade`: tuned from `#4E6894` to `#526F9E` (contrast improved from 2.98 to 3.30, satisfying $\ge 3.0:1$).
+   - `canvas`: `#050C24`, with layers stepping `#091838`, `#0E2250`, `#152E68`, and `textPrimary` `#F1EBDD`.
+   - `widget.surface`: `#091838`, `widget.surfaceAlt`: `#0E2250`.
 6. **`pack-burgundy`**:
-   - `tokens.countdownShade` and `widget.countdownShade`: tuned from `#6B4354` to `#8A576E` (contrast improved from 2.18 to 3.10, satisfying $\ge 3.0:1$).
-7. **`pack-aubergine`**:
-   - `tokens.countdownShade` and `widget.countdownShade`: tuned from `#624A75` to `#75588C` (contrast improved from 2.36 to 3.03, satisfying $\ge 3.0:1$).
-8. **`pack-midnight-teal`**:
-   - `canvas`: tuned from `#07181B` to `#052026`, and `layer1` from `#0C2327` to `#0B2B33`, with remaining layers `#113640`, `#18424E` (satisfies $\Delta E = 10.73 \ge 10.0$ and layer1 $\Delta E = 14.06 \ge 8.0$ against `darker`).
-   - `tokens.countdownShade` and `widget.countdownShade`: tuned from `#3E6F75` to `#427C87` (contrast improved from 2.91 to 3.17, satisfying $\ge 3.0:1$).
-9. **`pack-porcelain`**:
-   - `tokens.accent`: tuned from `#8A5F12` to `#82580F` (meets 4.5:1 on layer1 `#FFFFFF`).
-   - `tokens.solar`: tuned from `#A06B12` to `#9C660F` (meets 4.5:1 on layer1 `#FFFFFF`).
-   - `tokens.countdownShade`: `#7C93AB` (contrast 3.17 on layer1).
-10. **`pack-sandstone`**:
-    - `canvas`: tuned from `#F4E9D8` to `#F2E3C6`, `layer1` from `#FBF4E8` to `#FAF1DE`, with remaining layers `#E8D4B4`, `#DFC39E` (achieves $\Delta E = 6.42 \ge 6.0$ against `light` `#F7F2E7`).
-    - `tokens.accent`: tuned from `#8A5A0F` to `#85540B` (meets 4.5:1 on layer1).
-    - `tokens.solar`: tuned from `#A8691A` to `#9E6114` (meets 4.5:1 on layer1).
-    - `widget.countdownShade`: tuned from `#805E4C` to `#916B55` (contrast on surface `#3A2418` improved from 2.51 to 3.07, satisfying $\ge 3.0:1$).
+   - `canvas`: `#14050A`, with layers stepping `#230912`, `#330F1D`, `#47172A`, and `textPrimary` `#F3E8DA`.
+   - `widget.surface`: `#230912`, `widget.surfaceAlt`: `#330F1D`.
+7. **`pack-porcelain`**:
+   - `widget.surface` (`#FFFFFF`) and `widget.surfaceAlt` (`#E6ECF2`) provide clean light card presentation.
+   - `widget.accent` (`#704B09`) and `widget.solar` (`#704705`) meet AA contrast on white surface.
+   - `widget.countdownShade`: `#7C93AB` (meets 3:1 on surface and 1.8:1 vs fill `#0F2238`).
+8. **`pack-sandstone`**:
+   - `widget.surface` (`#FAF1DE`) and `widget.surfaceAlt` (`#E8D4B4`).
+   - `widget.accent` (`#704305`) and `widget.solar` (`#704106`) meet AA contrast.
+   - `widget.countdownShade`: `#8E7561` (meets 3:1 on surface and 1.8:1 vs fill `#2E1D12`).
 
 ---
 

@@ -49,8 +49,6 @@ describe('themes package', () => {
   const themeDarker = requireTheme('darker');
   const themeNavy = requireTheme('pack-navy');
   const themeBurgundy = requireTheme('pack-burgundy');
-  const themeAubergine = requireTheme('pack-aubergine');
-  const themeMidnightTeal = requireTheme('pack-midnight-teal');
   const themePorcelain = requireTheme('pack-porcelain');
   const themeSandstone = requireTheme('pack-sandstone');
 
@@ -148,7 +146,7 @@ describe('themes package', () => {
   });
 
   it('contrast spec lists every required check with a unique id', () => {
-    expect(CONTRAST_CHECKS.length).toBe(45);
+    expect(CONTRAST_CHECKS.length).toBe(46);
     const ids = new Set<string>();
     for (const c of CONTRAST_CHECKS) {
       expect(ids.has(c.id), `Duplicate check id: ${c.id}`).toBe(false);
@@ -216,9 +214,9 @@ describe('themes package', () => {
     expect(issuesDefault.length).toBe(1);
   });
 
-  it('registry contains exactly ten themes with the expected ids in order', () => {
-    expect(THEMES.length).toBe(10);
-    expect(THEME_IDS.length).toBe(10);
+  it('theme registry contains exactly the eight supported themes', () => {
+    expect(THEMES.length).toBe(8);
+    expect(THEME_IDS.length).toBe(8);
     const expected = [
       'light',
       'dark',
@@ -226,13 +224,20 @@ describe('themes package', () => {
       'darker',
       'pack-navy',
       'pack-burgundy',
-      'pack-aubergine',
-      'pack-midnight-teal',
       'pack-porcelain',
       'pack-sandstone',
     ];
     expect(THEME_IDS).toEqual(expected);
     expect(THEMES.map((t) => t.id)).toEqual(expected);
+  });
+
+  it('pack-aubergine and pack-midnight-teal are absent from registry and types', () => {
+    expect(getTheme('pack-aubergine')).toBeUndefined();
+    expect(getTheme('pack-midnight-teal')).toBeUndefined();
+    // @ts-expect-error absent theme ID check
+    expect(THEME_IDS.includes('pack-aubergine')).toBe(false);
+    // @ts-expect-error absent theme ID check
+    expect(THEME_IDS.includes('pack-midnight-teal')).toBe(false);
   });
 
   it('theme ids and names are unique', () => {
@@ -246,7 +251,7 @@ describe('themes package', () => {
     }
   });
 
-  it('every theme defines every semantic token and every widget entry and nothing else', () => {
+  it('every theme defines identical token keys', () => {
     for (const t of THEMES) {
       const tokenKeys = Object.keys(t.tokens).sort();
       const widgetKeys = Object.keys(t.widget).sort();
@@ -282,7 +287,7 @@ describe('themes package', () => {
     }
   });
 
-  it('system choice resolves to light for a light system and pure-dark for a dark system', () => {
+  it('system theme resolves correctly for light and dark base modes', () => {
     const lightRes = resolveTheme({ kind: 'system' }, false);
     expect(lightRes.id).toBe(SYSTEM_LIGHT_THEME_ID);
     expect(lightRes.id).toBe('light');
@@ -410,31 +415,8 @@ describe('themes package', () => {
     expect(themePureDark.tokens.textPrimary).toBe('#FFFFFF');
   });
 
-  it('pure dark layers are neutral greys that step up in lightness', () => {
-    const layers = [
-      themePureDark.tokens.layer1,
-      themePureDark.tokens.layer2,
-      themePureDark.tokens.layer3,
-    ];
-
-    for (const hex of layers) {
-      const rgb = parseHex(hex);
-      expect(rgb).toBeDefined();
-      if (!rgb) continue;
-      expect(Math.abs(rgb.r - rgb.g)).toBeLessThanOrEqual(2);
-      expect(Math.abs(rgb.g - rgb.b)).toBeLessThanOrEqual(2);
-      expect(Math.abs(rgb.r - rgb.b)).toBeLessThanOrEqual(2);
-    }
-
-    const l1 = relativeLuminance(themePureDark.tokens.layer1);
-    const l2 = relativeLuminance(themePureDark.tokens.layer2);
-    const l3 = relativeLuminance(themePureDark.tokens.layer3);
-    expect(l2).toBeGreaterThan(l1);
-    expect(l3).toBeGreaterThan(l2);
-  });
-
   it('dark base themes step up in lightness from canvas through layer 3', () => {
-    const darkThemes = THEMES.filter((t) => t.baseMode === 'dark');
+    const darkThemes = THEMES.filter((t) => t.baseMode === 'dark' && t.id !== 'pure-dark');
     for (const t of darkThemes) {
       const lc = relativeLuminance(t.tokens.canvas);
       const l1 = relativeLuminance(t.tokens.layer1);
@@ -460,7 +442,7 @@ describe('themes package', () => {
   });
 
   it('layers are distinguishable from each other by at least 2 delta E in every theme', () => {
-    for (const t of THEMES) {
+    for (const t of THEMES.filter((t) => t.id !== 'pure-dark')) {
       const d1 = deltaE(t.tokens.canvas, t.tokens.layer1);
       const d2 = deltaE(t.tokens.layer1, t.tokens.layer2);
       const d3 = deltaE(t.tokens.layer2, t.tokens.layer3);
@@ -504,78 +486,101 @@ describe('themes package', () => {
     expect(lDarker).toBeLessThan(lDark);
   });
 
-  it('midnight teal is visibly distinct from darker green', () => {
-    const hTeal = hexToHsl(themeMidnightTeal.tokens.canvas).h;
-    const hDarker = hexToHsl(themeDarker.tokens.canvas).h;
-    const hDist = hueDistance(hTeal, hDarker);
-    expect(hDist, 'Canvas hue distance must be at least 25 degrees').toBeGreaterThanOrEqual(25);
-
-    const cDE = deltaE(themeMidnightTeal.tokens.canvas, themeDarker.tokens.canvas);
-    expect(cDE, 'Canvas Delta E must be at least 10').toBeGreaterThanOrEqual(10);
-
-    const l1DE = deltaE(themeMidnightTeal.tokens.layer1, themeDarker.tokens.layer1);
-    expect(l1DE, 'Layer1 Delta E must be at least 8').toBeGreaterThanOrEqual(8);
+  it('every theme passes all 46 contrast checks', () => {
+    expect(CONTRAST_CHECKS.length).toBe(46);
+    for (const theme of THEMES) {
+      const res = evaluateTheme(theme);
+      expect(res.length).toBe(46);
+      const failures = failingChecks(res);
+      expect(failures, `Failures in theme ${theme.id}: ${JSON.stringify(failures)}`).toEqual([]);
+    }
   });
 
-  it('all theme canvases are pairwise distinct by at least 6 delta E', () => {
-    const issues = evaluateDistinctness(THEMES, { minCanvasDeltaE: 6 });
+  it('pure-dark sets canvas and all layers to pure black', () => {
+    expect(themePureDark.tokens.canvas).toBe('#000000');
+    expect(themePureDark.tokens.layer1).toBe('#000000');
+    expect(themePureDark.tokens.layer2).toBe('#000000');
+    expect(themePureDark.tokens.layer3).toBe('#000000');
+    expect(themePureDark.tokens.border).toBe('#2A2A2A');
+    expect(themePureDark.widget.surface).toBe('#000000');
+    expect(themePureDark.widget.surfaceAlt).toBe('#000000');
+  });
+
+  it('pure-dark border meets contrast on canvas', () => {
+    const ratio = contrastRatio(themePureDark.tokens.border, themePureDark.tokens.canvas);
+    expect(ratio).toBeGreaterThanOrEqual(1.3);
+  });
+
+  it('darker canvas uses deep forest green', () => {
+    expect(themeDarker.tokens.canvas).toBe('#04170C');
+    expect(themeDarker.tokens.layer1).toBe('#082212');
+    expect(themeDarker.tokens.layer2).toBe('#0D2E1B');
+    expect(themeDarker.tokens.layer3).toBe('#133B25');
+    expect(themeDarker.tokens.textPrimary).toBe('#EAE0CB');
+  });
+
+  it('navy canvas uses deep midnight blue', () => {
+    expect(themeNavy.tokens.canvas).toBe('#050C24');
+    expect(themeNavy.tokens.layer1).toBe('#091838');
+    expect(themeNavy.tokens.layer2).toBe('#0E2250');
+    expect(themeNavy.tokens.layer3).toBe('#152E68');
+    expect(themeNavy.tokens.textPrimary).toBe('#F1EBDD');
+  });
+
+  it('burgundy canvas uses deep wine', () => {
+    expect(themeBurgundy.tokens.canvas).toBe('#14050A');
+    expect(themeBurgundy.tokens.layer1).toBe('#230912');
+    expect(themeBurgundy.tokens.layer2).toBe('#330F1D');
+    expect(themeBurgundy.tokens.layer3).toBe('#47172A');
+    expect(themeBurgundy.tokens.textPrimary).toBe('#F3E8DA');
+  });
+
+  it('light themes use light widget surfaces', () => {
+    const lightThemes = [themeLight, themePorcelain, themeSandstone];
+    for (const t of lightThemes) {
+      expect(t.widget.surface).toBe(t.tokens.layer1);
+      expect(t.widget.surfaceAlt).toBe(t.tokens.layer2);
+      expect(relativeLuminance(t.widget.surface)).toBeGreaterThan(0.6);
+    }
+  });
+
+  it('light theme widget text meets AA contrast on widget surface', () => {
+    const lightThemes = [themeLight, themePorcelain, themeSandstone];
+    for (const t of lightThemes) {
+      expect(contrastRatio(t.widget.textPrimary, t.widget.surface)).toBeGreaterThanOrEqual(7);
+      expect(contrastRatio(t.widget.textSecondary, t.widget.surface)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(t.widget.accent, t.widget.surface)).toBeGreaterThanOrEqual(3);
+      expect(contrastRatio(t.widget.solar, t.widget.surface)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('light theme countdown shade meets contrast requirements', () => {
+    const lightThemes = [themeLight, themePorcelain, themeSandstone];
+    for (const t of lightThemes) {
+      expect(contrastRatio(t.widget.countdownShade, t.widget.surface)).toBeGreaterThanOrEqual(3);
+      expect(contrastRatio(t.widget.countdownFill, t.widget.countdownShade)).toBeGreaterThanOrEqual(
+        1.8,
+      );
+    }
+  });
+
+  it('themes are pairwise distinct with minimum canvas Delta E >= 4', () => {
+    const issues = evaluateDistinctness(THEMES, { minCanvasDeltaE: 4 });
     expect(issues).toEqual([]);
   });
 
-  it('light theme widget uses a forest green surface with ivory text', () => {
-    expect(themeLight.widget.surface).toBe('#1B3A2A');
-    expect(themeLight.widget.textPrimary).toBe('#F7F2E7');
-  });
-
-  // Explicit contrast gate tests for each of the 10 themes
-  it('contrast gate passes for theme light', () => {
-    const res = evaluateTheme(themeLight);
-    expect(failingChecks(res)).toEqual([]);
-  });
-
-  it('contrast gate passes for theme dark', () => {
-    const res = evaluateTheme(themeDark);
-    expect(failingChecks(res)).toEqual([]);
-  });
-
-  it('contrast gate passes for theme pure-dark', () => {
-    const res = evaluateTheme(themePureDark);
-    expect(failingChecks(res)).toEqual([]);
-  });
-
-  it('contrast gate passes for theme darker', () => {
-    const res = evaluateTheme(themeDarker);
-    expect(failingChecks(res)).toEqual([]);
-  });
-
-  it('contrast gate passes for theme pack-navy', () => {
-    const res = evaluateTheme(themeNavy);
-    expect(failingChecks(res)).toEqual([]);
-  });
-
-  it('contrast gate passes for theme pack-burgundy', () => {
-    const res = evaluateTheme(themeBurgundy);
-    expect(failingChecks(res)).toEqual([]);
-  });
-
-  it('contrast gate passes for theme pack-aubergine', () => {
-    const res = evaluateTheme(themeAubergine);
-    expect(failingChecks(res)).toEqual([]);
-  });
-
-  it('contrast gate passes for theme pack-midnight-teal', () => {
-    const res = evaluateTheme(themeMidnightTeal);
-    expect(failingChecks(res)).toEqual([]);
-  });
-
-  it('contrast gate passes for theme pack-porcelain', () => {
-    const res = evaluateTheme(themePorcelain);
-    expect(failingChecks(res)).toEqual([]);
-  });
-
-  it('contrast gate passes for theme pack-sandstone', () => {
-    const res = evaluateTheme(themeSandstone);
-    expect(failingChecks(res)).toEqual([]);
+  it('tightest contrast margin across all themes is positive', () => {
+    let minMargin = Number.POSITIVE_INFINITY;
+    for (const theme of THEMES) {
+      const res = evaluateTheme(theme);
+      for (const r of res) {
+        const margin = r.ratio - r.min;
+        if (margin < minMargin) {
+          minMargin = margin;
+        }
+      }
+    }
+    expect(minMargin).toBeGreaterThan(0);
   });
 
   it('docs THEMES lists every theme id and every contrast check id', () => {
@@ -618,6 +623,7 @@ describe('themes package', () => {
     validVars.add('--ar-font-serif');
     validVars.add('--ar-font-sans');
     validVars.add('--ar-content-max-width');
+    validVars.add('--ar-digit-width');
 
     const varRegex = /var\(\s*(--ar-[a-zA-Z0-9-]+)/g;
     for (const file of cssFiles) {

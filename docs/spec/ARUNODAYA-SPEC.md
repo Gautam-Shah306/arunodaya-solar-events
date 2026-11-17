@@ -326,41 +326,31 @@ Editorial Premium: warm ivory, deep forest green, muted sage, restrained antique
 
 ### 9.2 Themes
 
-Arunodaya ships four built-in themes and a set of curated theme packs. Every theme shares the same layout, hierarchy and components; only the tokens change.
+Arunodaya ships four built-in themes and four curated theme packs (eight themes total). Every theme shares the same layout, hierarchy and components; only the tokens change.
 
 | Theme | Canvas | Text | Layers | Accent | Role |
 | --- | --- | --- | --- | --- | --- |
 | Light (Editorial Premium) | Warm ivory | Deep ink-green | Muted sage | Antique gold | Accepted direction; default for system light |
 | Dark | Charcoal-green | Parchment | Olive and forest | Champagne gold | Original dark concept; selectable |
-| **Pure Dark** | Black | White | Neutral near-black steps | Champagne gold | Default for system dark; saves power on OLED screens |
-| **Darker** | Very dark green | Parchment | Deep green steps | Champagne gold | Keeps the green identity at the lowest brightness |
-| Custom theme packs | Per pack | Per pack | Per pack | Per pack | Curated premium palettes, chosen in a selector |
+| **Pure Dark** | Pure black (#000000) | White | Pure black (#000000) with #2A2A2A border | Champagne gold | Default for system dark; saves power on OLED screens |
+| **Darker** | Deep forest green | Soft cream | Deep forest steps | Champagne gold | Keeps the green identity at the lowest brightness |
+| Navy | Deep midnight navy | Warm ivory | Slate-navy steps | Champagne gold | Selectable dark theme pack; formal and classic |
+| Burgundy | Deep wine | Warm ivory | Oxblood and mulberry steps | Champagne gold | Selectable dark theme pack; rich and warm |
+| Porcelain | Cool off-white | Deep navy ink | Pale blue-grey steps | Bronze-gold | Selectable light theme pack; crisp daytime feel |
+| Sandstone | Warm sand | Espresso brown | Terracotta-tinted sand | Antique gold | Selectable light theme pack; sun-baked and earthy |
 
 - **Match system (Decided):** system light shows Light and system dark shows Pure Dark. Choosing any other theme turns Match system off. There is no user-chosen light/dark pair: Match system only ever maps to Light and Pure Dark.
-- **Layers, not shadows:** on dark themes, depth comes from stepping surface lightness (canvas, layer 1, layer 2, layer 3) with subtle borders. Light keeps minimal elevation.
+- **Layers, not shadows:** on dark themes, depth comes from stepping surface lightness (canvas, layer 1, layer 2, layer 3) with subtle borders. Pure Dark sets canvas and all layers (layer 1, layer 2, layer 3) to pure black (`#000000`) with a `#2A2A2A` border for card separation. Light themes use light widget surfaces matching their layer tokens.
 - **Pure Dark text (Proposed):** primary text and countdown digits are white. Secondary and tertiary text use reduced-opacity tints so the hierarchy survives on black.
-- **Custom theme packs (Decided direction):** a selector offers premium packs such as Navy and Burgundy. Each pack is a complete, individually designed theme, not a recolour generated from one accent. The launch lineup is in the table below: four dark packs and two light packs, each declaring one base mode. The solar accent stays in the gold/amber family in every pack so the sun always reads the same way.
+- **Custom theme packs (Decided direction):** a selector offers premium packs such as Navy and Burgundy. Each pack is a complete, individually designed theme, not a recolour generated from one accent. The launch lineup is in the table above: two dark packs and two light packs, each declaring one base mode. The solar accent stays in the gold/amber family in every pack so the sun always reads the same way.
 - **No free colour picker in v1 (Proposed):** curated packs only, because arbitrary colours can produce unreadable combinations.
 - **Selector (Proposed):** Settings, Appearance shows the Match system switch and a gallery of theme cards. Each card previews real components (event times and a countdown), not swatches.
 - **Other outputs (Proposed):** the monthly PDF uses a fixed light paper palette. The share card renders in the current theme or in Light, the user's choice. This replaces the earlier "light and dark variants" wording in §7.3.
-- **Palettes (Decided):** the ten themes are defined in packages/themes and documented in docs/THEMES.md; every theme passes the contrast gate (section 9.4).
-
-**Launch theme packs (Decided)**
-
-| Pack | Base | Canvas | Text | Layers | Accent and character |
-| --- | --- | --- | --- | --- | --- |
-| Navy | Dark | Deep midnight navy | Warm ivory | Slate-navy steps | Champagne gold; formal and classic |
-| Burgundy | Dark | Deep wine | Warm ivory | Oxblood and mulberry steps | Champagne gold; rich and warm |
-| Aubergine | Dark | Deep aubergine | Soft lilac-ivory | Plum steps | Champagne gold with a hint of rose; calm, evening feel |
-| Midnight Teal | Dark | Deep petrol teal | Pale mint-ivory | Teal steps | Gold-amber; cool and quiet |
-| Porcelain | Light | Cool off-white | Deep navy ink | Pale blue-grey steps | Bronze-gold; crisp daytime feel |
-| Sandstone | Light | Warm sand | Espresso brown | Terracotta-tinted sand | Antique gold; sun-baked and earthy |
-
-All six keep the editorial hierarchy and a gold or amber solar accent. Midnight Teal must be checked beside Darker in the selector so the two never read as the same green. Light packs need a darker gold text token to pass the contrast gate.
+- **Palettes (Decided):** the eight themes (dark, darker, pure-dark, light, porcelain, sandstone, navy, burgundy) are defined in packages/themes and documented in docs/THEMES.md; every theme passes all 46 contrast checks in the contrast gate (section 9.4). Pure Dark layers all equal `#000000` with a `#2A2A2A` border. Light themes use light widget surfaces matching their layer tokens.
 
 ### 9.3 Typography (revised)
 
-- **Numbers and headings (Decided):** a **bundled open-license serif** with lining and tabular figures: **Gelasio** (SIL Open Font License 1.1), bundled under `apps/app/src/assets/fonts/` as WOFF2 with OpenType lining (`lnum`) and tabular (`tnum`) figures (ADR 0013). Georgia is dropped completely from all font stacks.
+- **Numbers and headings (Decided):** a **bundled open-license serif** with lining figures: **Playfair Display** (SIL Open Font License 1.1), bundled under `apps/app/src/assets/fonts/` as WOFF2 with OpenType lining figures (`lnum`) (ADR 0015). Gelasio and Georgia are dropped completely. Digit width is calibrated in Playfair Display (`--ar-digit-width`).
 - **UI/body (Decided):** native `system-ui` sans-serif stack (`system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`).
 - **Widgets:** custom fonts in RemoteViews/Glance are unreliable, so render digits to bitmaps with a `contentDescription` for TalkBack, or use the system font if the bundled font fails to render.
 - **Odometer rules:** fixed-width slots, clipped viewport, uniform baseline, no layout shift.
@@ -373,9 +363,9 @@ Themes are data, not code: components read semantic tokens and never hard-code a
 
 - **Three token tiers:** a primitive palette (raw colours), semantic tokens (canvas, layer 1 to 3, text primary/secondary/tertiary, border, accent, solar, on-accent, focus, positive/warning/critical, scrim), and component tokens (countdown digit fill, progress shade, widget surface). Components use only semantic or component tokens.
 - **Resolution:** a `system` choice resolves to Light or Pure Dark from the system setting. An unknown id (for example a removed pack) falls back to the system rule.
-- **Applying:** the root element gets a `data-theme` attribute, CSS variables and `color-scheme`. `apps/app/public/early-theme.js` reads cached canvas and color scheme keys from localStorage before first paint so the wrong theme never flashes.
+- **Applying:** the root element gets a `data-theme` attribute, CSS variables and `color-scheme`. `apps/app/public/early-theme.js` reads cached canvas and color scheme keys from localStorage before first paint so the wrong theme never flashes. Capacitor sets the status and navigation bar style from `baseMode` (Android shell prompt).
 - **Widgets:** widgets can't read CSS variables, so the resolved widget palette (about a dozen hex values) travels with the snapshot through the native-readable store (§8.2). Default is "follow app theme", with an optional separate widget theme. A theme change triggers a widget re-render.
-- **Contrast gate (Decided):** CI computes WCAG contrast for every theme and token pair: 4.5:1 for body text, 3:1 for large text and UI components. Champagne gold must pass on every canvas; gold text on ivory is the likely failure, so Light needs a darker gold text token. A theme that fails can't merge. The required pairs and ratios are listed in docs/THEMES.md (7:1 for primary text on the canvas, 4.5:1 for other text, 3:1 for tertiary text and UI components; Proposed). A distinctness test uses CIE76 colour difference with a minimum of 6 to keep every canvas visibly different, including Midnight Teal against Darker.
+- **Contrast gate (Decided):** CI computes WCAG contrast for every theme across 46 contrast checks (including border-canvas with minimum ratio 1.3:1): 7:1 for primary text on the canvas, 4.5:1 for other text, 3:1 for tertiary text and UI components. Champagne gold must pass on every canvas; gold text on ivory is the likely failure, so Light needs a darker gold text token. A theme that fails can't merge. The 46 required pairs and ratios are listed in docs/THEMES.md. A distinctness test ensures canvas distinctness (minimum Delta E >= 4).
 - **Visual regression:** CI screenshots Home, Forecast, Settings and the widget previews in every theme.
 - **Adding a pack** is one data file in the theme package plus passing both gates. No component changes.
 - **Not used:** Android dynamic colour (Material You), to keep the brand palette. The Android splash screen typically follows only the system light/dark setting, so verify how it looks in each theme.
@@ -448,6 +438,13 @@ Exact epoch instants are stored, never display strings. `solarNoonMs` holds the 
 ### 10.2 Suggested layout
 
 `src/{app,components,features/{home,forecast,astronomy,locations,settings,export},engine,services,hooks,types,styles}` · `public/` · `android/` (Capacitor host, Kotlin widgets, alarm and worker code) · `tests/{unit,astronomy,integration}`. Superseded by the monorepo layout in §18.3; no repository exists yet.
+
+### 10.3 Fonts
+
+- **Playfair Display 400 and 700 WOFF2:** bundled under `apps/app/src/assets/fonts/` with `LICENSE-playfair-display.txt`.
+- **OpenType features:** lining numbers (`lnum`) enabled; tabular figures (`tnum`) absent from font metadata, accommodated via calibrated `--ar-digit-width: 1.06ch` slot styling.
+- **Calibrated digit width:** digit width accommodates all lining digits without clipping in real-browser testing.
+- **Superseded:** Gelasio font files and configuration are completely removed (ADR 0015 supersedes ADR 0013).
 
 ---
 
@@ -528,16 +525,16 @@ Exact epoch instants are stored, never display strings. `solarNoonMs` holds the 
 - No Jain-specific or Panchang-style features in v1.
 - **Hosting and source control:** the web build deploys to GitHub Pages through GitHub Actions; Git and GitHub for source control.
 - **Repository:** `arunodaya-solar-events` on your GitHub account (not yet created).
-- **Themes:** Light, Dark (charcoal-green), Pure Dark, Darker, and curated custom theme packs. Match system maps system light to Light and system dark to Pure Dark only, with no user-chosen pair.
-- **Theme pack lineup:** Navy, Burgundy, Aubergine, Midnight Teal (dark) and Porcelain, Sandstone (light).
+- **Themes:** Light, Dark (charcoal-green), Pure Dark, Darker, and curated custom theme packs (eight themes total). Match system maps system light to Light and system dark to Pure Dark only, with no user-chosen pair.
+- **Theme pack lineup:** Navy, Burgundy (dark) and Porcelain, Sandstone (light).
 - **System design:** layered architecture with a framework-free domain core, versioned contracts and automated quality gates (§17).
 - **Licence (Decided):** MIT, with the LICENSE file created with the repository. Third-party data and fonts keep their own licences and are listed in a NOTICE file.
 - **Monorepo toolchain (Decided):** npm workspaces with a single committed package-lock.json.
 - **Application ID (Decided):** in.gautam.arunodaya (permanent once published).
 - **Astronomy engine:** Astronomy Engine (astronomy-engine 2.1.19), chosen by benchmark against the committed reference dataset (docs/ASTRONOMY.md, ADR 0008).
-- **Theme palettes:** ten themes defined in packages/themes (docs/THEMES.md) and passing the contrast gate.
+- **Theme palettes:** eight themes defined in packages/themes (docs/THEMES.md) and passing the 46 checks in the contrast gate.
 - **App foundation:** React 19, TypeScript, Vite, plain CSS using the --ar-* custom properties, KeyValueStore port with a localStorage adapter in v1, and hash routing (ADR 0012).
-- **Typography:** Gelasio bundled WOFF2 serif with lining and tabular figures; system-ui for UI sans; Georgia dropped (ADR 0013).
+- **Typography:** Playfair Display bundled WOFF2 serif with lining figures; system-ui for UI sans; Georgia and Gelasio dropped (ADR 0015).
 
 **Proposed (confirm)**
 

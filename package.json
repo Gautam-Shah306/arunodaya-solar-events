@@ -30,7 +30,11 @@
     "reference:generate": "node tools/generate-reference.mjs",
     "bench:astro": "node tools/bench-astro.mjs",
     "verify": "node tools/verify.mjs",
-    "verify:linux": "node tools/verify-linux.mjs"
+    "verify:linux": "node tools/verify-linux.mjs",
+    "lint:workflows": "node tools/lint-workflows.mjs",
+    "analyze:bundle": "node tools/bundle-report.mjs",
+    "e2e:install": "node tools/e2e-install.mjs",
+    "test:e2e": "node tools/test-e2e.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -44,6 +48,7 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "fast-check": "4.10.2",
     "happy-dom": "21.0.4",
+    "playwright-core": "1.65.1",
     "prettier": "3.10.1",
     "suncalc": "2.1.4",
     "typescript": "6.0.3",

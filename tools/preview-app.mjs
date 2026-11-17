@@ -1,29 +1,19 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { preview } from 'vite';
-import { resolveBase } from './lib/build-targets.mjs';
+import { startPreviewServer } from './lib/preview.mjs';
 
-const pagesDist = path.resolve('apps/app/dist/pages');
-if (!fs.existsSync(pagesDist)) {
-  console.error('Error: apps/app/dist/pages does not exist. Run "npm run build:pages first".');
-  process.exit(1);
-}
-
-const base = resolveBase('pages');
-
-await preview({
-  root: pagesDist,
-  base,
-  preview: {
-    host: '127.0.0.1',
+try {
+  const { url } = await startPreviewServer({
+    target: 'pages',
     port: 4173,
     strictPort: true,
-    open: false,
-  },
-});
+  });
 
-const serverUrl = `http://127.0.0.1:4173${base}`;
-console.log(`Arunodaya Pages preview server running at:`);
-console.log(`  Index:  ${serverUrl}index.html`);
-console.log(`  Themes: ${serverUrl}themes.html`);
-console.log('Press Ctrl+C to stop.');
+  console.log(`Arunodaya Pages preview server running at:`);
+  console.log(`  Index:      ${url}index.html`);
+  console.log(`  Themes:     ${url}themes.html`);
+  console.log(`  Components: ${url}components.html`);
+  console.log('Press Ctrl+C to stop.');
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error('Error starting preview server:', msg);
+  process.exit(1);
+}

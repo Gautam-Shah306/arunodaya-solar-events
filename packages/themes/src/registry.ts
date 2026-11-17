@@ -4,14 +4,12 @@ import { themePureDark } from './themes/pure-dark.js';
 import { themeDarker } from './themes/darker.js';
 import { themePackNavy } from './themes/pack-navy.js';
 import { themePackBurgundy } from './themes/pack-burgundy.js';
-import { themePackAubergine } from './themes/pack-aubergine.js';
-import { themePackMidnightTeal } from './themes/pack-midnight-teal.js';
 import { themePackPorcelain } from './themes/pack-porcelain.js';
 import { themePackSandstone } from './themes/pack-sandstone.js';
 import type { ThemeChoice, ThemeDefinition, ThemeId } from './types.js';
 
 /**
- * Ordered list of all 10 curated theme definitions.
+ * Ordered list of all 8 curated theme definitions.
  */
 export const THEMES: readonly ThemeDefinition[] = [
   themeLight,
@@ -20,14 +18,12 @@ export const THEMES: readonly ThemeDefinition[] = [
   themeDarker,
   themePackNavy,
   themePackBurgundy,
-  themePackAubergine,
-  themePackMidnightTeal,
   themePackPorcelain,
   themePackSandstone,
 ] as const;
 
 /**
- * Ordered array of all 10 curated theme identifiers.
+ * Ordered array of all 8 curated theme identifiers.
  */
 export const THEME_IDS: readonly ThemeId[] = [
   'light',
@@ -36,8 +32,6 @@ export const THEME_IDS: readonly ThemeId[] = [
   'darker',
   'pack-navy',
   'pack-burgundy',
-  'pack-aubergine',
-  'pack-midnight-teal',
   'pack-porcelain',
   'pack-sandstone',
 ] as const;

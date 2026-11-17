@@ -46,3 +46,20 @@ Previous discussions explored build-time CSS generation, dynamic Android Materia
 - All colour values and hex codes are strictly quarantined inside `packages/themes`.
 - Web application stylesheets remain lightweight, static, and declarative.
 - Visual accessibility is guarded by automated CI tests rather than manual verification.
+
+## Amendment (6b)
+
+In Prompt 6b, the theme lineup and design tokens were refined based on design review and accessibility gates:
+
+1. **Eight Themes Lineup**:
+   - `pack-aubergine` and `pack-midnight-teal` are removed. The finalized lineup consists of eight themes: `light`, `dark`, `pure-dark`, `darker`, `pack-navy`, `pack-burgundy`, `pack-porcelain`, and `pack-sandstone`.
+   - Stored selections of removed theme IDs cleanly fall back to `system` (Match system).
+2. **Pure Dark Hierarchy**:
+   - In `pure-dark`, `layer1`, `layer2`, and `layer3` equal the canvas (`#000000`). Visual separation is provided by `border` and `borderStrong`.
+   - Pure dark widgets use black surface and surfaceAlt.
+3. **Deeper Dark Palettes**:
+   - `darker`, `pack-navy`, and `pack-burgundy` use deeper, more saturated canvas anchors with lightness below 0.10.
+4. **Light Theme Widgets**:
+   - Light themes (`light`, `pack-porcelain`, `pack-sandstone`) feature light widgets matching the theme base mode, utilizing `layer1` as widget surface and dark text for high contrast.
+5. **Border Contrast Check**:
+   - Added contrast check `border-canvas` (minimum 1.3:1 ratio) ensuring structural borders and cards remain perceptible against the canvas across all themes, expanding the automated contrast specification to 46 check IDs.

@@ -125,6 +125,37 @@ describe('Theme Controller and Early Paint', () => {
     expect(mock.metaColor).toBe('#F7F2E7');
   });
 
+  it('theme controller supports subscribe, unsubscribe, and dispose', () => {
+    const { env } = createMockEnv(false);
+    const store = createMemoryStore();
+    const ctrl = createThemeController({ env, store });
+
+    const notifications: string[] = [];
+    const unsubscribe = ctrl.subscribe((t) => {
+      notifications.push(t.id);
+    });
+
+    ctrl.choose('darker');
+    expect(notifications).toEqual(['darker']);
+
+    unsubscribe();
+    ctrl.choose('light');
+    expect(notifications).toEqual(['darker']);
+
+    ctrl.dispose();
+  });
+
+  it('theme controller ignores choose when debug theme override is active', () => {
+    const { env, target } = createMockEnv(false);
+    const store = createMemoryStore();
+    const ctrl = createThemeController({ env, store, debugOverride: 'pack-navy' });
+
+    expect(target.dataset.theme).toBe('pack-navy');
+    ctrl.choose('light');
+    // debug theme remains
+    expect(target.dataset.theme).toBe('pack-navy');
+  });
+
   it('theme controller falls back to the system choice for an unknown stored id', () => {
     const { env, target } = createMockEnv(false);
     const store = createMemoryStore();
@@ -140,6 +171,24 @@ describe('Theme Controller and Early Paint', () => {
 
     const ctrl = createThemeController({ env, store });
     expect(ctrl.current().id).toBe('light'); // light system default
+    expect(target.dataset.theme).toBe('light');
+  });
+
+  it('theme controller keeps the system choice when a removed theme id is stored', () => {
+    const { env, target } = createMockEnv(false);
+    const store = createMemoryStore();
+    store.set(
+      PREFS_KEY,
+      JSON.stringify({
+        version: 1,
+        themeChoice: 'theme:pack-aubergine',
+        clockFormat: '12h',
+        location: { lat: 22.3, lon: 70.8, label: 'Rajkot', source: 'manual', fixAtMs: 0 },
+      }),
+    );
+
+    const ctrl = createThemeController({ env, store });
+    expect(ctrl.current().id).toBe('light');
     expect(target.dataset.theme).toBe('light');
   });
 

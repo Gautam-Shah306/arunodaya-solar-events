@@ -3,6 +3,11 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { buildApp } from '../build-app.mjs';
+import {
+  ASTRONOMY_DISTINCTIVE_STRING,
+  BUNDLE_BUDGETS,
+  calculateFirstLoadJs,
+} from '../lib/bundle-budgets.mjs';
 import { CSP_POLICY } from '../lib/csp.mjs';
 
 describe('build-output', () => {
@@ -105,17 +110,41 @@ describe('build-output', () => {
     expect(workerFile).toBeDefined();
   });
 
-  it('app bundle stays under 90 KB gzip', () => {
-    const assetsDir = path.join(pagesDist, 'assets');
-    const files = fs.readdirSync(assetsDir);
-    const mainJsFile = files.find((f) => f.startsWith('main-') && f.endsWith('.js'));
-    expect(mainJsFile).toBeDefined();
+  it('first-load JavaScript for the pages target stays under its recorded budget', () => {
+    const pagesFirstLoad = calculateFirstLoadJs('pages');
+    expect(pagesFirstLoad.files.length).toBeGreaterThan(0);
+    expect(pagesFirstLoad.totalGzipBytes).toBeLessThanOrEqual(BUNDLE_BUDGETS.pagesGzipBytes);
+  });
 
-    const content = fs.readFileSync(path.join(assetsDir, mainJsFile || ''));
-    const gzipSize = zlib.gzipSync(content).length;
+  it('first-load JavaScript for the android target stays under its recorded budget', () => {
+    const androidFirstLoad = calculateFirstLoadJs('android');
+    expect(androidFirstLoad.files.length).toBeGreaterThan(0);
+    expect(androidFirstLoad.totalGzipBytes).toBeLessThanOrEqual(BUNDLE_BUDGETS.androidGzipBytes);
+  });
 
-    // Must stay under 90 KB (92160 bytes)
-    expect(gzipSize).toBeLessThanOrEqual(92160);
+  it('astronomy code is only in the worker chunk and the lazy fallback chunk', () => {
+    const pagesAssets = path.join(pagesDist, 'assets');
+    const jsFiles = fs.readdirSync(pagesAssets).filter((f) => f.endsWith('.js'));
+
+    const workerFile = jsFiles.find((f) => f.startsWith('snapshot.worker-'));
+    const fallbackFile = jsFiles.find((f) => f.startsWith('request-handler-'));
+
+    expect(workerFile).toBeDefined();
+    expect(fallbackFile).toBeDefined();
+
+    // Verify distinctive astronomy string is present in worker and fallback chunks
+    const workerContent = fs.readFileSync(path.join(pagesAssets, workerFile || ''), 'utf8');
+    const fallbackContent = fs.readFileSync(path.join(pagesAssets, fallbackFile || ''), 'utf8');
+
+    expect(workerContent).toContain(ASTRONOMY_DISTINCTIVE_STRING);
+    expect(fallbackContent).toContain(ASTRONOMY_DISTINCTIVE_STRING);
+
+    // Verify absent from every other chunk
+    for (const jsFile of jsFiles) {
+      if (jsFile === workerFile || jsFile === fallbackFile) continue;
+      const content = fs.readFileSync(path.join(pagesAssets, jsFile), 'utf8');
+      expect(content).not.toContain(ASTRONOMY_DISTINCTIVE_STRING);
+    }
   });
 
   it('components gallery bundle stays under 90 KB gzip', () => {

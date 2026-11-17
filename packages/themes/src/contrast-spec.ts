@@ -26,13 +26,13 @@ export interface ContrastCheck<
 }
 
 /**
- * Complete list of all 45 automated contrast checks across semantic tokens and widget palettes.
+ * Complete list of all 46 automated contrast checks across semantic tokens and widget palettes.
  * Minimum contrast ratio thresholds are Proposed in the specification and guarded here.
  */
 export const CONTRAST_CHECKS: readonly (
   ContrastCheck<SemanticTokenName> | ContrastCheck<WidgetTokenName>
 )[] = [
-  // --- Semantic Tokens Scope (33 checks) ---
+  // --- Semantic Tokens Scope (34 checks) ---
   {
     id: 'text-primary-canvas',
     fg: 'textPrimary',
@@ -168,6 +168,14 @@ export const CONTRAST_CHECKS: readonly (
     scope: 'tokens',
     min: 3,
     purpose: 'Solar accent visibility against canvas',
+  },
+  {
+    id: 'border-canvas',
+    fg: 'border',
+    bg: 'canvas',
+    scope: 'tokens',
+    min: 1.3,
+    purpose: 'Separators and card edges are perceptible against canvas',
   },
   {
     id: 'border-strong-canvas',

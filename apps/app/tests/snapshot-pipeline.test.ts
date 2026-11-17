@@ -372,4 +372,70 @@ describe('Snapshot Pipeline', () => {
     expect(res.ok).toBe(false);
     expect(store.get(SNAPSHOT_STORE_KEY)).toBeNull();
   });
+
+  it('handleMessage ignores foreign messages and handles invalid requests gracefully', () => {
+    expect(handleMessage(null)).toBeNull();
+    expect(handleMessage('string')).toBeNull();
+    expect(handleMessage({ type: 'other' })).toBeNull();
+
+    // Malformed build request
+    const invalidReq = handleMessage({ type: 'build', id: 99, missingFields: true });
+    expect(invalidReq).not.toBeNull();
+    expect(invalidReq?.ok).toBe(false);
+    expect(invalidReq?.id).toBe(99);
+
+    // Invalid location coordinates (lat > 90)
+    const outOfBounds = handleMessage({
+      id: 102,
+      type: 'build',
+      location: { ...RAJKOT_LOCATION, lat: 95.0 },
+      startIstDate: '2026-11-16',
+      dayCount: 7,
+      generatedAtMs: 1763274600000,
+    });
+    expect(outOfBounds).not.toBeNull();
+    expect(outOfBounds?.ok).toBe(false);
+  });
+
+  it('snapshot client handles disposal, malformed worker messages, and worker errors', async () => {
+    const mockWorker = new MockWorker();
+    const client = createSnapshotClient({ createWorker: () => mockWorker });
+
+    // Client disposal
+    client.dispose();
+    const afterDisposed = await client.build({
+      location: RAJKOT_LOCATION,
+      startIstDate: '2026-11-16',
+      dayCount: 7,
+      generatedAtMs: 1763274600000,
+    });
+    expect(afterDisposed.ok).toBe(false);
+    if (!afterDisposed.ok) {
+      expect(afterDisposed.error.code).toBe('DISPOSED');
+    }
+
+    // Active client with worker error event
+    const activeWorker = new MockWorker();
+    const activeClient = createSnapshotClient({ createWorker: () => activeWorker });
+
+    const pendingPromise = activeClient.build({
+      location: RAJKOT_LOCATION,
+      startIstDate: '2026-11-16',
+      dayCount: 7,
+      generatedAtMs: 1763274600000,
+    });
+
+    // Malformed message event ignored
+    activeWorker.respond(null);
+    activeWorker.respond({ notAValidResponse: true });
+
+    // Worker error event triggers failure
+    activeWorker.fail({ message: 'Crash in web worker thread' });
+    const errorResult = await pendingPromise;
+    expect(errorResult.ok).toBe(false);
+    if (!errorResult.ok) {
+      expect(errorResult.error.code).toBe('WORKER_ERROR');
+      expect(errorResult.error.message).toContain('Crash in web worker thread');
+    }
+  });
 });

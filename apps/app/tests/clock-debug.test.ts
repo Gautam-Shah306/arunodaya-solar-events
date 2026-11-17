@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createFrozenClock, createOffsetClock, createSystemClock } from '../src/core/clock.js';
+import {
+  createFrozenClock,
+  createOffsetClock,
+  createSystemClock,
+  type Clock,
+} from '../src/core/clock.js';
 import { parseDebugParams } from '../src/core/debug.js';
 
 describe('Clock and Debug Parameters', () => {
@@ -33,7 +38,21 @@ describe('Clock and Debug Parameters', () => {
     const frozenMs = 1763164800000;
     const frozen = createFrozenClock(frozenMs);
     expect(frozen.nowMs()).toBe(frozenMs);
-    expect(frozen.nowMs()).toBe(frozenMs);
+    expect(frozen.now?.()).toBe(frozenMs);
+  });
+
+  it('clock implementations support now() and nowMs() consistently', () => {
+    const sys = createSystemClock();
+    expect(typeof sys.now?.()).toBe('number');
+    expect(typeof sys.nowMs()).toBe('number');
+
+    const baseClock: Clock = {
+      nowMs: () => 1763164800000,
+      now: () => 1763164800000,
+    };
+    const offset = createOffsetClock(baseClock, 1000);
+    expect(offset.now?.()).toBe(1000);
+    expect(offset.nowMs()).toBe(1000);
   });
 
   it('debug params are empty when debug is disabled', () => {

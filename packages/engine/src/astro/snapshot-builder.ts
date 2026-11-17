@@ -11,7 +11,7 @@ import {
 } from '@arunodaya/contracts';
 import type { Clock } from '../clock.js';
 import { ASTRONOMY_ENGINE, SNAPSHOT_POLICY } from '../config.js';
-import { addIstDays, isSupportedIstDate, istParts, parseIstDate } from '../time/ist.js';
+import { addIstDays, isSupportedIstDate, parseIstDate } from '../time/ist.js';
 import { makeEvent } from '../time/rounding.js';
 import { computeAstroDay } from './astro-day.js';
 import { toDayRecord } from './day-record.js';
@@ -37,23 +37,9 @@ export interface BuildSnapshotOptions {
   generatedAtMs: number;
 }
 
-/**
- * Computes the recommended snapshot calendar date window around an epoch instant.
- * Starts `SNAPSHOT_POLICY.daysBehind` before today's IST date and spans
- * `daysBehind + 1 + daysAhead` (default 92 days).
- *
- * @param nowMs Current epoch milliseconds
- * @returns Object with startIstDate and dayCount
- */
-export function planSnapshotWindow(nowMs: number): {
-  startIstDate: string;
-  dayCount: number;
-} {
-  const parts = istParts(nowMs);
-  const startIstDate = addIstDays(parts.istDate, -SNAPSHOT_POLICY.daysBehind);
-  const dayCount = SNAPSHOT_POLICY.daysBehind + 1 + SNAPSHOT_POLICY.daysAhead;
-  return { startIstDate, dayCount };
-}
+import { planSnapshotWindow } from '../time/snapshot-status.js';
+
+export { planSnapshotWindow };
 
 /**
  * Constructs a fully validated multi-day astronomical snapshot payload.

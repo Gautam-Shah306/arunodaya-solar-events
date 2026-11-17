@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import { buildVitestThresholds } from './tools/lib/coverage-gates.mjs';
 import { TEST_PROJECTS } from './tools/lib/test-projects.mjs';
 
 export default defineConfig({
@@ -23,6 +24,14 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       include: ['tools/lib/**', 'packages/*/src/**', 'apps/app/src/**'],
       exclude: [
+        // Stylesheet files contain CSS rules and no executable JavaScript runtime statements
+        '**/*.css',
+        // Font binary files contain typography data and no executable JavaScript runtime statements
+        '**/*.woff2',
+        // Plain text license files contain no executable JavaScript runtime statements
+        '**/*.txt',
+        // Pure re-export entry module for astronomy subpath containing no runtime statements
+        'packages/engine/src/astro/index.ts',
         // CLI entry files are tested via end-to-end command-line executions rather than unit-level code coverage
         'tools/*.mjs',
         // Candidates were benchmark evaluation adapters in Prompt 3, not runtime library code
@@ -35,12 +44,15 @@ export default defineConfig({
         'apps/app/src/components-gallery.tsx',
         // Dedicated Web Worker entry delegates execution to request-handler module
         'apps/app/src/snapshot/snapshot.worker.ts',
+        // Type-only contracts definition module with no runtime statements
+        'packages/contracts/src/ev.ts',
+        // Type-only astronomy types module with no runtime statements
+        'packages/engine/src/astro/types.ts',
+        // Ambient TypeScript declarations for Vite build environment
+        'apps/app/src/env.d.ts',
       ],
       thresholds: {
-        statements: 90,
-        branches: 90,
-        functions: 90,
-        lines: 90,
+        ...buildVitestThresholds(),
       },
     },
   },

@@ -66,7 +66,7 @@ export type SemanticTokens = Record<SemanticTokenName, string>;
 export type WidgetPalette = Record<WidgetTokenName, string>;
 
 /**
- * Union of the ten curated theme identifiers.
+ * Union of the eight curated theme identifiers.
  */
 export type ThemeId =
   | 'light'
@@ -75,8 +75,6 @@ export type ThemeId =
   | 'darker'
   | 'pack-navy'
   | 'pack-burgundy'
-  | 'pack-aubergine'
-  | 'pack-midnight-teal'
   | 'pack-porcelain'
   | 'pack-sandstone';
 

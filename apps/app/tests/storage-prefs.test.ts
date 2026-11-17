@@ -50,6 +50,11 @@ describe('Storage and Preferences', () => {
     expect(() => store.remove('throw')).not.toThrow();
   });
 
+  it('local storage store uses window.localStorage by default', () => {
+    const defaultStore = createLocalStorageStore();
+    expect(defaultStore.get('nonexistent')).toBeNull();
+  });
+
   it('local storage store survives missing storage', () => {
     const store = createLocalStorageStore(null);
     expect(store.get('any.key')).toBeNull();
