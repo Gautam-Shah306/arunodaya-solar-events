@@ -14,14 +14,25 @@ export async function buildApp(target) {
 
   console.log(`Building Arunodaya shell for target '${target}' (base: '${base}')...`);
 
-  await build({
-    root,
-    base,
-    build: {
-      outDir,
-      emptyOutDir: true,
-    },
-  });
+  const prevNodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  try {
+    await build({
+      root,
+      base,
+      mode: 'production',
+      build: {
+        outDir,
+        emptyOutDir: true,
+      },
+    });
+  } finally {
+    if (prevNodeEnv === undefined) {
+      delete process.env.NODE_ENV;
+    } else {
+      process.env.NODE_ENV = prevNodeEnv;
+    }
+  }
 
   console.log(`Build complete: ${outDir}`);
 }

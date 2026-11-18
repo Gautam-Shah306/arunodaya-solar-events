@@ -1,0 +1,130 @@
+# Part 0.4
+first-load JavaScript includes statically imported shared chunks
+bundle budgets compare gzip bytes with gzip budgets
+first-load JavaScript for the pages target stays under its recorded budget
+first-load JavaScript for the android target stays under its recorded budget
+astronomy code is only in the worker chunk and the lazy fallback chunk
+
+# Part 0.5
+spec contains no hex colour values
+spec rolling digits section states that every changed digit rolls including wraps
+spec widgets follow the theme base mode
+spec testing section mentions the real-browser tests
+spec contains no fonts section outside typography
+
+# Part 0.6
+scenario checker collects titles from it and test calls
+scenario checker reports titles missing from the test suite
+scenario checker ignores blank lines and comment lines
+scenario checker finds titles in e2e test files
+verify runs the scenario check right after the invariants check
+
+# Part B
+phaseName maps fraction 0.0 to new_moon
+phaseName maps fraction 0.25 to first_quarter
+phaseName maps fraction 0.5 to full_moon
+phaseName maps fraction 0.75 to third_quarter
+phaseName maps fraction 0.125 to waxing_crescent
+interpolatePhase wraps across 0.99 to 0.01 without backwards jump
+interpolatePhase at t=0 returns start phase
+interpolatePhase at t=1 returns end phase
+interpolatePhase at t=0.5 returns midpoint
+livePhase returns current phase and illumination from snapshot
+livePhase marks approximate when snapshot days are insufficient
+
+# Part C1
+phase names exist for all eight moon phases
+formatShortDateLabel formats weekday day and short month in IST
+event details texts contain no seconds
+
+# Part C2, C3, C4
+home model builds three event cards in sunrise navkarshi sunset order
+home model shows today times when every event is still ahead
+home model targets tomorrow for sunrise after sunrise has passed
+home model targets tomorrow for every event after sunset
+home model navkarshi time is exactly 48 minutes after the sunrise time on screen
+home model countdown minutes agree with the displayed target minute
+home model progress comes from displayed instants and stays within 0 and 1
+home model soonest event is the one with the fewest remaining minutes
+home model greeting follows 04:00 noon the evening rule and sunset plus three hours
+home model day and night follow the displayed sunrise and sunset minutes
+home model solar arc fraction is null at night and between 0 and 1 by day
+home model solar arc fraction is 0 at sunrise and approaches 1 at sunset
+home model daylight text is computed from the displayed sunrise and sunset
+home model formats times in 12-hour and 24-hour modes
+home model solar noon uses nearest minute rounding and twilight and golden hours use displayed instants
+home model reports no moonrise today when the day has no rise event
+home model shows the moonset of the next day with a plus one note when today has a rise but no set
+home model lists today moonrise and moonset in IST
+home model next moonrise is ready with a day label when it is not today
+home model next moonrise is unavailable when the snapshot has no later moonrise
+home model rounds illumination to a whole percent and names the phase
+home model reports the approximate accuracy tier after 2035
+home model reports no_day_record when the snapshot does not cover today
+home model reports a horizon error when the snapshot runs out
+moon glyph geometry lights nothing at new moon and everything at full moon
+moon glyph geometry lights the right half at first quarter and the left half at last quarter
+moon glyph geometry lights the right side while waxing and the left side while waning
+moon glyph lit area fraction equals the illumination formula for every phase
+moon glyph path is a closed svg path for crescent gibbous and half phases
+service rebuild skips the cache and saves the new snapshot
+service rebuild failure leaves the cached snapshot untouched
+useSnapshot refresh keeps the current data while rebuilding
+useSnapshot refresh failure keeps the data and reports the error
+useSnapshot auto refresh runs once per guard interval when the snapshot is expiring
+
+# Part D
+arcPosition places the sun at the start in the middle and at the end of the arc
+SolarArc places the sun at the fraction along the arc by day
+SolarArc hides the sun and dims the arc at night
+SolarArc exposes a text alternative with sunrise sunset and the current state
+MoonPhaseGlyph renders an accessible label with phase and illumination
+Dialog moves focus into the dialog and returns it on close
+Dialog closes on escape on the close button and on backdrop click
+Dialog keeps tab focus inside the dialog
+Dialog makes the page behind it inert while open
+EventDetailsDialog explains the event the rounding rule and the accuracy note without seconds
+EventCard is a button whose name contains the event and its countdown
+Home shows greeting date location chip and clock
+Home location chip links to the locations tab and the date links to forecast
+Home shows the three event cards with countdowns and the Tomorrow marker
+Home opens the event details dialog from an event card
+Home day details list daylight solar noon golden hours and twilight
+Home moon card shows phase glyph name illumination rise set and the next moonrise countdown
+Home moon card shows truthful empty states
+Home refresh rebuilds the snapshot and disables itself while busy
+Home refresh failure keeps the previous data and shows an error line
+Home rebuilds in the background when the snapshot is expiring
+Home shows the approximate badge for dates after 2035
+Home announces one polite label for the soonest event
+Home shows loading then ready and an error with retry
+Home simulated time banner appears only when debug time is active
+Home headings form a logical outline
+
+# Part E
+built home page references no remote URLs and no inline styles
+android build includes the home screen and excludes the simulated time banner text
+
+# Part F
+e2e: home shows sunrise navkarshi and sunset with navkarshi exactly 48 minutes after sunrise
+e2e: home sunrise and sunset for Rajkot match the reference dataset within 62 seconds
+e2e: home moonrise and moonset for Rajkot match the reference dataset within 70 seconds
+e2e: after sunset the three event cards show tomorrow
+e2e: between sunrise and navkarshi sunrise shows tomorrow while navkarshi and sunset show today
+e2e: day and night indicator and solar arc follow the simulated time
+e2e: greeting changes across 03:59 04:00 12:30 17:00 20:30 and 21:30
+e2e: tapping an event card opens the details dialog and escape returns focus to the card
+e2e: the details dialog keeps focus inside and makes the page inert
+e2e: location chip opens the locations tab and the date opens the forecast tab
+e2e: refresh rebuilds the snapshot and the page stays usable
+e2e: moon card shows phase name illumination and the moon times or truthful empty states
+e2e: next moonrise countdown shows a time and a day label
+e2e: home countdown label has an accessible name and the live region announces once per minute
+e2e: far future dates show the approximate badge
+e2e: home renders in every theme at 390 pixels without horizontal scrolling or console errors
+e2e: home is centred at 1280 pixels with a column of at most 560 pixels
+e2e: pure dark home separates cards by borders
+
+# Part G2
+spec home section states the next occurrence rule and the approximate badge
+spec states the live moon phase interpolation

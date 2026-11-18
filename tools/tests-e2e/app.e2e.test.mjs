@@ -20,24 +20,9 @@ describe('Application Real-Browser Tests', () => {
     }
   });
 
-  it('pages target loads with valid CSP header and no console errors', async () => {
-    const response = await harness.goto('index.html');
-    expect(response).not.toBeNull();
-    expect(response?.status()).toBe(200);
-
-    const headers = response?.headers() ?? {};
-    const csp = headers['content-security-policy'] ?? '';
-    expect(csp).toContain("default-src 'self'");
-    expect(csp).toContain("worker-src 'self'");
-    expect(csp).not.toContain('blob:');
-
-    await harness.waitForFonts();
-    expect(consoleErrors).toEqual([]);
-  });
-
-  it('Playfair Display font is loaded and applied to headings', async () => {
+  it('e2e: the serif font loads from the bundled file and is applied to countdown digits', async () => {
     await harness.goto('index.html');
-    await harness.page.waitForSelector('.ar-home-greeting');
+    await harness.page.waitForSelector('.ar-countdown', { timeout: 10000 });
     await harness.waitForFonts();
 
     const isFontLoaded = await harness.page.evaluate(() => {
@@ -45,83 +30,90 @@ describe('Application Real-Browser Tests', () => {
     });
     expect(isFontLoaded).toBe(true);
 
-    const headingFont = await harness.page.$eval('.ar-home-greeting', (el) => {
+    const countdownFont = await harness.page.$eval('.ar-countdown', (el) => {
       return window.getComputedStyle(el).fontFamily;
     });
-    expect(headingFont).toContain('Playfair Display');
+    expect(countdownFont).toContain('Playfair Display');
   });
 
-  it('theme toggle updates document dataset and early paint storage', async () => {
-    await harness.goto('components.html');
-    await harness.waitForFonts();
+  it('e2e: the snapshot worker starts under the content security policy and the app leaves the loading state', async () => {
+    let violationFound = false;
+    await harness.page.exposeFunction('onCspViolation', () => {
+      violationFound = true;
+    });
 
-    // Click Pure Dark theme button
-    const pureDarkBtn = await harness.page.waitForSelector('.ar-theme-btn:has-text("pure-dark")');
-    expect(pureDarkBtn).not.toBeNull();
-    await pureDarkBtn?.click();
+    await harness.page.addInitScript(() => {
+      document.addEventListener('securitypolicyviolation', () => {
+        // @ts-expect-error test bridge
+        window.onCspViolation?.();
+      });
+    });
 
-    const currentTheme = await harness.page.evaluate(() => document.documentElement.dataset.theme);
-    expect(currentTheme).toBe('pure-dark');
+    const response = await harness.goto('index.html');
+    expect(response?.status()).toBe(200);
 
-    // Switch to Light
-    const lightBtn = await harness.page.waitForSelector('.ar-theme-btn:has-text("light")');
-    await lightBtn?.click();
-    const lightTheme = await harness.page.evaluate(() => document.documentElement.dataset.theme);
-    expect(lightTheme).toBe('light');
+    const headers = response?.headers() ?? {};
+    const csp = headers['content-security-policy'] ?? '';
+    expect(csp).toContain("worker-src 'self'");
+    expect(csp).not.toContain('blob:');
+
+    // Wait for worker computation to complete and leave loading state
+    const card = await harness.page.waitForSelector('.ar-countdown', { timeout: 10000 });
+    expect(card).not.toBeNull();
+
+    expect(violationFound).toBe(false);
+    expect(consoleErrors).toEqual([]);
   });
 
-  it('clock format toggle switches between 12h and 24h display', async () => {
-    await harness.goto('index.html');
+  it('e2e: the home countdown rolls down when the minute changes', async () => {
+    // Start live offset clock 3 seconds before a minute boundary (06:40:57 -> 06:41:00)
+    await harness.goto('index.html?now=2026-11-17T06:40:57');
+    await harness.page.waitForSelector('.ar-countdown', { timeout: 10000 });
     await harness.waitForFonts();
 
-    const initialTime = await harness.page.waitForSelector('.ar-home-card-time');
-    const initialText = await initialTime?.textContent();
-    expect(initialText).toMatch(/\d{2}:\d{2}/);
-  });
-
-  it('manual location entry updates coordinate display', async () => {
-    await harness.goto('index.html');
-    await harness.waitForFonts();
-
-    const locationLabel = await harness.page.waitForSelector('.ar-home-location');
-    const text = await locationLabel?.textContent();
-    expect(text).toBe('Rajkot');
-  });
-
-  it('snapshot worker calculates astronomical events without main thread block', async () => {
-    await harness.goto('index.html');
-    await harness.waitForFonts();
-
-    // Verify upcoming event countdowns rendered with non-empty text
-    const cards = await harness.page.$$('.ar-home-card');
-    expect(cards.length).toBeGreaterThanOrEqual(1);
-
-    const countdownText = await harness.page.$eval(
-      '.ar-home-card .ar-countdown',
-      (el) => el.textContent,
+    const initialLabel = await harness.page.$eval(
+      '[data-testid="event-card-sunrise"] .ar-countdown-sr',
+      (el) => el.textContent?.trim() ?? '',
     );
-    expect(countdownText).toMatch(/\d{2}h\s+\d{2}m/);
 
-    // Capture screenshots
-    await harness.captureScreenshot('home-preview-light.png');
+    // Observe DOM synchronously so we never miss the 260ms animation window
+    const sawRollDown = await harness.page.evaluate(() => {
+      return new Promise((resolve) => {
+        if (document.querySelector('.ar-roll-slot[data-dir="down"]')) {
+          resolve(true);
+          return;
+        }
+        const timer = setTimeout(() => {
+          observer.disconnect();
+          resolve(false);
+        }, 5000);
+        const observer = new window.MutationObserver(() => {
+          if (document.querySelector('.ar-roll-slot[data-dir="down"]')) {
+            clearTimeout(timer);
+            observer.disconnect();
+            resolve(true);
+          }
+        });
+        observer.observe(document.body, {
+          subtree: true,
+          childList: true,
+          attributes: true,
+          attributeFilter: ['data-dir'],
+        });
+      });
+    });
 
-    // Also capture Pure Dark
-    await harness.goto('index.html?theme=pure-dark');
-    await harness.waitForFonts();
-    await harness.captureScreenshot('home-preview-pure-dark.png');
+    expect(sawRollDown).toBe(true);
+
+    const updatedLabel = await harness.page.$eval(
+      '[data-testid="event-card-sunrise"] .ar-countdown-sr',
+      (el) => el.textContent?.trim() ?? '',
+    );
+    expect(updatedLabel).not.toBe(initialLabel);
   });
 
-  it('components gallery displays all theme previews and specimens', async () => {
-    await harness.goto('components.html');
-    await harness.waitForFonts();
-
-    const buttons = await harness.page.$$('.ar-theme-btn');
-    expect(buttons.length).toBe(8);
-
-    const buttonTexts = await harness.page.$$eval('.ar-theme-btn', (els) =>
-      els.map((e) => e.textContent?.trim()),
-    );
-    expect(buttonTexts).toEqual([
+  it('e2e: every theme renders the components page without console errors', async () => {
+    const themes = [
       'light',
       'dark',
       'pure-dark',
@@ -130,14 +122,57 @@ describe('Application Real-Browser Tests', () => {
       'pack-burgundy',
       'pack-porcelain',
       'pack-sandstone',
-    ]);
+    ];
 
-    // Check 48px and 20px specimens
-    const specimen48 = await harness.page.$('.ar-specimen-48');
-    const specimen20 = await harness.page.$('.ar-specimen-20');
-    expect(specimen48).not.toBeNull();
-    expect(specimen20).not.toBeNull();
+    for (const theme of themes) {
+      consoleErrors.length = 0;
+      await harness.goto(`components.html?theme=${theme}`);
+      await harness.page.waitForSelector('.ar-countdown', { timeout: 10000 });
+      await harness.waitForFonts();
 
-    await harness.captureScreenshot('components-gallery.png');
+      const applied = await harness.page.evaluate(() => document.documentElement.dataset.theme);
+      expect(applied).toBe(theme);
+      expect(consoleErrors).toEqual([]);
+    }
+  });
+
+  it('e2e: the themes page shows eight themes and no horizontal scrolling at 390 pixels', async () => {
+    await harness.page.setViewportSize({ width: 390, height: 844 });
+    await harness.goto('themes.html');
+    await harness.page.waitForSelector('.theme-section', { timeout: 10000 });
+    await harness.waitForFonts();
+
+    const cards = await harness.page.$$('.theme-section');
+    expect(cards.length).toBe(8);
+
+    const hasNoHorizontalScroll = await harness.page.evaluate(() => {
+      const doc = document.documentElement;
+      return doc.scrollWidth <= doc.clientWidth;
+    });
+    expect(hasNoHorizontalScroll).toBe(true);
+
+    await harness.captureScreenshot('themes-390.png');
+  });
+
+  it('e2e: the removed theme ids fall back to the system theme', async () => {
+    // Light scheme emulation -> removed theme ids should resolve to light
+    await harness.page.emulateMedia({ colorScheme: 'light' });
+    await harness.goto('index.html?theme=pack-aubergine');
+    let theme = await harness.page.evaluate(() => document.documentElement.dataset.theme);
+    expect(theme).toBe('light');
+
+    await harness.goto('index.html?theme=pack-midnight-teal');
+    theme = await harness.page.evaluate(() => document.documentElement.dataset.theme);
+    expect(theme).toBe('light');
+
+    // Dark scheme emulation -> removed theme ids should resolve to pure-dark
+    await harness.page.emulateMedia({ colorScheme: 'dark' });
+    await harness.goto('index.html?theme=pack-aubergine');
+    theme = await harness.page.evaluate(() => document.documentElement.dataset.theme);
+    expect(theme).toBe('pure-dark');
+
+    await harness.goto('index.html?theme=pack-midnight-teal');
+    theme = await harness.page.evaluate(() => document.documentElement.dataset.theme);
+    expect(theme).toBe('pure-dark');
   });
 });

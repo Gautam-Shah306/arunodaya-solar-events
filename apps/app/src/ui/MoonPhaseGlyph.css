@@ -1,0 +1,24 @@
+.ar-moon-phase-glyph-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ar-moon-glyph-svg {
+  display: block;
+}
+
+.ar-moon-glyph-disc {
+  fill: var(--ar-layer-2);
+}
+
+.ar-moon-glyph-lit {
+  fill: var(--ar-text-primary);
+}
+
+.ar-moon-glyph-ring {
+  fill: none;
+  stroke: var(--ar-border);
+  stroke-width: 1;
+  opacity: 0.5;
+}

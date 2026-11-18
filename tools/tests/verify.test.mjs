@@ -8,7 +8,15 @@ describe('Verification pipeline runner and output formatting', () => {
     const goldenIdx = VERIFY_STEPS.indexOf('test:golden');
     expect(tzIdx).toBeGreaterThanOrEqual(0);
     expect(goldenIdx).toBe(tzIdx + 1);
-    expect(VERIFY_STEPS.length).toBe(11);
+    expect(VERIFY_STEPS.length).toBe(12);
+  });
+
+  it('verify runs the scenario check right after the invariants check', () => {
+    const invIdx = VERIFY_STEPS.indexOf('verify:invariants');
+    const scnIdx = VERIFY_STEPS.indexOf('verify:scenarios');
+    expect(invIdx).toBeGreaterThanOrEqual(0);
+    expect(scnIdx).toBe(invIdx + 1);
+    expect(VERIFY_STEPS.length).toBe(12);
   });
 
   it('test:golden is excluded from the coverage run', () => {

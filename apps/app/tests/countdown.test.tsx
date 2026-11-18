@@ -71,4 +71,20 @@ describe('Countdown Component', () => {
     expect(rootEl).not.toBeNull();
     expect(rootEl?.classList.contains('ar-tnum')).toBe(true);
   });
+
+  it('countdown updates direction when remainingMinutes changes up or down', async () => {
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(<Countdown remainingMinutes={60} srLabel="Sunrise in 1 hour" />);
+    });
+    await act(async () => {
+      root.render(<Countdown remainingMinutes={59} srLabel="Sunrise in 59 minutes" />);
+    });
+    expect(container.querySelector('.ar-roll-slot[data-dir="down"]')).not.toBeNull();
+
+    await act(async () => {
+      root.render(<Countdown remainingMinutes={60} srLabel="Sunrise in 1 hour" />);
+    });
+    expect(container.querySelector('.ar-roll-slot[data-dir="up"]')).not.toBeNull();
+  });
 });

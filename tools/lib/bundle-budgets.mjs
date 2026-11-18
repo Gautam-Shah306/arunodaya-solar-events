@@ -10,13 +10,14 @@ export const ASTRONOMY_DISTINCTIVE_STRING = 'Invalid observer coordinates';
 
 /**
  * Recorded first-load JavaScript gzip budgets per build target.
- * Computed as ceil(measuredAfterFix * 1.15).
+ * Computed as ceil(measured * 1.15) after Prompt 7 Home screen additions.
+ * Hard ceiling is 110 KB gzip (112,640 B) for pages.
  */
 export const BUNDLE_BUDGETS = {
-  // Pages measured after fix: 143,300 B gzip -> budget: ceil(143,300 * 1.15) = 164,795 B (~165 kB)
-  pagesGzipBytes: 165_000,
-  // Android measured after fix: 142,714 B gzip -> budget: ceil(142,714 * 1.15) = 164,122 B (~165 kB)
-  androidGzipBytes: 165_000,
+  // Pages measured: 87,788 B gzip (~85.73 kB) -> budget: ceil(87,788 * 1.15) = 100,957 B
+  pagesGzipBytes: 100_957,
+  // Android measured: 87,177 B gzip (~85.13 kB) -> budget: ceil(87,177 * 1.15) = 100,254 B
+  androidGzipBytes: 100_254,
 };
 
 /**
@@ -38,8 +39,8 @@ export function calculateFirstLoadJs(target, appRoot = path.resolve('apps/app'))
 
   const html = fs.readFileSync(htmlPath, 'utf8');
 
-  // Match module scripts and modulepreload links
-  const scriptRegex = /<script\s+[^>]*type=["']module["'][^>]*src=["']([^"']+)["']/gi;
+  // Match all script tags with a src and modulepreload links
+  const scriptRegex = /<script\s+[^>]*src=["']([^"']+)["']/gi;
   const preloadRegex = /<link\s+[^>]*rel=["']modulepreload["'][^>]*href=["']([^"']+)["']/gi;
 
   const assetFiles = new Set();
@@ -62,7 +63,10 @@ export function calculateFirstLoadJs(target, appRoot = path.resolve('apps/app'))
   const files = [];
 
   for (const file of assetFiles) {
-    const fullPath = path.join(assetsDir, file);
+    let fullPath = path.join(assetsDir, file);
+    if (!fs.existsSync(fullPath)) {
+      fullPath = path.join(distDir, file);
+    }
     if (fs.existsSync(fullPath)) {
       const buf = fs.readFileSync(fullPath);
       totalRawBytes += buf.length;

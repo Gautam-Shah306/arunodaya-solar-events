@@ -105,7 +105,7 @@ Sunrise · Navkarshi · Sunset · Morning and evening golden hour · Daylight du
 - Sunrise/sunset are standard astronomical-horizon values, not terrain-obstructed visibility.
 - **Golden hour (Proposed):** morning = sunrise to solar altitude +6°; evening = +6° to sunset. Keeping the window inside daylight avoids a "golden hour" that starts before the displayed sunrise. An optional blue-hour entry (−4° to sunrise) can sit in the Astronomy tab only.
 - **Civil twilight:** sun at −6°. Nautical/astronomical twilight may appear in the Astronomy tab.
-- **Moon phase and illumination reference instant (Proposed):** live value at *now* on Home; **12:00 IST** for each forecast or picked date. Moon phase is defined as the lunation fraction in `[0, 1)` (with 0 at new moon and 0.5 at full moon); illumination is defined as a fraction in `[0, 1]`.
+- **Moon phase and illumination reference instant (Proposed):** live value at *now* on Home; **12:00 IST** for each forecast or picked date. Moon phase is defined as the lunation fraction in `[0, 1)` (with 0 at new moon and 0.5 at full moon); illumination is defined as a fraction in `[0, 1]`. On Home, live moon phase is interpolated along the shortest circular path between adjacent days' solar-noon phase anchors from the precomputed snapshot, deriving live illumination from the interpolated fraction so no astronomy library runs on the main thread (ADR 0018).
 - **Moon date attribution (Proposed):** a moon event is listed under the IST date on which it occurs. If a day has no moonrise or no moonset, show "No moonrise today" / "No moonset today". Never invent a time. If the paired event falls on the next IST day, show it with a `(+1)` marker.
 - **Accuracy (Decided):** the engine is Astronomy Engine (astronomy-engine 2.1.19, MIT), chosen by benchmark (docs/ASTRONOMY.md, ADR 0008) against a primary reference of Skyfield with the JPL DE440s ephemeris, cross-checked with PyEphem, on 2,790 city-days (27 Indian cities, 2026 plus extra dates). Measured maximum errors: sun events 1.61 s, solar noon 0.30 s, moon events 7.23 s, against tolerances of 60 s (sun), 30 s (solar noon) and 120 s (moon). The committed reference dataset is packages/engine/tests/data/astro-reference-v1.json. Printed local calendars may differ by a minute or two because of different sunrise conventions and city tables.
 - **Elevation (Proposed):** elevation is stored and shown but does not shift sunrise or sunset in v1; times use the standard sea-level horizon.
@@ -159,8 +159,7 @@ Selection always uses exact computed instants, never fixed clock cutoffs.
 
 ### 4.4 Rolling digits (Decided)
 
-- Digit increases → new digit enters from below, rolls upward. Digit decreases → enters from above, rolls downward.
-- **Roll direction (Decided):** Direction follows the change of the whole countdown value: decrease rolls down with the new incoming digit entering from above; increase rolls up with the new incoming digit entering from below; equal does nothing. Only changing digit characters roll; separators and unit letters are static.
+- **Roll direction (Decided):** the direction follows the change of the whole countdown value: a decrease rolls down (the new digit enters from above), an increase rolls up (the new digit enters from below). Every digit that changes rolls on every change, including wraps: 9 to 0 on an increase rolls up and 0 to 9 on a decrease rolls down. Unchanged digits, separators and unit letters stay still.
 - Fixed-width digit slots, clipped viewport, no baseline, width or card-size change.
 - Respect reduced-motion; static update when animation can't run. Widgets use a static fallback.
 - **Screen reader announcements (Decided):** Visual layers are `aria-hidden="true"`. Screen readers receive one polite live label per minute for the soonest event via an `aria-live="polite"` region.
@@ -228,7 +227,7 @@ The hybrid keeps the morning and evening starts predictable (04:00 and 17:00) wh
 
 ### 6.1 Home
 
-Greeting · day/date (e.g. `Sat 14 November`) · active location (tap to change) · live IST clock · solar arc · sunrise/Navkarshi/sunset times · three countdowns · day/night icon · daylight duration · solar noon · golden hours · civil dawn/dusk · moonrise/moonset · moon phase/illumination · **next-moonrise countdown (see §7.4)**.
+Greeting · day/date (e.g. `Sat 14 November`) · active location (tap to change) · live IST clock · solar arc · sunrise/Navkarshi/sunset times · three countdowns · day/night icon · daylight duration · solar noon · golden hours · civil dawn/dusk · moonrise/moonset · moon phase/illumination · **next-moonrise countdown (see §7.4)**. Each primary event card (sunrise, Navkarshi, sunset) shows the next occurrence strictly after the current instant with a `Tomorrow` marker when that target falls on the following IST day, and dates after 2035 display an `Approximate` accuracy badge (ADR 0017).
 
 ### 6.2 Forecast
 
@@ -322,7 +321,7 @@ Event → event details. Date → forecast. Location → selector. Refresh → r
 
 ### 9.1 Light theme (accepted)
 
-Editorial Premium: warm ivory, deep forest green, muted sage, restrained antique gold, serif display, clean sans UI, generous spacing, subtle borders, minimal elevation. Widgets use a forest-green surface with ivory text and sparing gold.
+Editorial Premium: warm ivory, deep forest green, muted sage, restrained antique gold, serif display, clean sans UI, generous spacing, subtle borders, minimal elevation. Widgets follow the theme: light themes use light widgets and dark themes use dark widgets.
 
 ### 9.2 Themes
 
@@ -332,7 +331,7 @@ Arunodaya ships four built-in themes and four curated theme packs (eight themes 
 | --- | --- | --- | --- | --- | --- |
 | Light (Editorial Premium) | Warm ivory | Deep ink-green | Muted sage | Antique gold | Accepted direction; default for system light |
 | Dark | Charcoal-green | Parchment | Olive and forest | Champagne gold | Original dark concept; selectable |
-| **Pure Dark** | Pure black (#000000) | White | Pure black (#000000) with #2A2A2A border | Champagne gold | Default for system dark; saves power on OLED screens |
+| **Pure Dark** | Pure black | White | Pure black with a subtle neutral border | Champagne gold | Default for system dark; saves power on OLED screens |
 | **Darker** | Deep forest green | Soft cream | Deep forest steps | Champagne gold | Keeps the green identity at the lowest brightness |
 | Navy | Deep midnight navy | Warm ivory | Slate-navy steps | Champagne gold | Selectable dark theme pack; formal and classic |
 | Burgundy | Deep wine | Warm ivory | Oxblood and mulberry steps | Champagne gold | Selectable dark theme pack; rich and warm |
@@ -340,17 +339,17 @@ Arunodaya ships four built-in themes and four curated theme packs (eight themes 
 | Sandstone | Warm sand | Espresso brown | Terracotta-tinted sand | Antique gold | Selectable light theme pack; sun-baked and earthy |
 
 - **Match system (Decided):** system light shows Light and system dark shows Pure Dark. Choosing any other theme turns Match system off. There is no user-chosen light/dark pair: Match system only ever maps to Light and Pure Dark.
-- **Layers, not shadows:** on dark themes, depth comes from stepping surface lightness (canvas, layer 1, layer 2, layer 3) with subtle borders. Pure Dark sets canvas and all layers (layer 1, layer 2, layer 3) to pure black (`#000000`) with a `#2A2A2A` border for card separation. Light themes use light widget surfaces matching their layer tokens.
+- **Layers, not shadows:** on dark themes, depth comes from stepping surface lightness (canvas, layer 1, layer 2, layer 3) with subtle borders. Pure Dark sets canvas and all layers (layer 1, layer 2, layer 3) to pure black with a subtle neutral border for card separation. Light themes use light widget surfaces matching their layer tokens.
 - **Pure Dark text (Proposed):** primary text and countdown digits are white. Secondary and tertiary text use reduced-opacity tints so the hierarchy survives on black.
 - **Custom theme packs (Decided direction):** a selector offers premium packs such as Navy and Burgundy. Each pack is a complete, individually designed theme, not a recolour generated from one accent. The launch lineup is in the table above: two dark packs and two light packs, each declaring one base mode. The solar accent stays in the gold/amber family in every pack so the sun always reads the same way.
 - **No free colour picker in v1 (Proposed):** curated packs only, because arbitrary colours can produce unreadable combinations.
 - **Selector (Proposed):** Settings, Appearance shows the Match system switch and a gallery of theme cards. Each card previews real components (event times and a countdown), not swatches.
 - **Other outputs (Proposed):** the monthly PDF uses a fixed light paper palette. The share card renders in the current theme or in Light, the user's choice. This replaces the earlier "light and dark variants" wording in §7.3.
-- **Palettes (Decided):** the eight themes (dark, darker, pure-dark, light, porcelain, sandstone, navy, burgundy) are defined in packages/themes and documented in docs/THEMES.md; every theme passes all 46 contrast checks in the contrast gate (section 9.4). Pure Dark layers all equal `#000000` with a `#2A2A2A` border. Light themes use light widget surfaces matching their layer tokens.
+- **Palettes (Decided):** the eight themes (dark, darker, pure-dark, light, porcelain, sandstone, navy, burgundy) are defined in packages/themes and documented in docs/THEMES.md; every theme passes all 46 contrast checks in the contrast gate (section 9.4). Pure Dark layers all equal pure black with a subtle neutral border. Light themes use light widget surfaces matching their layer tokens.
 
 ### 9.3 Typography (revised)
 
-- **Numbers and headings (Decided):** a **bundled open-license serif** with lining figures: **Playfair Display** (SIL Open Font License 1.1), bundled under `apps/app/src/assets/fonts/` as WOFF2 with OpenType lining figures (`lnum`) (ADR 0015). Gelasio and Georgia are dropped completely. Digit width is calibrated in Playfair Display (`--ar-digit-width`).
+- **Numbers and headings (Decided):** a **bundled open-license serif** with lining figures: **Playfair Display** (SIL Open Font License 1.1), bundled under `apps/app/src/assets/fonts/` with `LICENSE-playfair-display.txt` as WOFF2 with OpenType lining figures (`lnum`) (ADR 0015). Gelasio and Georgia are dropped completely. Digit width is calibrated in Playfair Display (`--ar-digit-width: 1.06ch`) accommodating all lining digits without clipping in real-browser testing.
 - **UI/body (Decided):** native `system-ui` sans-serif stack (`system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`).
 - **Widgets:** custom fonts in RemoteViews/Glance are unreliable, so render digits to bitmaps with a `contentDescription` for TalkBack, or use the system font if the bundled font fails to render.
 - **Odometer rules:** fixed-width slots, clipped viewport, uniform baseline, no layout shift.
@@ -439,13 +438,6 @@ Exact epoch instants are stored, never display strings. `solarNoonMs` holds the 
 
 `src/{app,components,features/{home,forecast,astronomy,locations,settings,export},engine,services,hooks,types,styles}` · `public/` · `android/` (Capacitor host, Kotlin widgets, alarm and worker code) · `tests/{unit,astronomy,integration}`. Superseded by the monorepo layout in §18.3; no repository exists yet.
 
-### 10.3 Fonts
-
-- **Playfair Display 400 and 700 WOFF2:** bundled under `apps/app/src/assets/fonts/` with `LICENSE-playfair-display.txt`.
-- **OpenType features:** lining numbers (`lnum`) enabled; tabular figures (`tnum`) absent from font metadata, accommodated via calibrated `--ar-digit-width: 1.06ch` slot styling.
-- **Calibrated digit width:** digit width accommodates all lining digits without clipping in real-browser testing.
-- **Superseded:** Gelasio font files and configuration are completely removed (ADR 0015 supersedes ADR 0013).
-
 ---
 
 ## 11. Offline, privacy and resilience
@@ -496,6 +488,10 @@ Exact epoch instants are stored, never display strings. `solarNoonMs` holds the 
 
 - Contrast, large font scale, TalkBack minute-level announcements, reduced motion, glyph test of the chosen serif on real devices.
 
+**Real-browser end-to-end tests**
+
+Real-browser end-to-end tests run under Playwright against the built pages target. They verify visual rendering across all eight themes, font-family cascading to Playfair Display with tabular numerals, slot width stability during countdown rollover, the worker-based snapshot service under the live Content Security Policy, and visual contrast margins.
+
 ---
 
 ## 13. Roadmap (revised)
@@ -535,6 +531,7 @@ Exact epoch instants are stored, never display strings. `solarNoonMs` holds the 
 - **Theme palettes:** eight themes defined in packages/themes (docs/THEMES.md) and passing the 46 checks in the contrast gate.
 - **App foundation:** React 19, TypeScript, Vite, plain CSS using the --ar-* custom properties, KeyValueStore port with a localStorage adapter in v1, and hash routing (ADR 0012).
 - **Typography:** Playfair Display bundled WOFF2 serif with lining figures; system-ui for UI sans; Georgia and Gelasio dropped (ADR 0015).
+- **Real-browser tests:** Real-browser tests run against built assets via Playwright to verify visual and font-rendering invariants that happy-dom cannot catch.
 
 **Proposed (confirm)**
 
@@ -550,6 +547,7 @@ Exact epoch instants are stored, never display strings. `solarNoonMs` holds the 
 - Every theme pack keeps the solar accent in the gold/amber family; light packs use a darker gold text token.
 - Android release build without the INTERNET permission if Capacitor allows it.
 - Contrast thresholds as listed in docs/THEMES.md.
+- The 10:1 visual border contrast, deltaE > 3.0 canvas contrast against pure black, and slot-width advance tolerance of 0.05 px are candidates for promotion to Decided once production telemetry on target Android devices confirms their stability.
 
 **Open**
 

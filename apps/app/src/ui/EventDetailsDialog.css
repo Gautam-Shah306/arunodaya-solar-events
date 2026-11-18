@@ -1,0 +1,52 @@
+.ar-event-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ar-event-dialog-time-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ar-border);
+}
+
+.ar-event-dialog-time {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--ar-font-serif, serif);
+  color: var(--ar-text-primary);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.ar-event-dialog-tomorrow {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ar-accent-text);
+  background-color: var(--ar-layer-2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.ar-event-dialog-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ar-event-dialog-section-title {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ar-text-tertiary);
+  font-weight: 600;
+}
+
+.ar-event-dialog-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ar-text-primary);
+  line-height: 1.5;
+}

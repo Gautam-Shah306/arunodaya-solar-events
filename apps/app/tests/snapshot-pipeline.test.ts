@@ -438,4 +438,82 @@ describe('Snapshot Pipeline', () => {
       expect(errorResult.error.message).toContain('Crash in web worker thread');
     }
   });
+
+  it('snapshot client exercises fallback when worker creation throws or is unavailable', async () => {
+    // 1. Worker creation throws, fallback succeeds
+    const client = createSnapshotClient({
+      createWorker: () => {
+        throw new Error('Worker blocked by security policy');
+      },
+    });
+
+    const res = await client.build({
+      location: RAJKOT_LOCATION,
+      startIstDate: '2026-11-16',
+      dayCount: 3,
+      generatedAtMs: 1763274600000,
+    });
+    expect(res.ok).toBe(true);
+
+    // 2. Custom fallback function
+    const customFallbackClient = createSnapshotClient({
+      createWorker: () => null,
+      fallback: async (req) => {
+        return {
+          id: req.id,
+          ok: false,
+          error: { code: 'CUSTOM_FAIL', message: 'Custom fallback failed' },
+        };
+      },
+    });
+
+    const customRes = await customFallbackClient.build({
+      location: RAJKOT_LOCATION,
+      startIstDate: '2026-11-16',
+      dayCount: 3,
+      generatedAtMs: 1763274600000,
+    });
+    expect(customRes.ok).toBe(false);
+    if (!customRes.ok) {
+      expect(customRes.error.code).toBe('CUSTOM_FAIL');
+    }
+
+    // 3. Fallback is null
+    const noFallbackClient = createSnapshotClient({
+      createWorker: () => null,
+      fallback: null,
+    });
+
+    const noFallbackRes = await noFallbackClient.build({
+      location: RAJKOT_LOCATION,
+      startIstDate: '2026-11-16',
+      dayCount: 3,
+      generatedAtMs: 1763274600000,
+    });
+    expect(noFallbackRes.ok).toBe(false);
+    if (!noFallbackRes.ok) {
+      expect(noFallbackRes.error.code).toBe('FALLBACK_FAILED');
+    }
+  });
+
+  it('worker request handler catches unexpected exceptions during calculation', () => {
+    const explodingObj = {
+      id: 77,
+      type: 'build',
+      location: RAJKOT_LOCATION,
+      get startIstDate(): string {
+        throw new Error('Unexpected calculation crash');
+      },
+      dayCount: 5,
+      generatedAtMs: 1763274600000,
+    };
+
+    const res = handleMessage(explodingObj);
+    expect(res).not.toBeNull();
+    expect(res?.ok).toBe(false);
+    if (res && !res.ok) {
+      expect(res.error.code).toBe('UNEXPECTED_WORKER_ERROR');
+      expect(res.error.message).toContain('Unexpected calculation crash');
+    }
+  });
 });

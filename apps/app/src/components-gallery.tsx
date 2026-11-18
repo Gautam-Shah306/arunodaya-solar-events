@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { getTheme, THEME_IDS, type ThemeId } from '@arunodaya/themes';
+import { getTheme, isThemeId, THEME_IDS, type ThemeId } from '@arunodaya/themes';
 import { Countdown } from './ui/Countdown.js';
 import { countdownParts } from './ui/rolling-digits-model.js';
 import { applyThemeToElement } from './theme/apply-theme.js';
@@ -11,16 +11,29 @@ import './styles/components-gallery.css';
 
 const ALL_THEMES: readonly ThemeId[] = THEME_IDS;
 
+function resolveInitialTheme(): ThemeId {
+  if (typeof window !== 'undefined') {
+    const param = new URLSearchParams(window.location.search).get('theme');
+    if (param && isThemeId(param)) {
+      return param;
+    }
+  }
+  return 'light';
+}
+
 export const ComponentsGallery: React.FC = () => {
-  const [activeTheme, setActiveTheme] = useState<ThemeId>('light');
+  const [activeTheme, setActiveTheme] = useState<ThemeId>(resolveInitialTheme);
   const [interactiveMinutes, setInteractiveMinutes] = useState(168); // 02h 48m
 
-  function handleThemeChange(id: ThemeId): void {
-    setActiveTheme(id);
-    const themeDef = getTheme(id);
+  useEffect(() => {
+    const themeDef = getTheme(activeTheme);
     if (themeDef) {
       applyThemeToElement(document.documentElement, themeDef);
     }
+  }, [activeTheme]);
+
+  function handleThemeChange(id: ThemeId): void {
+    setActiveTheme(id);
   }
 
   function step(delta: number): void {
@@ -150,6 +163,26 @@ export const ComponentsGallery: React.FC = () => {
               }}
             >
               Set 09h 59m
+            </button>
+            <button
+              type="button"
+              id="set-rollover-59m"
+              className="ar-gallery-step-btn"
+              onClick={() => {
+                setInteractiveMinutes(59); // 00h 59m
+              }}
+            >
+              Set 00h 59m
+            </button>
+            <button
+              type="button"
+              id="set-rollover-1h"
+              className="ar-gallery-step-btn"
+              onClick={() => {
+                setInteractiveMinutes(60); // 01h 00m
+              }}
+            >
+              Set 01h 00m
             </button>
           </div>
         </section>

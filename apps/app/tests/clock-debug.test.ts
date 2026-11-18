@@ -34,6 +34,19 @@ describe('Clock and Debug Parameters', () => {
     expect(offsetClock.nowMs()).toBe(simulatedStart + 5000);
   });
 
+  it('offset clock handles base clocks with now() or fallback', () => {
+    const clockWithNowOnly = { now: () => 5000 } as unknown as Parameters<
+      typeof createOffsetClock
+    >[0];
+    const offset1 = createOffsetClock(clockWithNowOnly, 10000);
+    expect(offset1.nowMs()).toBe(10000);
+    expect(offset1.now?.()).toBe(10000);
+
+    const emptyClock = {} as unknown as Parameters<typeof createOffsetClock>[0];
+    const offset2 = createOffsetClock(emptyClock, 20000);
+    expect(offset2.nowMs()).toBeGreaterThanOrEqual(20000);
+  });
+
   it('frozen clock does not advance', () => {
     const frozenMs = 1763164800000;
     const frozen = createFrozenClock(frozenMs);
@@ -94,9 +107,12 @@ describe('Clock and Debug Parameters', () => {
   });
 
   it('debug clock parameter accepts 12h and 24h only', () => {
-    expect(parseDebugParams('?clock=12h', true).clockFormat).toBe('12h');
-    expect(parseDebugParams('?clock=24h', true).clockFormat).toBe('24h');
-    expect(parseDebugParams('?clock=36h', true).clockFormat).toBeUndefined();
+    expect(parseDebugParams('?clock=12h&freeze=1', true).clockFormat).toBe('12h');
+    expect(parseDebugParams('?clock=12h&freeze=1', true).freeze).toBe(true);
+    expect(parseDebugParams('?clock=24h&freeze=true', true).clockFormat).toBe('24h');
+    expect(parseDebugParams('?clock=24h&freeze=true', true).freeze).toBe(true);
+    expect(parseDebugParams('?clock=36h&freeze=0', true).clockFormat).toBeUndefined();
+    expect(parseDebugParams('?clock=36h&freeze=0', true).freeze).toBeUndefined();
     expect(parseDebugParams('?clock=invalid', true).clockFormat).toBeUndefined();
   });
 });

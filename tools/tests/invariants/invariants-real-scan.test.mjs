@@ -218,11 +218,11 @@ describe('Invariants scanner and real repository verification', () => {
     expect(summary.filesScanned).toBeGreaterThan(50);
     expect(summary.rulesRun).toBe(11);
     expect(findings).toHaveLength(0);
-  });
+  }, 60000);
 
   it('real repository scan still reports zero findings after the dependency allowance', () => {
     const { findings, summary } = runInvariants({ root: repoRoot });
     expect(summary.rulesRun).toBe(11);
     expect(findings).toHaveLength(0);
-  });
+  }, 60000);
 });

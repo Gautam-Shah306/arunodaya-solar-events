@@ -4,6 +4,7 @@ import { runSteps } from './lib/run-steps.mjs';
 export const VERIFY_STEPS = [
   'check:toolchain',
   'verify:invariants',
+  'verify:scenarios',
   'lint',
   'format:check',
   'typecheck',

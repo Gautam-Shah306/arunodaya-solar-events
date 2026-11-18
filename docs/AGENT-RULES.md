@@ -34,14 +34,14 @@ Every subsequent prompt must begin with Part 0 verification to ensure workspace 
 
 ## Report format
 
-Every prompt execution concludes with exactly one REPORT section with nothing after it. A report with other section names is non-compliant. SPEC/DOC EDITS shows raw git diff output, never reconstructed text.
+Every prompt execution concludes with exactly one REPORT section with nothing after it. A report with other section names is non-compliant. SPEC/DOC EDITS shows raw git diff output, never reconstructed text. All test titles from the current prompt are copied verbatim into tools/scenarios/prompt-<id>.txt and checked by npm run verify:scenarios.
 
 1. **1 PART STATUS**: Status table recording whether each part is DONE, PARTIAL, SKIPPED, or FAILED with concise command-backed evidence.
-2. **2 COMMANDS RUN**: Exhaustive log of executed commands with their exit codes, test counts per project, coverage summaries, golden counters, and asset gzip sizes.
-3. **3 FILES**: Complete inventory of all created and modified repository files grouped by execution part.
+2. **2 COMMANDS RUN**: Exhaustive log of executed commands with their exit codes, test counts per project, coverage summaries, golden counters, and asset gzip sizes (numbers marked 'before' must be measured at the start of Part 0, never copied from an earlier report).
+3. **3 FILES**: Complete inventory of all created and modified repository files grouped by execution part, where reported counts must equal the exact number of listed files.
 4. **4 SPEC/DOC EDITS**: Raw, unedited output of git diff -U1 -- docs/spec/ARUNODAYA-SPEC.md and git diff --stat for other documentation files without reconstructed memory quotes.
 5. **5 DEVIATIONS**: Documented variances from the prompt instructions or architectural expectations with technical justifications.
 6. **6 UNVERIFIED**: Explicit list of any operations, browsers, or environments that could not be executed directly.
 7. **7 FAILED ATTEMPTS**: Exact commands and terminal error output for any operation that failed before resolution or recovery.
-8. **8 USER ACTIONS**: Actionable manual steps required strictly by the user, such as physical device verification or git commits.
+8. **8 USER ACTIONS**: Actionable manual steps required strictly by the user, always containing the exact commit steps: git status --short, git add -A, npm run verify:linux -- --index, git commit with a message, git push.
 9. **9 FOLLOW-UPS**: Non-blocking observations, future architectural recommendations, and out-of-scope backlog items.

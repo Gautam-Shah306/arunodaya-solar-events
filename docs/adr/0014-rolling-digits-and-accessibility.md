@@ -60,3 +60,8 @@ In Prompt 6b, the rolling digit mechanics and component implementation were rewo
    - Each changed slot mounts newly keyed DOM elements (`.ar-roll-enter` and `.ar-roll-exit` with a monotonically incrementing sequence counter) so that every change restarts CSS animations reliably in all browser engines.
    - Exiting glyphs are unmounted upon `onAnimationEnd` or by a 400ms safety timeout.
    - Synchronized dual-layer rendering in `Countdown.tsx` ensures the shade layer and clipped fill layer share identical sequence keys and animation timing.
+
+### Root cause of the Prompt 6 defect
+
+Analysis from code (reading pre-6b implementation at commit `f0e4903:apps/app/src/ui/RollingDigits.tsx` and `rolling-digits-model.ts`):
+In the Prompt 6 implementation, slot elements in `RollingDigits.tsx` were rendered with static array index keys (`key={index}`) and static track children (`.ar-num-prev`, `.ar-num-next`). When new countdown changes arrived, React's reconciliation reconciled the existing DOM elements without re-triggering CSS keyframe animations. Furthermore, consecutive rapid updates or digit wraps (such as 0 to 9 on decrement) lacked dynamic keying, entry/exit lifecycle cleanup via `animationend`, and a safety timeout fallback, leaving exiting glyphs in the DOM and failing to restart animations reliably across browser engines.

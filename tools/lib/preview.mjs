@@ -11,13 +11,14 @@ import { CSP_POLICY } from './csp.mjs';
  * @param {number} [options.port]
  * @param {'pages' | 'android'} [options.target]
  * @param {boolean} [options.strictPort]
+ * @param {string} [options.appRoot]
  * @returns {Promise<{ url: string, port: number, base: string, close(): Promise<void> }>}
  */
 export async function startPreviewServer(options = {}) {
   const target = options.target ?? 'pages';
   const port = options.port ?? 0;
   const strictPort = options.strictPort ?? false;
-  const appRoot = path.resolve('apps/app');
+  const appRoot = options.appRoot ? path.resolve(options.appRoot) : path.resolve('apps/app');
   const distDir = path.resolve(appRoot, `dist/${target}`);
 
   if (!fs.existsSync(distDir)) {

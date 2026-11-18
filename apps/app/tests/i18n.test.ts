@@ -4,7 +4,11 @@ import {
   en,
   format,
   formatDateLabel,
+  formatShortDateLabel,
+  formatTime24,
+  formatTimeDisplay,
   greetingText,
+  moonPhaseLabel,
   t,
 } from '../src/i18n/index.js';
 
@@ -81,5 +85,64 @@ describe('i18n and English strings', () => {
     expect(t('tagline')).toBe('A little closer to the sun.');
     expect(t('status.loading')).toBe('Calculating the sky');
     expect(() => t('non.existent.key')).toThrow();
+  });
+
+  it('phase names exist for all eight moon phases', () => {
+    const phases = [
+      'new_moon',
+      'waxing_crescent',
+      'first_quarter',
+      'waxing_gibbous',
+      'full_moon',
+      'waning_gibbous',
+      'third_quarter',
+      'waning_crescent',
+    ] as const;
+    for (const phase of phases) {
+      const label = moonPhaseLabel(phase);
+      expect(typeof label).toBe('string');
+      expect(label.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('formatShortDateLabel formats weekday day and short month in IST', () => {
+    // 2026-11-16 12:00:00 IST = Monday 16 Nov 2026
+    const instant = 1794793200000;
+    const label = formatShortDateLabel(instant);
+    expect(label).toBe('Mon 16 Nov');
+  });
+
+  it('event details texts contain no seconds', () => {
+    const detailsTexts = [
+      en.dialog.sunriseDefinition,
+      en.dialog.sunriseRounding,
+      en.dialog.navkarshiDefinition,
+      en.dialog.navkarshiRounding,
+      en.dialog.sunsetDefinition,
+      en.dialog.sunsetRounding,
+      en.dialog.accuracyStandard,
+      en.dialog.accuracyApproximate,
+    ];
+    for (const text of detailsTexts) {
+      expect(text).not.toMatch(/\bseconds?\b/i);
+      expect(text).not.toMatch(/:\d{2}:\d{2}\b/);
+    }
+  });
+
+  it('formatTime24 and formatTimeDisplay handle midnight, noon, and non-string keys', () => {
+    // 2026-11-16 18:35 UTC = 2026-11-17 00:05 IST
+    const midnightIst = Date.UTC(2026, 10, 16, 18, 35, 0);
+    expect(formatTime24(midnightIst)).toBe('00:05');
+    expect(formatTimeDisplay(midnightIst, '12h')).toBe('12:05 AM');
+    expect(formatTimeDisplay(midnightIst, '24h')).toBe('00:05');
+
+    // 2026-11-17 06:35 UTC = 2026-11-17 12:05 IST
+    const noonIst = Date.UTC(2026, 10, 17, 6, 35, 0);
+    expect(formatTimeDisplay(noonIst, '12h')).toBe('12:05 PM');
+
+    expect(() => t('events')).toThrow(/not a string/i);
+    expect(greetingText('unknown' as unknown as Parameters<typeof greetingText>[0])).toBe(
+      'Good morning',
+    );
   });
 });

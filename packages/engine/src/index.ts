@@ -16,3 +16,5 @@ export * from './time/countdown.js';
 export * from './time/greeting.js';
 export * from './time/day-night.js';
 export * from './time/snapshot-status.js';
+export * from './accuracy.js';
+export * from './moon/phase.js';

@@ -6,7 +6,7 @@ export const COVERAGE_GATES = [
   {
     glob: 'tools/lib/**',
     statements: 90,
-    branches: 88,
+    branches: 90,
     functions: 90,
     lines: 90,
   },
@@ -34,7 +34,7 @@ export const COVERAGE_GATES = [
   {
     glob: 'apps/app/src/**',
     statements: 90,
-    branches: 83,
+    branches: 90,
     functions: 90,
     lines: 90,
   },

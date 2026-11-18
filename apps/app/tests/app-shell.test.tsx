@@ -28,6 +28,25 @@ const MOCK_DAY: DayRecord = {
   moonPhaseAtNoon: { phase: 0.5, illumination: 1.0 },
 };
 
+const PREV_DAY: DayRecord = {
+  istDate: '2026-11-16',
+  sunrise: { exactMs: 1794706200000, displayMs: 1794706200000 },
+  navkarshi: { exactMs: 1794709080000, displayMs: 1794709080000 },
+  sunset: { exactMs: 1794745800000, displayMs: 1794745800000 },
+  civilDawn: { exactMs: 1794704400000, displayMs: 1794704400000 },
+  civilDusk: { exactMs: 1794747600000, displayMs: 1794747600000 },
+  solarNoonMs: 1794726000000,
+  goldenMorning: {
+    start: { exactMs: 1794706200000, displayMs: 1794706200000 },
+    end: { exactMs: 1794709800000, displayMs: 1794709800000 },
+  },
+  goldenEvening: {
+    start: { exactMs: 1794742200000, displayMs: 1794742200000 },
+    end: { exactMs: 1794745800000, displayMs: 1794745800000 },
+  },
+  moonPhaseAtNoon: { phase: 0.5, illumination: 1.0 },
+};
+
 const dummySnapshot: SnapshotV1 = {
   schemaVersion: 1,
   engine: { name: 'astronomy-engine', version: '2.1.19' },
@@ -39,7 +58,7 @@ const dummySnapshot: SnapshotV1 = {
     source: 'manual',
     fixAtMs: fixedNowMs,
   },
-  days: [MOCK_DAY],
+  days: [PREV_DAY, MOCK_DAY],
   moonEvents: [],
 };
 
@@ -47,6 +66,10 @@ const mockService: SnapshotService = {
   load: vi.fn().mockResolvedValue({
     ok: true,
     value: { source: 'cached', snapshot: dummySnapshot },
+  }),
+  rebuild: vi.fn().mockResolvedValue({
+    ok: true,
+    value: dummySnapshot,
   }),
 };
 

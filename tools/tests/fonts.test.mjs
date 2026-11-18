@@ -97,4 +97,24 @@ describe('Bundled Fonts and Typography Invariants', () => {
       expect(header.toString('latin1')).toBe('wOF2');
     }
   });
+
+  it('readWoff2 handles invalid signature, truncated buffers and decompression errors', () => {
+    // 1. Invalid signature (must be at least 48 bytes)
+    const badSig = Buffer.alloc(48);
+    badSig.write('OTTO', 0, 'latin1');
+    expect(readWoff2(badSig)).toEqual({ error: 'Invalid WOFF2 signature: OTTO' });
+
+    // 2. Truncated buffer
+    const truncated = Buffer.from('wOF2');
+    expect(readWoff2(truncated)).toEqual({ error: 'Buffer too small for WOFF2 header' });
+
+    // 3. Corrupted brotli stream
+    const fake = Buffer.alloc(49);
+    fake.write('wOF2', 0, 'latin1');
+    fake.writeUInt32BE(0x00010000, 4);
+    fake.writeUInt32BE(49, 8);
+    fake.writeUInt16BE(1, 12);
+    fake.writeUInt8(0, 48);
+    expect(readWoff2(fake)).toHaveProperty('error');
+  });
 });

@@ -5,15 +5,21 @@ import type { SnapshotService } from '../snapshot/service.js';
 import { AppShell } from './AppShell.js';
 import { parseRoute, type Route } from './routes.js';
 import { ComingSoon } from './screens/ComingSoon.js';
-import { FoundationHome } from './screens/FoundationHome.js';
+import { Home } from './screens/Home.js';
 
 export interface AppProps {
   readonly clock: Clock;
   readonly snapshotService: SnapshotService;
   readonly isSimulated?: boolean;
+  readonly clockFormat?: '12h' | '24h' | undefined;
 }
 
-export const App: React.FC<AppProps> = ({ clock, snapshotService, isSimulated = false }) => {
+export const App: React.FC<AppProps> = ({
+  clock,
+  snapshotService,
+  isSimulated = false,
+  clockFormat = '12h',
+}) => {
   const [route, setRoute] = useState<Route>(() => {
     if (typeof window !== 'undefined') {
       return parseRoute(window.location.hash);
@@ -38,10 +44,11 @@ export const App: React.FC<AppProps> = ({ clock, snapshotService, isSimulated = 
     switch (route) {
       case 'home':
         return (
-          <FoundationHome
+          <Home
             clock={clock}
             snapshotService={snapshotService}
             isSimulated={isSimulated}
+            clockFormat={clockFormat}
           />
         );
       case 'forecast':
@@ -54,10 +61,11 @@ export const App: React.FC<AppProps> = ({ clock, snapshotService, isSimulated = 
         return <ComingSoon title={en.tabs.settings} />;
       default:
         return (
-          <FoundationHome
+          <Home
             clock={clock}
             snapshotService={snapshotService}
             isSimulated={isSimulated}
+            clockFormat={clockFormat}
           />
         );
     }

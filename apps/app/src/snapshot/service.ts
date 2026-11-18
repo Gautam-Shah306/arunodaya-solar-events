@@ -30,6 +30,7 @@ export interface SnapshotServiceOptions {
 
 export interface SnapshotService {
   load(location: SnapshotLocation): Promise<Result<SnapshotServiceResult, SnapshotServiceError>>;
+  rebuild(location: SnapshotLocation): Promise<Result<SnapshotV1, SnapshotServiceError>>;
 }
 
 /**
@@ -93,6 +94,27 @@ export function createSnapshotService(options: SnapshotServiceOptions): Snapshot
         snapshot: buildResult.value,
         source: 'built',
       });
+    },
+
+    async rebuild(location: SnapshotLocation): Promise<Result<SnapshotV1, SnapshotServiceError>> {
+      const nowMs = typeof clock.now === 'function' ? clock.now() : clock.nowMs();
+      const windowPlan = planSnapshotWindow(nowMs);
+      const buildResult = await client.build({
+        location,
+        startIstDate: windowPlan.startIstDate,
+        dayCount: windowPlan.dayCount,
+        generatedAtMs: nowMs,
+      });
+
+      if (!buildResult.ok) {
+        return err({
+          code: buildResult.error.code,
+          message: buildResult.error.message,
+        });
+      }
+
+      store.set(SNAPSHOT_STORE_KEY, JSON.stringify(buildResult.value));
+      return ok(buildResult.value);
     },
   };
 }

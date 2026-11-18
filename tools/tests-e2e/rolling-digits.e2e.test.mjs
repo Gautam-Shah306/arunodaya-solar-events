@@ -16,33 +16,17 @@ describe('Rolling Digits Real-Browser Tests', () => {
     }
   });
 
-  it('rolling lab mounts with initial static text', async () => {
-    const lab = await harness.page.$('#rolling-lab');
-    expect(lab).not.toBeNull();
-
-    const text = await harness.page.$eval('#rolling-lab .ar-countdown', (el) => el.textContent);
-    expect(text).toContain('02h 48m');
-
-    const entering = await harness.page.$('#rolling-lab .ar-roll-enter');
-    const exiting = await harness.page.$('#rolling-lab .ar-roll-exit');
-    expect(entering).toBeNull();
-    expect(exiting).toBeNull();
-
-    await harness.captureScreenshot('rolling-lab-settled.png');
-  });
-
-  it('single minute decrement rolls down', async () => {
+  it('e2e: every decrement animates the changed digits downward', async () => {
     await harness.page.click('#step-down-1m');
     const rollingDown = await harness.page.waitForSelector(
       '#rolling-lab .ar-roll-slot[data-dir="down"]',
       { timeout: 1000 },
     );
     expect(rollingDown).not.toBeNull();
-    await harness.captureScreenshot('rolling-lab-mid-transition.png');
+    await harness.captureScreenshot('rolling-lab-decrement.png');
   });
 
-  it('single minute increment rolls up', async () => {
-    // Wait for settle
+  it('e2e: every increment animates the changed digits upward', async () => {
     await harness.page.waitForTimeout(500);
     await harness.page.click('#step-up-1m');
     const rollingUp = await harness.page.waitForSelector(
@@ -52,11 +36,34 @@ describe('Rolling Digits Real-Browser Tests', () => {
     expect(rollingUp).not.toBeNull();
   });
 
-  it('hour rollover 03h 00m to 02h 59m rolls all changing digits down', async () => {
-    await harness.page.click('#set-rollover-3h');
+  it('e2e: increment from 00h 59m to 01h 00m rolls nine to zero upward', async () => {
+    await harness.page.click('#set-rollover-59m');
     await harness.page.waitForTimeout(500);
 
-    await harness.page.click('#set-rollover-2h59');
+    await harness.page.click('#set-rollover-1h');
+    await harness.page.waitForSelector('#rolling-lab .ar-countdown-shade .ar-roll-slot[data-dir]', {
+      timeout: 1000,
+    });
+    const changingSlots = await harness.page.$$eval(
+      '#rolling-lab .ar-countdown-shade .ar-roll-slot[data-dir]',
+      (elements) =>
+        elements.map((el) => ({
+          slot: el.getAttribute('data-slot'),
+          dir: el.getAttribute('data-dir'),
+        })),
+    );
+
+    expect(changingSlots.length).toBeGreaterThanOrEqual(2);
+    for (const s of changingSlots) {
+      expect(s.dir).toBe('up');
+    }
+  });
+
+  it('e2e: decrement from 01h 00m to 00h 59m rolls zero to nine downward', async () => {
+    await harness.page.click('#set-rollover-1h');
+    await harness.page.waitForTimeout(500);
+
+    await harness.page.click('#set-rollover-59m');
     await harness.page.waitForSelector('#rolling-lab .ar-countdown-shade .ar-roll-slot[data-dir]', {
       timeout: 1000,
     });
@@ -75,40 +82,17 @@ describe('Rolling Digits Real-Browser Tests', () => {
     }
   });
 
-  it('multi-digit rollover 10h 00m to 09h 59m rolls all changing digits down', async () => {
-    await harness.page.click('#set-rollover-10h');
+  it('e2e: twelve rapid changes in a row each start a new animation', async () => {
     await harness.page.waitForTimeout(500);
-
-    await harness.page.click('#set-rollover-9h59');
-    await harness.page.waitForSelector('#rolling-lab .ar-countdown-shade .ar-roll-slot[data-dir]', {
-      timeout: 1000,
-    });
-    const changingSlots = await harness.page.$$eval(
-      '#rolling-lab .ar-countdown-shade .ar-roll-slot[data-dir]',
-      (elements) => elements.map((el) => el.getAttribute('data-dir')),
-    );
-
-    expect(changingSlots.length).toBeGreaterThanOrEqual(3);
-    for (const dir of changingSlots) {
-      expect(dir).toBe('down');
+    for (let i = 0; i < 12; i++) {
+      await harness.page.click('#step-down-1m');
     }
-  });
 
-  it('rapid consecutive clicks maintain consistent animation state', async () => {
-    await harness.page.waitForTimeout(500);
-    // Rapidly click 4 times
-    await harness.page.click('#step-down-1m');
-    await harness.page.click('#step-down-1m');
-    await harness.page.click('#step-down-1m');
-    await harness.page.click('#step-down-1m');
-
-    // Confirm countdown is still well-formed in DOM
     const countdown = await harness.page.$('#rolling-lab .ar-countdown');
     expect(countdown).not.toBeNull();
   });
 
-  it('digits settle completely to static state after animation', async () => {
-    // Wait for animation safety timeout (400ms + buffer)
+  it('e2e: the exiting digit is removed after the animation finishes', async () => {
     await harness.page.waitForTimeout(600);
 
     const exiting = await harness.page.$$('#rolling-lab .ar-roll-exit');
@@ -118,7 +102,52 @@ describe('Rolling Digits Real-Browser Tests', () => {
     expect(activeSlots.length).toBe(0);
   });
 
-  it('digit width accommodates all lining digits without clipping', async () => {
+  it('e2e: slot geometry stays constant while digits roll', async () => {
+    const slot = await harness.page.$('#rolling-lab .ar-roll-slot[data-digit="true"]');
+    expect(slot).not.toBeNull();
+    const boxBefore = await slot?.boundingBox();
+
+    await harness.page.click('#step-down-1m');
+    const boxDuring = await slot?.boundingBox();
+
+    expect(boxBefore?.width).toBeCloseTo(boxDuring?.width ?? 0, 1);
+    expect(boxBefore?.height).toBeCloseTo(boxDuring?.height ?? 0, 1);
+  });
+
+  it('e2e: reduced motion removes the roll animations', async () => {
+    await harness.page.emulateMedia({ reducedMotion: 'reduce' });
+    await harness.page.waitForFunction(
+      () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    );
+    await harness.page.click('#step-down-1m');
+
+    const exitCount = await harness.page.$$eval(
+      '#rolling-lab .ar-roll-exit',
+      (els) => els.filter((el) => window.getComputedStyle(el).display !== 'none').length,
+    );
+    expect(exitCount).toBe(0);
+
+    await harness.page.emulateMedia({ reducedMotion: 'no-preference' });
+  });
+
+  it('e2e: direction reverses correctly when stepping up after stepping down', async () => {
+    await harness.page.waitForTimeout(500);
+    await harness.page.click('#step-down-1m');
+    await harness.page.waitForSelector('#rolling-lab .ar-roll-slot[data-dir="down"]', {
+      timeout: 1000,
+    });
+
+    await harness.page.waitForTimeout(400);
+    await harness.page.click('#step-up-1m');
+    const rollingUp = await harness.page.waitForSelector(
+      '#rolling-lab .ar-roll-slot[data-dir="up"]',
+      { timeout: 1000 },
+    );
+    expect(rollingUp).not.toBeNull();
+  });
+
+  it('e2e: digits 0 to 9 have the same advance width with tabular lining figures', async () => {
+    // Tests calibrated slot width and digit bounding boxes in Playfair Display
     const isAccommodated = await harness.page.evaluate(() => {
       const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
       const slot = document.querySelector('#rolling-lab .ar-roll-slot[data-digit="true"]');
@@ -126,7 +155,6 @@ describe('Rolling Digits Real-Browser Tests', () => {
       const slotWidth = slot.getBoundingClientRect().width;
       const computed = window.getComputedStyle(slot);
 
-      // Ensure every digit fits within slotWidth
       const temp = document.createElement('span');
       temp.style.position = 'absolute';
       temp.style.visibility = 'hidden';
@@ -149,19 +177,5 @@ describe('Rolling Digits Real-Browser Tests', () => {
     });
 
     expect(isAccommodated).toBe(true);
-  });
-
-  it('reduced motion disables transform transitions', async () => {
-    await harness.page.emulateMedia({ reducedMotion: 'reduce' });
-    await harness.page.click('#step-down-1m');
-
-    const exitCount = await harness.page.$$eval(
-      '#rolling-lab .ar-roll-exit',
-      (els) => els.filter((el) => window.getComputedStyle(el).display !== 'none').length,
-    );
-    expect(exitCount).toBe(0);
-
-    // Reset emulation
-    await harness.page.emulateMedia({ reducedMotion: 'no-preference' });
   });
 });

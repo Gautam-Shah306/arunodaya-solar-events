@@ -1,8 +1,15 @@
-import { istParts, type Greeting } from '@arunodaya/engine';
+import { istParts, type Greeting, type MoonPhaseKey } from '@arunodaya/engine';
 import { en } from './en.js';
 
 export { en };
-export type { Greeting };
+export type { Greeting, MoonPhaseKey };
+
+/**
+ * Returns the localized label for a moon phase key.
+ */
+export function moonPhaseLabel(phase: MoonPhaseKey): string {
+  return en.moon.phases[phase];
+}
 
 /**
  * Retrieves a plain English translation string by dot-separated path.
@@ -114,6 +121,19 @@ export function formatDateLabel(nowMs: number): string {
 export const formatDateLong = formatDateLabel;
 
 /**
+ * Formats an epoch millisecond instant into a short IST date label.
+ * Example: "Tue, 17 Nov".
+ *
+ * @param ms Epoch millisecond instant
+ */
+export function formatShortDateLabel(ms: number): string {
+  const parts = istParts(ms);
+  const weekdayShort = en.weekdaysShort[parts.weekday] ?? '';
+  const monthShort = en.monthsShort[parts.month - 1] ?? '';
+  return `${weekdayShort} ${String(parts.day)} ${monthShort}`;
+}
+
+/**
  * Formats an epoch millisecond instant into HH:MM (24-hour) in IST.
  *
  * @param ms Epoch millisecond instant
@@ -123,4 +143,25 @@ export function formatTime24(ms: number): string {
   const hh = String(parts.hour).padStart(2, '0');
   const mm = String(parts.minute).padStart(2, '0');
   return `${hh}:${mm}`;
+}
+
+/**
+ * Formats an epoch millisecond instant into 12h (hh:mm AM/PM) or 24h (HH:MM) in IST.
+ *
+ * @param ms Epoch millisecond instant
+ * @param format '12h' | '24h'
+ */
+export function formatTimeDisplay(ms: number, format: '12h' | '24h'): string {
+  const parts = istParts(ms);
+  if (format === '24h') {
+    const hh = String(parts.hour).padStart(2, '0');
+    const mm = String(parts.minute).padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+
+  const period = parts.hour >= 12 ? 'PM' : 'AM';
+  const h12 = parts.hour % 12 === 0 ? 12 : parts.hour % 12;
+  const hh = String(h12).padStart(2, '0');
+  const mm = String(parts.minute).padStart(2, '0');
+  return `${hh}:${mm} ${period}`;
 }

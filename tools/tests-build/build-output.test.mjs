@@ -159,4 +159,38 @@ describe('build-output', () => {
     // Must stay under 90 KB (92160 bytes)
     expect(gzipSize).toBeLessThanOrEqual(92160);
   });
+
+  it('built home page references no remote URLs and no inline styles', () => {
+    const htmlPath = path.join(pagesDist, 'index.html');
+    const html = fs.readFileSync(htmlPath, 'utf8');
+
+    // No remote URLs
+    expect(html).not.toMatch(/https?:\/\//i);
+    expect(html).not.toMatch(/src=["']\/\/[^"']+/i);
+    expect(html).not.toMatch(/href=["']\/\/[^"']+/i);
+
+    // No inline styles
+    expect(html).not.toMatch(/\sstyle=["'][^"']*["']/i);
+  });
+
+  it('android build includes the home screen and excludes the simulated time banner text', () => {
+    const androidAssets = path.join(androidDist, 'assets');
+    const jsFiles = fs.readdirSync(androidAssets).filter((f) => f.endsWith('.js'));
+
+    let foundHome = false;
+    let foundSimulatedBannerText = false;
+
+    for (const jsFile of jsFiles) {
+      const content = fs.readFileSync(path.join(androidAssets, jsFile), 'utf8');
+      if (content.includes('Navkarshi') || content.includes('Civil Dawn')) {
+        foundHome = true;
+      }
+      if (content.includes('Simulated time:')) {
+        foundSimulatedBannerText = true;
+      }
+    }
+
+    expect(foundHome).toBe(true);
+    expect(foundSimulatedBannerText).toBe(false);
+  });
 });

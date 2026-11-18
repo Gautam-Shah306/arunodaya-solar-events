@@ -10,7 +10,8 @@ describe('Engine Entry Points', () => {
     expect(rootExports).not.toContain('computeDayRecord');
     expect(rootExports).not.toContain('computeMoonEvents');
     expect(rootExports).not.toContain('ASTRONOMY_ENGINE');
-    expect(rootExports).not.toContain('accuracyTier');
+    expect(rootExports).toContain('accuracyTier');
+    expect(rootExports).toContain('livePhase');
     expect(rootExports).toContain('planSnapshotWindow');
   });
 

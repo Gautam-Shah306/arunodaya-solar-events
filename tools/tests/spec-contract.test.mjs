@@ -139,9 +139,8 @@ describe('Spec Contract Verification', () => {
     expect(design).toContain('docs/THEMES.md');
   });
 
-  it('spec contains no hex colour values other than pure dark anchor tokens', () => {
-    const stripped = spec.replace(/#(?:000000|2A2A2A)\b/gi, '');
-    expect(stripped).not.toMatch(/#[0-9a-fA-F]{6}\b/);
+  it('spec contains no hex colour values', () => {
+    expect(spec).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
   });
 
   it('spec: 9.2 lists the eight themes and pure-dark pure black canvas', () => {
@@ -160,8 +159,7 @@ describe('Spec Contract Verification', () => {
     for (const t of themes) {
       expect(section9.toLowerCase()).toContain(t);
     }
-    expect(section9).toContain('#000000');
-    expect(section9).toContain('#2A2A2A');
+    expect(section9).toContain('pure black');
     expect(section9).not.toContain('Aubergine');
     expect(section9).not.toContain('Midnight Teal');
   });
@@ -172,13 +170,35 @@ describe('Spec Contract Verification', () => {
     expect(section9).toContain('border-canvas');
   });
 
-  it('spec: 10.3 references Playfair Display and not Gelasio', () => {
+  it('spec rolling digits section states that every changed digit rolls including wraps', () => {
+    const section4 = getSectionBody(sections, '4. Countdowns');
+    expect(section4).toContain('Every digit that changes rolls on every change, including wraps');
+    expect(section4).toContain(
+      '9 to 0 on an increase rolls up and 0 to 9 on a decrease rolls down',
+    );
+  });
+
+  it('spec widgets follow the theme base mode', () => {
+    const section9 = getSectionBody(sections, '9. Design system');
+    expect(section9).toContain(
+      'Widgets follow the theme: light themes use light widgets and dark themes use dark widgets.',
+    );
+  });
+
+  it('spec testing section mentions the real-browser tests', () => {
+    const testing = getSectionBody(sections, '12. Testing and validation');
+    expect(testing).toContain('Real-browser end-to-end tests run under Playwright');
+    expect(testing).toContain('Playfair Display with tabular numerals');
+    expect(testing).toContain('slot width stability during countdown rollover');
+  });
+
+  it('spec contains no fonts section outside typography', () => {
+    expect(spec).not.toContain('### 10.3 Fonts');
     const section10 = getSectionBody(sections, '10. Engineering stack');
-    expect(section10).toContain('### 10.3 Fonts');
-    expect(section10).toContain('Playfair Display');
-    expect(section10).toContain('lnum');
-    // Ensure Gelasio is only referenced as removed/superseded
-    expect(section10).not.toMatch(/\busing Gelasio\b/i);
+    expect(section10).not.toContain('Fonts');
+    const section9 = getSectionBody(sections, '9. Design system');
+    expect(section9).toContain('### 9.3 Typography');
+    expect(section9).toContain('Playfair Display');
   });
 
   it('spec theme sections reference the themes package and the contrast document', () => {
@@ -208,5 +228,20 @@ describe('Spec Contract Verification', () => {
     for (const phrase of forbidden) {
       expect(spec).not.toContain(phrase);
     }
+  });
+
+  it('spec home section states the next occurrence rule and the approximate badge', () => {
+    const section6 = getSectionBody(sections, '6. App structure');
+    expect(section6).toContain('next occurrence strictly after the current instant');
+    expect(section6).toContain('Tomorrow');
+    expect(section6).toContain('Approximate');
+    expect(section6).toContain('2035');
+  });
+
+  it('spec states the live moon phase interpolation', () => {
+    const section3 = getSectionBody(sections, '3. Astronomical values and rounding');
+    expect(section3).toContain('live moon phase is interpolated');
+    expect(section3).toContain('shortest circular path');
+    expect(section3).toContain('ADR 0018');
   });
 });

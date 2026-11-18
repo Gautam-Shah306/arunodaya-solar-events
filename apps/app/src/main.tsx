@@ -83,7 +83,12 @@ function init(): void {
     const root = createRoot(rootElement);
     root.render(
       <React.StrictMode>
-        <App clock={clock} snapshotService={snapshotService} isSimulated={isSimulated} />
+        <App
+          clock={clock}
+          snapshotService={snapshotService}
+          isSimulated={isSimulated}
+          clockFormat={debugParams.clockFormat}
+        />
       </React.StrictMode>,
     );
   }

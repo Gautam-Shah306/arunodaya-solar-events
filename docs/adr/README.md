@@ -42,3 +42,5 @@ This directory documents key architectural decisions for Arunodaya.
 - [0014: Rolling digits odometer and accessible countdown architecture](0014-rolling-digits-and-accessibility.md)
 - [0015: Playfair Display serif typography and lining figures](0015-playfair-display.md)
 - [0016: Real-browser end-to-end testing with Playwright Core](0016-real-browser-tests.md)
+- [0017: Home screen view-model, presentation, and dialog architecture](0017-home-screen.md)
+- [0018: Live moon phase and illumination interpolation](0018-live-moon-phase.md)

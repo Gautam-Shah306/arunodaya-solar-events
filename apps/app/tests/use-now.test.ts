@@ -119,4 +119,22 @@ describe('useNow hook', () => {
     });
     expect(ticks).toEqual([1763274610000]);
   });
+
+  it('useNow supports fallback when clock has neither nowMs nor now', () => {
+    const emptyClock = {} as Clock;
+    const ticks: number[] = [];
+    const root = createRoot(container);
+    act(() => {
+      root.render(
+        React.createElement(TestComponent, {
+          clock: emptyClock,
+          onTick: (t: number) => {
+            ticks.push(t);
+          },
+        }),
+      );
+    });
+    expect(ticks.length).toBe(1);
+    expect(ticks[0]).toBeGreaterThan(0);
+  });
 });

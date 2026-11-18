@@ -1,0 +1,54 @@
+.ar-solar-arc-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.ar-solar-arc-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.ar-solar-arc-track {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 4 4;
+}
+
+.ar-solar-arc-track--day {
+  stroke: var(--ar-accent);
+  opacity: 0.8;
+}
+
+.ar-solar-arc-track--night {
+  stroke: var(--ar-border);
+  opacity: 0.35;
+}
+
+.ar-solar-arc-sun-core {
+  fill: var(--ar-solar);
+}
+
+.ar-solar-arc-sun-glow {
+  fill: var(--ar-solar);
+  opacity: 0.25;
+}
+
+.ar-solar-arc-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 16px;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--ar-text-tertiary);
+  font-family: var(--ar-font-serif, serif);
+  font-variant-numeric: tabular-nums lining-nums;
+  box-sizing: border-box;
+}

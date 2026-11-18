@@ -18,37 +18,46 @@ apps/app/
 │   │   ├── TabBar.tsx           # Accessible 5-route navigation bar
 │   │   ├── routes.ts            # Route definitions and URL hash parser
 │   │   └── screens/
-│   │       ├── FoundationHome.tsx # Live solar countdowns and greetings
+│   │       ├── Home.tsx         # Complete Home screen (solar arc, event cards, details, moon)
 │   │       └── ComingSoon.tsx   # Placeholder screen for upcoming views
 │   ├── assets/
-│   │   └── fonts/               # Bundled Gelasio WOFF2 serif files (SIL OFL 1.1)
+│   │   └── fonts/               # Bundled Playfair Display WOFF2 serif files (SIL OFL 1.1)
 │   ├── core/                    # Low-level infrastructure adapters
 │   │   ├── clock.ts             # System, offset, and frozen clock implementations
-│   │   ├── debug.ts             # Dev/test URL query parameter parser (?theme=, ?now=)
+│   │   ├── debug.ts             # Dev/test URL query parameter parser (?theme=, ?now=, ?clock=)
 │   │   ├── prefs.ts             # User preferences schema and serialization
 │   │   ├── storage.ts           # Abstract KeyValueStore port and LocalStorage adapter
 │   │   └── theme-controller.ts  # Theme controller orchestrating CSSOM and early-paint cache
+│   ├── home/                    # Pure Home view-model and moon glyph geometry
+│   │   ├── home-model.ts        # Pure buildHomeModel view-model (ADR 0017)
+│   │   └── moon-glyph.ts        # Continuous moon phase SVG disc geometry
 │   ├── i18n/                    # Localization and string formatting
 │   │   ├── en.ts                # Plain English strings dictionary
 │   │   └── index.ts             # Translation lookup, date labels, and accessible ARIA labels
 │   ├── snapshot/                # Multi-day astronomy calculation pipeline
 │   │   ├── client.ts            # Client wrapper with fallback and timeout guards
 │   │   ├── request-handler.ts   # Pure snapshot calculation and validation
-│   │   ├── service.ts           # Caching, migration, and expiration orchestrator
+│   │   ├── service.ts           # Caching, rebuild, migration, and expiration orchestrator
 │   │   ├── snapshot.worker.ts   # Dedicated Web Worker entry
 │   │   └── worker-protocol.ts   # Typed message definitions and type guards
 │   ├── styles/                  # Global CSS styles
 │   │   ├── base.css             # CSS reset, box sizing, and system defaults
-│   │   └── fonts.css            # @font-face declarations for bundled Gelasio
+│   │   └── fonts.css            # @font-face declarations for bundled Playfair Display
 │   ├── theme/                   # Theme application helper
 │   │   └── apply-theme.ts       # CSSOM theme applier
 │   ├── ui/                      # Reusable UI components and hooks
 │   │   ├── Countdown.tsx        # Dual-layer accessible countdown component
+│   │   ├── DayNightIcon.tsx     # Day/night vector indicator
+│   │   ├── Dialog.tsx           # Portal modal with focus trap and background inertness
+│   │   ├── EventCard.tsx        # Primary event countdown button card
+│   │   ├── EventDetailsDialog.tsx # Accessible event explanation modal (no seconds)
+│   │   ├── MoonPhaseGlyph.tsx   # Live SVG lunar disc glyph
 │   │   ├── RollingDigits.tsx    # Odometer rolling digit renderer
 │   │   ├── rolling-digits-model.ts # Direction and slot transition calculation
+│   │   ├── SolarArc.tsx         # Semi-circular solar position arc
 │   │   ├── use-now.ts           # Minute-boundary synchronized time hook
-│   │   └── use-snapshot.ts      # Multi-day snapshot loading hook
-│   ├── components-gallery.tsx   # Review gallery previewing countdowns across 10 themes
+│   │   └── use-snapshot.ts      # Multi-day snapshot loading, refresh, and auto-refresh hook
+│   ├── components-gallery.tsx   # Review gallery previewing countdowns across 8 themes
 │   ├── main.tsx                 # Application bootstrap entry point
 │   └── themes-gallery.ts        # Theme review gallery
 └── tests/                       # Unit tests for components, hooks, and services
@@ -95,10 +104,10 @@ Real-browser automated tests execute in Chromium driven by `playwright-core` (AD
 
 ## Bundle Budgets
 
-First-load JavaScript (entry chunk + modulepreloads/static imports summed as gzip) is tracked and enforced against recorded budgets:
+First-load JavaScript (entry chunk + modulepreloads/static imports summed as gzip) is tracked and enforced against recorded budgets (`tools/lib/bundle-budgets.mjs`):
 
-- **Pages Target**: Budget is **165 kB gzip** (measured: ~143.3 kB gzip; budget is `ceil(measured * 1.15)`).
-- **Android Target**: Budget is **165 kB gzip** (measured: ~142.7 kB gzip; budget is `ceil(measured * 1.15)`).
+- **Pages Target**: Budget is **100,957 B gzip (~98.6 kB)** (measured: 87,788 B / 85.73 kB gzip; budget is `ceil(measured * 1.15)`; hard ceiling 110 kB gzip).
+- **Android Target**: Budget is **100,254 B gzip (~97.9 kB)** (measured: 87,177 B / 85.13 kB gzip; budget is `ceil(measured * 1.15)`).
 - **Analysis CLI**: `npm run analyze:bundle -- --target=<pages|android>` prints per-chunk raw and gzip sizes, along with the top 12 modules grouped by npm package or repository source path.
 - **Astronomy Isolation**: Astronomy calculation code (`astronomy-engine` and `packages/engine/src/astro`) is isolated strictly to the worker chunk and the lazy fallback chunk (`request-handler-*.js`).
 

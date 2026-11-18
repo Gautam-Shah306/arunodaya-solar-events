@@ -1,0 +1,33 @@
+# Prompt 6b Test Scenarios (32 titles)
+planSlots marks every changed digit for rolling in the direction of the whole change
+planSlots rolls nine to zero upward on an increase
+planSlots rolls zero to nine downward on a decrease
+planSlots treats a missing previous digit as an entering slot
+planSlots keeps separators and unit letters unchanged
+RollingDigits creates new glyph elements for every change so that animations restart
+RollingDigits restarts the roll when a second change arrives before the first finishes
+RollingDigits removes the exiting glyph when the animation ends
+RollingDigits removes the exiting glyph after the safety timeout when no animation event arrives
+RollingDigits rolls every changed digit down on decrement including zero to nine
+RollingDigits rolls every changed digit up on increment including nine to zero
+RollingDigits keeps unchanged digits static
+RollingDigits shows no rolling markers on first render
+Countdown layers animate in sync
+roll keyframes exist for entering and exiting in both directions
+reduced motion hides the exiting glyph and removes roll animations
+e2e: every decrement animates the changed digits downward
+e2e: every increment animates the changed digits upward
+e2e: increment from 00h 59m to 01h 00m rolls nine to zero upward
+e2e: decrement from 01h 00m to 00h 59m rolls zero to nine downward
+e2e: twelve rapid changes in a row each start a new animation
+e2e: the exiting digit is removed after the animation finishes
+e2e: slot geometry stays constant while digits roll
+e2e: reduced motion removes the roll animations
+e2e: direction reverses correctly when stepping up after stepping down
+e2e: digits 0 to 9 have the same advance width with tabular lining figures
+e2e: the serif font loads from the bundled file and is applied to countdown digits
+e2e: the snapshot worker starts under the content security policy and the app leaves the loading state
+e2e: the home countdown rolls down when the minute changes
+e2e: every theme renders the components page without console errors
+e2e: the themes page shows eight themes and no horizontal scrolling at 390 pixels
+e2e: the removed theme ids fall back to the system theme

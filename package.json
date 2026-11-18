@@ -14,6 +14,7 @@
   "scripts": {
     "check:toolchain": "node tools/check-toolchain.mjs",
     "verify:invariants": "node tools/verify-invariants.mjs",
+    "verify:scenarios": "node tools/verify-scenarios.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

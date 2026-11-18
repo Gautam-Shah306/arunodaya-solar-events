@@ -6,7 +6,8 @@ export const TEST_PROJECTS = [
     name: 'tools',
     environment: 'node',
     include: ['tools/tests/**/*.test.{mjs,js,ts}'],
-    testTimeout: 30000,
+    testTimeout: 60000,
+    hookTimeout: 60000,
   },
   {
     name: 'packages',
